@@ -1,12 +1,13 @@
+import { GenerateJdInput } from '@/interfaces/generate-jd-input.interface';
+import { MatchAnalysisInput } from '@/interfaces/match-analysis-input.interface';
+import { MatchAnalysisOutput } from '@/interfaces/match-analysis-output.interface';
+import { ClaudeService } from '@/services/claude.service';
 import { Injectable } from '@nestjs/common';
-import { ClaudeService } from '@modules/ai/claude/claude.service';
 
-/**
- * AiOrchestrationService — orquestra chamadas ao Claude para tarefas de RH
- */
+
 @Injectable()
 export class AiOrchestrationService {
-  constructor(private readonly claude: ClaudeService) {}
+  constructor(private readonly claude: ClaudeService) { }
 
   async generateJobDescription(input: GenerateJdInput): Promise<string> {
     const prompt = `

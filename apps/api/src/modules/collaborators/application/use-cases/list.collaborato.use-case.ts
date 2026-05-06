@@ -1,0 +1,41 @@
+import { ICollaboratorRepository } from "@/interfaces/icollaborator-repository.interface";
+import { OrgChartNode } from "@/interfaces/org-chart-node.interface";
+import { COLLABORATOR_REPOSITORY } from "@/repositories/collaborator.repository.interface";
+import { Injectable, Inject } from "@nestjs/common";
+
+@Injectable()
+export class GetOrgChartUseCase {
+    constructor(
+        @Inject(COLLABORATOR_REPOSITORY) private readonly repo: ICollaboratorRepository,
+    ) { }
+
+    async execute(companyId: string): Promise<OrgChartNode[]> {
+        const all = await this.repo.findByCompany(companyId);
+
+        const map = new Map<string, OrgChartNode>();
+        const roots: OrgChartNode[] = [];
+
+        for (const c of all) {
+            map.set(c.id.value, {
+                id: c.id.value,
+                name: c.name,
+                role: c.role,
+                department: c.department,
+                email: c.email,
+                children: [],
+            });
+        }
+
+        for (const c of all) {
+            const node = map.get(c.id.value)!;
+            if (c.parentId) {
+                const parent = map.get(c.parentId);
+                if (parent) parent.children.push(node);
+            } else {
+                roots.push(node);
+            }
+        }
+
+        return roots;
+    }
+}

@@ -9,7 +9,7 @@ import { RefreshTokenUseCase } from './auth/application/use-cases/refresh-token.
 import { JwtStrategy } from './auth/infrastructure/jwt.strategy';
 import { BcryptHashService } from './auth/infrastructure/services/bcrypt-hash.service';
 import { PrismaTokenRepository } from './auth/infrastructure/repositories/prisma-token.repository';
-import { AuthController } from './auth/presentation/auth.controller';
+import { AuthController } from './auth/controllers/auth.controller';
 import { HASH_SERVICE } from '../shared/domain/services/hash.service.interface';
 import { TOKEN_REPOSITORY } from './auth/domain/repositories/token.repository.interface';
 import { CompaniesModule } from './companies.module';

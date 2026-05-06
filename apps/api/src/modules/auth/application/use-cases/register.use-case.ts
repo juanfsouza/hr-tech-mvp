@@ -23,7 +23,6 @@ type RegisterError =
   | InvalidValueObjectError
   | BusinessRuleViolationError;
 
-
 @Injectable()
 export class RegisterUseCase implements UseCase<RegisterInput, RegisterOutput, RegisterError> {
   constructor(

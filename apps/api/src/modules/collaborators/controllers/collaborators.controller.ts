@@ -9,11 +9,9 @@ import { IsString, IsNotEmpty, IsOptional, IsEmail, IsUUID } from 'class-validat
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
 import { CurrentUser, AuthenticatedUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
-import {
-  CreateCollaboratorUseCase,
-  GetOrgChartUseCase,
-} from '@modules/collaborators/application/use-cases/collaborator.use-cases';
+import { CreateCollaboratorUseCase } from '../application/use-cases/create.collaborator.use-case';
 import { OrgChartNode } from '@/interfaces/org-chart-node.interface';
+import { GetOrgChartUseCase } from '../application/use-cases/list.collaborato.use-case';
 
 class CreateCollaboratorDto {
   @ApiProperty() @IsString() @IsNotEmpty() name!: string;
