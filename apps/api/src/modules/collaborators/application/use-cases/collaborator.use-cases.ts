@@ -8,7 +8,6 @@ import { Collaborator } from '@/entities/collaborator.entity';
 import { ICollaboratorRepository } from '@/interfaces/icollaborator-repository.interface';
 import { COLLABORATOR_REPOSITORY } from '@/repositories/collaborator.repository.interface';
 
-// ─────────────────────────────────────────────────────────────────────────────
 
 @Injectable()
 export class CreateCollaboratorUseCase {
@@ -43,8 +42,6 @@ export class CreateCollaboratorUseCase {
     return right({ id: collaborator.id.value, name: collaborator.name, role: collaborator.role, parentId: collaborator.parentId });
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
 
 @Injectable()
 export class GetOrgChartUseCase {

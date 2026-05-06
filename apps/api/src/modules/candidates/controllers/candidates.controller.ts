@@ -5,16 +5,14 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
-import { CurrentUser, AuthenticatedUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
-import {
-  CreateCandidateUseCase,
-  ListCandidatesByJobUseCase,
-  GetCandidateByIdUseCase,
-  UpdateCandidateStatusUseCase,
-  AnonymizeCandidateUseCase,
-} from '@modules/candidates/application/use-cases/candidates.use-cases';
 import { CreateCandidateDto } from '@/dtos/create-candidate.dto';
-import { UpdateStatusDto } from '@/dtos/update-status.dto';
+import { UpdateStatusDto } from '../application/dtos/update-status.dto';
+import { CreateCandidateUseCase } from '../application/use-cases/create-candidates.use-case';
+import { GetCandidateByIdUseCase, ListCandidatesByJobUseCase } from '../application/use-cases/list-candidates.use-case';
+import { AuthenticatedUser } from '@/interfaces/authenticated-user.interface';
+import { CurrentUser } from '@/shared/infrastructure/http/decorators/current-user.decorator';
+import { AnonymizeCandidateUseCase } from '../application/use-cases/anonymize-candidate.use-case';
+import { UpdateCandidateStatusUseCase } from '../application/use-cases/update-candidates.use.case';
 
 
 

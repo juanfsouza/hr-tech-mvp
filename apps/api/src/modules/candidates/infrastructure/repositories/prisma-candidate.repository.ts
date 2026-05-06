@@ -6,14 +6,8 @@ import { normalizePaginationParams } from '@/shared/application/pagination';
 import { UniqueEntityID } from '@/shared/domain/value-objects';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/database/prisma.service';
+import { PrismaCandidateRecord } from '../interfaces/candidate.interface';
 
-
-interface PrismaCandidateRecord {
-  id: string; companyId: string; jobId: string | null;
-  name: string; email: string; phone: string | null;
-  resumeUrl: string | null; status: string; lgpdConsent: boolean;
-  consentAt: Date | null; createdAt: Date; updatedAt: Date; deletedAt: Date | null;
-}
 
 @Injectable()
 export class PrismaCandidateRepository implements ICandidateRepository {

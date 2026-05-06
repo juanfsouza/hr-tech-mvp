@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/database/prisma.service';
-import { IJobRepository } from '@modules/jobs/domain/repositories/job.repository.interface';
 import { Job, JobStatus } from '@modules/jobs/domain/entities/job.entity';
-import { PaginationParams, PaginatedResult, normalizePaginationParams } from '@shared/application/pagination';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
+import { IJobRepository } from '@/interfaces/ijob-repository.interface';
+import { PaginatedResult } from '@/interfaces/paginated-result.interface';
+import { PaginationParams } from '@/interfaces/pagination-params.interface';
+import { normalizePaginationParams } from '@/shared/application/pagination';
 
 interface PrismaJobRecord {
   id: string; companyId: string; title: string; description: string | null;
@@ -15,7 +17,7 @@ interface PrismaJobRecord {
 
 @Injectable()
 export class PrismaJobRepository implements IJobRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findById(id: string, companyId: string): Promise<Job | null> {
     const r = await this.prisma.job.findFirst({ where: { id, companyId, deletedAt: null } });

@@ -6,13 +6,7 @@ import { PrismaService } from '@/services/prisma.service';
 import { SaveResponseInput } from '@/interfaces/save-response-input.interface';
 import { PsychProfileData } from '@/interfaces/psych-profile-data.interface';
 import { UniqueEntityID } from '@/shared/domain/value-objects';
-
-interface PrismaSessionRecord {
-  id: string; companyId: string; candidateId: string | null;
-  token: string; status: string; expiresAt: Date;
-  startedAt: Date | null; completedAt: Date | null;
-  currentTest: string | null; createdAt: Date;
-}
+import { PrismaSessionRecord } from '../interfaces/prisma.teste.interface';
 
 @Injectable()
 export class PrismaTestRepository implements ITestRepository {

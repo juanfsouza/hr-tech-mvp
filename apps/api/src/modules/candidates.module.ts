@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CANDIDATE_REPOSITORY } from './candidates/domain/repositories/candidate.repository.interface';
 import { PrismaCandidateRepository } from './candidates/infrastructure/repositories/prisma-candidate.repository';
-import { CandidatesController } from './candidates/presentation/candidates.controller';
+import { CandidatesController } from './candidates/controllers/candidates.controller';
 import {
   CreateCandidateUseCase,
   ListCandidatesByJobUseCase,
@@ -22,4 +22,4 @@ import {
   ],
   exports: [CANDIDATE_REPOSITORY],
 })
-export class CandidatesModule {}
+export class CandidatesModule { }

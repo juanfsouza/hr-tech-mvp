@@ -8,7 +8,7 @@ import {
   SaveProgressUseCase,
   CompleteTestUseCase,
 } from './tests/application/use-cases/tests.use-cases';
-import { TestsController } from './tests/presentation/tests.controller';
+import { TestsController } from './tests/controllers/tests.controller';
 
 @Module({
   imports: [
@@ -24,4 +24,4 @@ import { TestsController } from './tests/presentation/tests.controller';
   ],
   exports: [TEST_REPOSITORY, CreateTestSessionUseCase],
 })
-export class TestsModule {}
+export class TestsModule { }

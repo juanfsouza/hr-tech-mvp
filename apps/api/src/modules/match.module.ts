@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { MatchService } from './match/application/match.service';
 import { MatchWorker } from './match/infrastructure/workers/match.worker';
-import { MatchController } from './match/presentation/match.controller';
+import { MatchController } from './match/controllers/match.controller';
 import { JobsModule } from './jobs.module';
 import { TestsModule } from './tests.module';
 import { CandidatesModule } from './candidates.module';

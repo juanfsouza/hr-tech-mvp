@@ -4,7 +4,7 @@ import { COMPANY_REPOSITORY } from './companies/domain/repositories/company.repo
 import { CreateCompanyUseCase } from './companies/application/use-cases/create-company.use-case';
 import { UpdateOnboardingUseCase } from './companies/application/use-cases/update-onboarding.use-case';
 import { GetCompanyUseCase } from './companies/application/use-cases/get-company.use-case';
-import { CompaniesController } from './companies/presentation/companies.controller';
+import { CompaniesController } from './companies/controllers/companies.controller';
 
 @Module({
   controllers: [CompaniesController],
@@ -16,4 +16,4 @@ import { CompaniesController } from './companies/presentation/companies.controll
   ],
   exports: [COMPANY_REPOSITORY],
 })
-export class CompaniesModule {}
+export class CompaniesModule { }
