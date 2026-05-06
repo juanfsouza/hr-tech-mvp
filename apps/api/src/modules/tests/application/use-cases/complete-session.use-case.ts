@@ -59,53 +59,51 @@ export class CompleteTestUseCase {
                 candidateName = candidate.name;
             }
         }
-
         const { profileId, profileData } = await this.calculateAndSaveProfile(session.id.value, session.candidateId, candidateName);
 
         // -- AUTOMAÇÃO 1 e 2: Disparar Match IA e Enviar Email --
         if (candidate) {
             try {
                 // 1. Gerar PDF
-                    const pdfBuffer = await this.pdfService.generatePsychProfilePdf({
-                        candidateName: candidate.name,
-                        discDominant: profileData.discDominant || 'Não definido',
-                        discSecondary: profileData.discSecondary || undefined,
-                        discD: profileData.discD || 0,
-                        discI: profileData.discI || 0,
-                        discS: profileData.discS || 0,
-                        discC: profileData.discC || 0,
-                        enneagramType: profileData.enneagramType || 0,
-                        enneagramWing: profileData.enneagramWing || undefined,
-                        mbtiType: profileData.mbtiType || 'Não definido',
+                const pdfBuffer = await this.pdfService.generatePsychProfilePdf({
+                    candidateName: candidate.name,
+                    discDominant: profileData.discDominant || 'Não definido',
+                    discSecondary: profileData.discSecondary || undefined,
+                    discD: profileData.discD || 0,
+                    discI: profileData.discI || 0,
+                    discS: profileData.discS || 0,
+                    discC: profileData.discC || 0,
+                    enneagramType: profileData.enneagramType || 0,
+                    enneagramWing: profileData.enneagramWing || undefined,
+                    mbtiType: profileData.mbtiType || 'Não definido',
+                });
+
+                // 2. Enviar Email de Conclusão com PDF
+                await this.emailService.sendTestCompleted(
+                    candidate.email,
+                    candidate.name,
+                    profileData.discDominant || 'Não definido',
+                    String(profileData.enneagramType || 'Não definido'),
+                    profileData.mbtiType || 'Não definido',
+                    pdfBuffer
+                );
+
+                // 3. Acionar IA de Match se o candidato estiver vinculado a uma vaga
+                if (candidate.jobId) {
+                    const jobIdStr = `match:${candidate.id}:${candidate.jobId}`;
+                    await this.matchQueue.add('analyze', {
+                        candidateId: candidate.id,
+                        jobId: candidate.jobId,
+                        companyId: session.companyId,
+                    }, {
+                        jobId: jobIdStr,
+                        attempts: 3,
+                        backoff: { type: 'exponential', delay: 5000 },
                     });
-
-                    // 2. Enviar Email de Conclusão com PDF
-                    await this.emailService.sendTestCompleted(
-                        candidate.email,
-                        candidate.name,
-                        profileData.discDominant || 'Não definido',
-                        String(profileData.enneagramType || 'Não definido'),
-                        profileData.mbtiType || 'Não definido',
-                        pdfBuffer
-                    );
-
-                    // 3. Acionar IA de Match se o candidato estiver vinculado a uma vaga
-                    if (candidate.jobId) {
-                        const jobIdStr = `match:${candidate.id}:${candidate.jobId}`;
-                        await this.matchQueue.add('analyze', {
-                            candidateId: candidate.id,
-                            jobId: candidate.jobId,
-                            companyId: session.companyId,
-                        }, {
-                            jobId: jobIdStr,
-                            attempts: 3,
-                            backoff: { type: 'exponential', delay: 5000 },
-                        });
-                        this.logger.log(`[Automação] Match IA enfileirado para candidato ${candidate.id}`);
-                    }
+                    this.logger.log(`[Automação] Match IA enfileirado para candidato ${candidate.id}`);
+                }
             } catch (error) {
                 this.logger.error('Falha ao acionar automações pós-teste', error);
-                // Não quebra o fluxo de conclusão do teste caso o email ou a fila falhem
             }
         }
 
