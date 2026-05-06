@@ -18,8 +18,9 @@ import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard'
 import { CurrentUser, AuthenticatedUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
 import { CreateCompanyUseCase } from '@modules/companies/application/use-cases/create-company.use-case';
 import { UpdateOnboardingUseCase } from '@modules/companies/application/use-cases/update-onboarding.use-case';
-import { GetCompanyUseCase, GetCompanyOutput } from '@modules/companies/application/use-cases/get-company.use-case';
-import { CreateCompanyDto, UpdateOnboardingDto } from '../dtos/create-company.dto';
+import { GetCompanyUseCase } from '@modules/companies/application/use-cases/get-company.use-case';
+import { GetCompanyOutput } from '@/interfaces/get-company-output.interface';
+import { CreateCompanyDto, UpdateOnboardingDto } from '../application/dtos/create-company.dto';
 
 @ApiTags('Companies')
 @ApiBearerAuth()
@@ -30,9 +31,8 @@ export class CompaniesController {
     private readonly createCompany: CreateCompanyUseCase,
     private readonly updateOnboarding: UpdateOnboardingUseCase,
     private readonly getCompany: GetCompanyUseCase,
-  ) {}
+  ) { }
 
-  // ─── POST /companies ───────────────────────────────────────────────────────
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Criar nova empresa (passo 1 do onboarding)' })
@@ -52,14 +52,12 @@ export class CompaniesController {
     return { companyId: result.value.companyId, cnpj: result.value.cnpj };
   }
 
-  // ─── GET /companies/:id ────────────────────────────────────────────────────
   @Get(':id')
   @ApiOperation({ summary: 'Obter dados da empresa autenticada' })
   async findOne(
     @Param('id') id: string,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<GetCompanyOutput> {
-    // Isolamento multi-tenant: usuário só pode ver sua própria empresa
     if (user.companyId !== id && user.role !== 'ADMIN') {
       throw new ForbiddenException();
     }
@@ -70,7 +68,6 @@ export class CompaniesController {
     return result.value;
   }
 
-  // ─── PATCH /companies/:id/onboarding ──────────────────────────────────────
   @Patch(':id/onboarding')
   @ApiOperation({ summary: 'Avançar step do wizard de onboarding' })
   async advanceOnboarding(

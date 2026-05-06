@@ -15,7 +15,6 @@ import { AnonymizeCandidateUseCase } from '../application/use-cases/anonymize-ca
 import { UpdateCandidateStatusUseCase } from '../application/use-cases/update-candidates.use.case';
 
 
-
 @ApiTags('Candidates')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)

@@ -39,8 +39,6 @@ export class Company extends Entity<CompanyProps> {
     return new Company(props, id);
   }
 
-  // ─── Getters ──────────────────────────────────────────────────────────────
-
   get razaoSocial(): string { return this.props.razaoSocial; }
   get cnpj(): Cnpj { return this.props.cnpj; }
   get logoUrl(): string | undefined { return this.props.logoUrl; }
@@ -51,8 +49,6 @@ export class Company extends Entity<CompanyProps> {
   get isActive(): boolean { return this.props.isActive; }
   get createdAt(): Date { return this.props.createdAt; }
   get updatedAt(): Date { return this.props.updatedAt; }
-
-  // ─── Comportamento ────────────────────────────────────────────────────────
 
   updateAddress(address: CompanyAddress): void {
     this.props.address = address;
