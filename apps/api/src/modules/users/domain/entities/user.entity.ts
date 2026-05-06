@@ -27,8 +27,6 @@ export class User extends Entity<UserProps> {
     return new User(props, id);
   }
 
-  // ─── Getters ──────────────────────────────────────────────────────────────
-
   get companyId(): string { return this.props.companyId; }
   get email(): Email { return this.props.email; }
   get password(): Password { return this.props.password; }
@@ -40,8 +38,6 @@ export class User extends Entity<UserProps> {
   get createdAt(): Date { return this.props.createdAt; }
   get updatedAt(): Date { return this.props.updatedAt; }
   get deletedAt(): Date | undefined { return this.props.deletedAt; }
-
-  // ─── Comportamento ────────────────────────────────────────────────────────
 
   recordLogin(): void {
     this.props.lastLoginAt = new Date();

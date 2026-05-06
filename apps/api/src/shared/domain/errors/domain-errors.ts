@@ -1,8 +1,3 @@
-/**
- * Domain errors base — erros de negócio tipados
- * Não são exceptions, são valores retornados via Either
- */
-
 export abstract class DomainError {
   abstract readonly message: string;
   abstract readonly code: string;
@@ -11,8 +6,6 @@ export abstract class DomainError {
     return `[${this.code}] ${this.message}`;
   }
 }
-
-// ─── Generic Domain Errors ─────────────────────────────────────────────────────
 
 export class EntityNotFoundError extends DomainError {
   readonly message: string;

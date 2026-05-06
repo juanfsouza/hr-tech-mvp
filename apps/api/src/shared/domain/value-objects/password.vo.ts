@@ -7,21 +7,14 @@ interface PasswordProps {
   hashed: boolean;
 }
 
-/**
- * Password Value Object
- * - Password.createRaw() → valida força + armazena plaintext temporariamente
- * - Password.createHashed() → armazena hash bcrypt direto do banco
- * - Nunca expõe o valor via getter público sem contexto
- */
 export class Password extends ValueObject<PasswordProps> {
   private static readonly MIN_LENGTH = 8;
-  private static readonly MAX_LENGTH = 72; // bcrypt max
+  private static readonly MAX_LENGTH = 72;
 
   private constructor(props: PasswordProps) {
     super(props);
   }
 
-  /** Retorna o valor (hash ou plaintext) — uso interno apenas */
   getRawValue(): string {
     return this.props.value;
   }

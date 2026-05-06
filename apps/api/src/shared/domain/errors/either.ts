@@ -1,8 +1,3 @@
-/**
- * Either monad — encapsula sucesso (Right) ou falha (Left)
- * Elimina o uso de exceptions para erros de negócio
- */
-
 export class Left<L, R> {
   readonly value: L;
 

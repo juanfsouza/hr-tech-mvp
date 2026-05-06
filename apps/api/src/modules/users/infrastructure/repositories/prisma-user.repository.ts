@@ -5,21 +5,7 @@ import { Password } from '@shared/domain/value-objects/password.vo';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
 import { IUserRepository } from '@/interfaces/iuser-repository.interface';
 import { PrismaService } from '@/services/prisma.service';
-
-interface PrismaUserRecord {
-  id: string;
-  companyId: string;
-  email: string;
-  passwordHash: string;
-  name: string;
-  role: string;
-  avatarUrl: string | null;
-  lastLoginAt: Date | null;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-}
+import { PrismaUserRecord } from '../interfaces/user.interface';
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
@@ -105,7 +91,6 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
-  // ─── Mapper: Prisma → Domain ───────────────────────────────────────────────
   private toDomain(record: PrismaUserRecord): User {
     const emailOrError = Email.create(record.email);
     if (emailOrError.isLeft()) {

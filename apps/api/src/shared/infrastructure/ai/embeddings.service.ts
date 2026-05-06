@@ -1,11 +1,9 @@
+import { EmbeddingResult } from '@/interfaces/embedding-result.interface';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import { AppConfig } from 'src/config/app.config';
 
-/**
- * EmbeddingsService — gera vetores com OpenAI text-embedding-3-small (1536 dims)
- */
 @Injectable()
 export class EmbeddingsService {
   private readonly client: OpenAI;
@@ -20,7 +18,6 @@ export class EmbeddingsService {
       baseURL,
     });
 
-    // xAI usa modelo diferente; OpenAI usa text-embedding-3-small (1536 dims)
     this.model = isXai ? 'v1' : 'text-embedding-3-small';
   }
 

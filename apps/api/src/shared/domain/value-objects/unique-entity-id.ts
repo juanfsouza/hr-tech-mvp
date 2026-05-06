@@ -1,9 +1,5 @@
 import { randomUUID } from 'node:crypto';
 
-/**
- * UniqueEntityID — Value Object para IDs de entidades
- * Encapsula UUID v4 sem expor primitivos diretamente
- */
 export class UniqueEntityID {
   private readonly _value: string;
 

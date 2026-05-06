@@ -1,7 +1,3 @@
-/**
- * ValueObject base — imutáveis, igualdade por valor
- * Implementações: Email, CNPJ, Password, Token, etc.
- */
 export abstract class ValueObject<T> {
   protected readonly props: T;
 

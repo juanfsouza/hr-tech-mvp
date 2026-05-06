@@ -1,3 +1,5 @@
+import { PaginationParams } from "@/interfaces/pagination-params.interface";
+
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
 

@@ -3,20 +3,19 @@ import {
   UseGuards, HttpCode, HttpStatus,
   NotFoundException, BadRequestException,
 } from '@nestjs/common';
+
+import { CurrentUser, } from '@shared/infrastructure/http/decorators/current-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsOptional, IsIn, IsNumber, IsUUID } from 'class-validator';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
-import { CurrentUser, } from '@shared/infrastructure/http/decorators/current-user.decorator';
-import {
-  CreateTestSessionUseCase,
-  GetTestSessionByTokenUseCase,
-  SaveProgressUseCase,
-  CompleteTestUseCase,
-} from '@modules/tests/application/use-cases/tests.use-cases';
 import { DISC_QUESTIONS } from '@modules/tests/engine/disc/disc.questions';
 import { ENNEAGRAM_QUESTIONS } from '@modules/tests/engine/enneagram/enneagram.questions';
 import { IPIP_120_QUESTIONS } from '@modules/tests/engine/sixteen-personalities/ipip120.questions';
 import { AuthenticatedUser } from '@/interfaces/authenticated-user.interface';
+import { CompleteTestUseCase } from '../application/use-cases/complete-session.use-case';
+import { CreateTestSessionUseCase } from '../application/use-cases/create-session.use-case';
+import { GetTestSessionByTokenUseCase } from '../application/use-cases/list.session.use-case';
+import { SaveProgressUseCase } from '../application/use-cases/save-session.use-case';
 
 class CreateSessionDto {
   @ApiProperty({ required: false }) @IsOptional() @IsUUID() candidateId?: string;

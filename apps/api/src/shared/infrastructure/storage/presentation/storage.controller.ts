@@ -4,8 +4,8 @@ import {
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { IsIn, IsString } from 'class-validator';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
-import { StorageService, StorageBucket } from '../services/storage.service';
 import { Body } from '@nestjs/common';
+import { StorageBucket, StorageService } from '../storage.service';
 
 class GetUploadUrlDto {
   @IsIn(['resumes', 'logos', 'reports']) folder!: StorageBucket;
@@ -18,7 +18,7 @@ class GetUploadUrlDto {
 @UseGuards(JwtAuthGuard)
 @Controller('storage')
 export class StorageController {
-  constructor(private readonly storage: StorageService) {}
+  constructor(private readonly storage: StorageService) { }
 
   @Post('upload-url')
   @HttpCode(HttpStatus.OK)

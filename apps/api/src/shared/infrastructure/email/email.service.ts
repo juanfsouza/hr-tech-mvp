@@ -1,11 +1,10 @@
+import { SendEmailInput } from '@/interfaces/send-email-input.interface';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Resend } from 'resend';
 import { AppConfig } from 'src/config/app.config';
 
-/**
- * EmailService — wrapper do Resend SDK para envio transacional
- */
+
 @Injectable()
 export class EmailService {
   private readonly client: Resend;
@@ -31,8 +30,6 @@ export class EmailService {
       throw error;
     }
   }
-
-  // ─── Templates ─────────────────────────────────────────────────────────────
 
   async sendTestInvite(to: string, name: string, testUrl: string, expiresAt: Date): Promise<void> {
     const formattedDate = new Intl.DateTimeFormat('pt-BR', {

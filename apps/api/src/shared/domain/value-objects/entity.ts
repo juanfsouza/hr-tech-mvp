@@ -1,9 +1,5 @@
 import { UniqueEntityID } from './unique-entity-id';
 
-/**
- * Entity base — todas as entidades de domínio estendem esta classe
- * Igualdade por identidade (ID), não por referência
- */
 export abstract class Entity<TProps> {
   protected readonly _id: UniqueEntityID;
   protected props: TProps;

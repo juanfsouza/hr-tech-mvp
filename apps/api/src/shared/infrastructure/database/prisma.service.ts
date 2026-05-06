@@ -1,10 +1,6 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
-/**
- * PrismaService — wrapper do PrismaClient com lifecycle hooks do NestJS
- * Singleton global via DatabaseModule
- */
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
@@ -29,11 +25,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     this.logger.log('🔌 Desconectado do PostgreSQL');
   }
 
-  /**
-   * Soft delete helper — marca deletedAt ao invés de deletar fisicamente
-   */
   async softDelete(model: string, id: string): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (this as any)[model].update({
       where: { id },
       data: { deletedAt: new Date() },

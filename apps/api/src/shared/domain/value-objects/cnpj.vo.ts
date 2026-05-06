@@ -3,12 +3,9 @@ import { Either, left, right } from '../errors/either';
 import { InvalidValueObjectError } from '../errors/domain-errors';
 
 interface CnpjProps {
-  value: string; // stored unmasked: "12345678000195"
+  value: string;
 }
 
-/**
- * CNPJ Value Object — valida dígitos verificadores
- */
 export class Cnpj extends ValueObject<CnpjProps> {
   private constructor(props: CnpjProps) {
     super(props);

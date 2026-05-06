@@ -11,7 +11,6 @@
 import { IpipQuestion } from '@/interfaces/ipip-question.interface';
 
 export const IPIP_120_QUESTIONS: IpipQuestion[] = [
-  // ── Openness (O) — 24 itens ──────────────────────────────────────────────────
   { id: 'ipip-1', itemNumber: 1, text: 'Tenho uma imaginação vívida', dimension: 'O', keyed: '+' },
   { id: 'ipip-2', itemNumber: 2, text: 'Tenho dificuldade em entender ideias abstratas', dimension: 'O', keyed: '-' },
   { id: 'ipip-3', itemNumber: 3, text: 'Gosto de refletir sobre filosofia e questões profundas', dimension: 'O', keyed: '+' },

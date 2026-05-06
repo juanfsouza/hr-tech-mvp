@@ -6,10 +6,6 @@ interface EmailProps {
   value: string;
 }
 
-/**
- * Email Value Object — valida formato antes de criar
- * Uso: Email.create('user@example.com')
- */
 export class Email extends ValueObject<EmailProps> {
   private static readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

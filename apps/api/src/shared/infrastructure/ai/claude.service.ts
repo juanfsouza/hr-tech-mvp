@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
 import { AppConfig } from 'src/config/app.config';
+import { ClaudeMessage } from '@/interfaces/claude-message.interface';
+import { ClaudeOptions } from '@/interfaces/claude-options.interface';
+import { ClaudeResponse } from '@/interfaces/claude-response.interface';
 
-/**
- * ClaudeService — wrapper do Anthropic SDK com tipagem forte
- * Usado por: JobsModule (gerar JD), MatchModule (análise candidato), AiModule (chat)
- */
+
 @Injectable()
 export class ClaudeService {
   private readonly client: Anthropic;
