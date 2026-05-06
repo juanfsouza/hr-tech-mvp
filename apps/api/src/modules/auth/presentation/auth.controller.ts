@@ -1,0 +1,137 @@
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  Get,
+  HttpCode,
+  HttpStatus,
+  UnauthorizedException,
+  ConflictException,
+  BadRequestException,
+  UseGuards,
+} from '@nestjs/common';
+import { FastifyReply } from 'fastify';
+import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth, ApiCookieAuth } from '@nestjs/swagger';
+import { LoginUseCase } from '@modules/auth/application/use-cases/login.use-case';
+import { RegisterUseCase } from '@modules/auth/application/use-cases/register.use-case';
+import { RefreshTokenUseCase } from '@modules/auth/application/use-cases/refresh-token.use-case';
+import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
+import { CurrentUser, AuthenticatedUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
+import { LoginDto, RegisterDto } from '../application/dtos/login.dto';
+
+@ApiTags('Auth')
+@Controller('auth')
+export class AuthController {
+  constructor(
+    private readonly loginUseCase: LoginUseCase,
+    private readonly registerUseCase: RegisterUseCase,
+    private readonly refreshTokenUseCase: RefreshTokenUseCase,
+  ) { }
+
+  // ─── POST /auth/login ──────────────────────────────────────────────────────
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Autenticar usuário de RH' })
+  @ApiBody({ type: LoginDto })
+  async login(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ): Promise<{ accessToken: string; user: object }> {
+    const result = await this.loginUseCase.execute({
+      email: dto.email,
+      password: dto.password,
+      companyId: dto.companyId,
+    });
+
+    if (result.isLeft()) {
+      throw new UnauthorizedException(result.value.message);
+    }
+
+    const { accessToken, refreshToken, user } = result.value;
+
+    // Refresh token via HTTP-only cookie (não exposto ao JS do browser)
+    reply.setCookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: process.env['NODE_ENV'] === 'production',
+      sameSite: 'strict',
+      path: '/api/v1/auth/refresh',
+      maxAge: 60 * 60 * 24 * 7, // 7 dias
+    });
+
+    return { accessToken, user };
+  }
+
+  // ─── POST /auth/register ───────────────────────────────────────────────────
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Registrar novo usuário de RH em empresa existente' })
+  @ApiBody({ type: RegisterDto })
+  async register(@Body() dto: RegisterDto): Promise<{ userId: string; message: string }> {
+    const result = await this.registerUseCase.execute({
+      companyId: dto.companyId,
+      name: dto.name,
+      email: dto.email,
+      password: dto.password,
+      role: dto.role,
+    });
+
+    if (result.isLeft()) {
+      const err = result.value;
+      if (err.code === 'RESOURCE_ALREADY_EXISTS') throw new ConflictException(err.message);
+      throw new BadRequestException(err.message);
+    }
+
+    return { userId: result.value.userId, message: 'User registered successfully.' };
+  }
+
+  // ─── POST /auth/refresh ────────────────────────────────────────────────────
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Renovar access token via refresh token (cookie)' })
+  @ApiCookieAuth('refresh_token')
+  async refresh(
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ): Promise<{ accessToken: string }> {
+    const refreshToken = (reply.request as unknown as { cookies: Record<string, string> }).cookies['refresh_token'];
+    if (!refreshToken) throw new UnauthorizedException('No refresh token provided.');
+
+    const result = await this.refreshTokenUseCase.execute({ refreshToken });
+    if (result.isLeft()) {
+      throw new UnauthorizedException(result.value.message);
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } = result.value;
+
+    reply.setCookie('refresh_token', newRefreshToken, {
+      httpOnly: true,
+      secure: process.env['NODE_ENV'] === 'production',
+      sameSite: 'strict',
+      path: '/api/v1/auth/refresh',
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    return { accessToken };
+  }
+
+  // ─── POST /auth/logout ─────────────────────────────────────────────────────
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Encerrar sessão (revogar refresh token)' })
+  async logout(@Res({ passthrough: true }) reply: FastifyReply): Promise<void> {
+    reply.clearCookie('refresh_token', { path: '/api/v1/auth/refresh' });
+  }
+
+  // ─── GET /auth/me ──────────────────────────────────────────────────────────
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obter dados do usuário autenticado' })
+  async me(
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<AuthenticatedUser> {
+    return user;
+  }
+}
