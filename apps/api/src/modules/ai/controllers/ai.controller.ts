@@ -1,8 +1,8 @@
-import { Controller, Post, Body, Sse, MessageEvent, UseGuards, BadRequestException } from '@nestjs/common';
+import { Controller, Body, Sse, MessageEvent, UseGuards, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
-import { ClaudeService, ClaudeMessage } from '@modules/ai/claude/claude.service';
+import { ClaudeService } from '@/services/claude.service';
 
 export class ChatMessageDto {
   role!: 'user' | 'assistant';
@@ -18,7 +18,7 @@ export class ChatRequestDto {
 @UseGuards(JwtAuthGuard)
 @Controller('ai/chat')
 export class AiController {
-  constructor(private readonly claudeService: ClaudeService) {}
+  constructor(private readonly claudeService: ClaudeService) { }
 
   @Sse('stream')
   @ApiOperation({ summary: 'Conversar com IA do RH via Server-Sent Events (SSE)' })
@@ -37,7 +37,7 @@ export class AiController {
           for await (const chunk of stream) {
             subscriber.next({ data: { text: chunk } } as MessageEvent);
           }
-          
+
           subscriber.next({ data: '[DONE]' } as MessageEvent);
           subscriber.complete();
         } catch (error: unknown) {

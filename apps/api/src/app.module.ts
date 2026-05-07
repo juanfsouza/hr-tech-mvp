@@ -5,7 +5,6 @@ import { APP_GUARD } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bullmq';
-import { HealthController } from './controllers/health.controller';
 import { appConfig, validateConfig, AppConfig } from './config/app.config';
 import { CompaniesModule } from './modules/companies.module';
 import { StorageModule } from './modules/storage.module';
@@ -19,6 +18,7 @@ import { JobsModule } from './modules/jobs.module';
 import { MatchModule } from './modules/match.module';
 import { NotificationsModule } from './modules/notifications.module';
 import { TestsModule } from './modules/tests.module';
+import { HealthController } from './controllers/health.controller';
 
 @Module({
   imports: [

@@ -1,7 +1,7 @@
 import { GenerateJdInput } from '@/modules/ai/application/interfaces/generate-jd-input.interface';
 import { MatchAnalysisInput } from '@/modules/match/application/interfaces/match-analysis-input.interface';
 import { MatchAnalysisOutput } from '@/modules/match/application/interfaces/match-analysis-output.interface';
-import { ClaudeService } from '@/services/claude.service';
+import { ClaudeService } from '@/shared/infrastructure/ai/claude.service';
 import { Injectable } from '@nestjs/common';
 
 
