@@ -50,7 +50,7 @@ export class CreateCompanyUseCase
     const user = await this.userRepository.findById(input.userId);
     if (user) {
       user.assignToCompany(company.id.value);
-      await this.userRepository.save(user);
+      await this.userRepository.update(user);
     }
 
     return right({

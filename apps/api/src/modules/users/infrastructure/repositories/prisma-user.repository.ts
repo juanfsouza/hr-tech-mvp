@@ -61,6 +61,7 @@ export class PrismaUserRepository implements IUserRepository {
         avatarUrl: user.avatarUrl,
         isActive: user.isActive,
         lastLoginAt: user.lastLoginAt,
+        companyId: user.companyId,
         deletedAt: user.deletedAt,
         updatedAt: new Date(),
 

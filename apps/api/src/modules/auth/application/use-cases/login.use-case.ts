@@ -37,7 +37,9 @@ export class LoginUseCase implements UseCase<LoginInput, LoginOutput, LoginError
 
     // 2. Buscar usuário por email + company (isolamento tenant)
     const user = await this.userRepository.findByEmail(emailOrError.value);
-    if (!user || user.companyId !== input.companyId || !user.isActive) {
+    
+    // Comparamos usando == para que null e undefined sejam tratados como iguais
+    if (!user || user.companyId != input.companyId || !user.isActive) {
       return left(new InvalidCredentialsError());
     }
 
