@@ -63,7 +63,7 @@ const TYPE_CHALLENGES: Record<EnneagramType, string[]> = {
   9: ['Procrastinação', 'Passividade', 'Auto-esquecimento'],
 };
 
-// Wings adjacentes por tipo
+
 const ADJACENT_TYPES: Record<EnneagramType, [EnneagramType, EnneagramType]> = {
   1: [9, 2], 2: [1, 3], 3: [2, 4], 4: [3, 5], 5: [4, 6],
   6: [5, 7], 7: [6, 8], 8: [7, 9], 9: [8, 1],
@@ -71,11 +71,13 @@ const ADJACENT_TYPES: Record<EnneagramType, [EnneagramType, EnneagramType]> = {
 
 export class EnneagramEngine {
   static calculate(answers: EnneagramPairAnswer[]): EnneagramResult {
-    const scores: Record<EnneagramType, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+    const scores: Record<EnneagramType, number> = {
+      1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0,
+    };
 
     for (const a of answers) {
-      if (a.choice === 'A') scores[a.typeA] += 1;
-      else scores[a.typeB] += 1;
+      if (a.choice === 'A') scores[a.typeA as EnneagramType] += 1;
+      else scores[a.typeB as EnneagramType] += 1;
     }
 
     // Tipo principal = maior score

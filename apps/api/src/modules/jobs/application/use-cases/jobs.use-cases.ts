@@ -4,11 +4,11 @@ import { BusinessRuleViolationError, EntityNotFoundError } from '@shared/domain/
 import { CreateJobInput } from '@/modules/jobs/application/interfaces/create-job-input.interface';
 import { ListJobsInput } from '@/modules/jobs/application/interfaces/list-jobs-input.interface';
 import { IJobRepository } from '@/modules/jobs/domain/repositories/ijob-repository.interface';
-import { JOB_REPOSITORY } from '@/repositories/job.repository.interface';
 import { ICompanyRepository } from '@/modules/companies/domain/repositories/icompany-repository.interface';
-import { COMPANY_REPOSITORY } from '@/repositories/company.repository.interface';
-import { Job } from '@/entities/job.entity';
-import { AiOrchestrationService } from '@/services/ai-orchestration.service';
+import { AiOrchestrationService } from '@/modules/ai/services/ai-orchestration.service';
+import { COMPANY_REPOSITORY } from '@/modules/companies/domain/repositories/company.repository.interface';
+import { JOB_REPOSITORY } from '../../domain/repositories/job.repository.interface';
+import { Job } from '../../domain/entities/job.entity';
 
 @Injectable()
 export class CreateJobUseCase {
@@ -79,7 +79,7 @@ export class GenerateJobDescriptionUseCase {
 
     const jd = await this.ai.generateJobDescription({
       jobTitle: job.title,
-      companyContext: company.context.companyContext ?? company.razaoSocial,
+      companyContext: company.context?.companyContext ?? company.razaoSocial,
       requirements: job.requirements,
       isRemote: job.isRemote,
       salaryRange: job.salaryMin && job.salaryMax

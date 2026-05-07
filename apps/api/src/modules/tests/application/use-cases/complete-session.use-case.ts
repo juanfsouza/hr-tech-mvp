@@ -1,19 +1,19 @@
-import { PsychProfileData } from "@/interfaces/psych-profile-data.interface";
 import { CompleteTestInput } from "@/modules/tests/application/interfaces/complete-test-input.interface";
 import { CompleteTestOutput } from "@/modules/tests/application/interfaces/complete-test-output.interface";
 import { ITestRepository } from "@/modules/tests/domain/repositories/itest-repository.interface";
-import { TEST_REPOSITORY } from "@/repositories/test.repository.interface";
-import { DiscEngine } from "@/services/disc.engine";
-import { EmailService } from "@/services/email.service";
-import { EnneagramEngine } from "@/services/enneagram.engine";
-import { PdfService } from "@/services/pdf.service";
-import { PrismaService } from "@/services/prisma.service";
-import { SixteenPersonalitiesEngine } from "@/services/sixteen-personalities.engine";
 import { EntityNotFoundError, BusinessRuleViolationError } from "@/shared/domain/errors/domain-errors";
 import { Either, left, right } from "@/shared/domain/errors/either";
+import { PrismaService } from "@/shared/infrastructure/database/prisma.service";
+import { EmailService } from "@/shared/infrastructure/email/email.service";
+import { PdfService } from "@/shared/infrastructure/pdf/pdf.service";
 import { InjectQueue } from "@nestjs/bullmq";
 import { Injectable, Logger, Inject } from "@nestjs/common";
 import { Queue } from "bullmq";
+import { PsychProfileData } from "../../domain/interfaces/psych-profile-data.interface";
+import { TEST_REPOSITORY } from "../../domain/repositories/test.repository.interface";
+import { DiscEngine } from "../../engine/disc/disc.engine";
+import { EnneagramEngine } from "../../engine/enneagram/enneagram.engine";
+import { SixteenPersonalitiesEngine } from "../../engine/sixteen-personalities/sixteen-personalities.engine";
 
 @Injectable()
 export class CompleteTestUseCase {

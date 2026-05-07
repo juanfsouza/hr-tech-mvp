@@ -1,9 +1,9 @@
 import { GetSessionOutput } from "@/modules/tests/application/interfaces/get-session-output.interface";
 import { ITestRepository } from "@/modules/tests/domain/repositories/itest-repository.interface";
-import { TEST_REPOSITORY } from "@/repositories/test.repository.interface";
 import { EntityNotFoundError, BusinessRuleViolationError } from "@/shared/domain/errors/domain-errors";
 import { Either, left, right } from "@/shared/domain/errors/either";
 import { Injectable, Inject } from "@nestjs/common";
+import { TEST_REPOSITORY } from "../../domain/repositories/test.repository.interface";
 
 @Injectable()
 export class GetTestSessionByTokenUseCase {

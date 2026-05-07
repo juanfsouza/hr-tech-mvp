@@ -4,8 +4,9 @@ import { Job, JobStatus } from '@modules/jobs/domain/entities/job.entity';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
 import { IJobRepository } from '@/modules/jobs/domain/repositories/ijob-repository.interface';
 import { normalizePaginationParams } from '@/shared/application/pagination';
-import { PaginatedResult } from '@/interfaces/paginated-result.interface';
-import { PaginationParams } from '@/interfaces/pagination-params.interface';
+import { PaginatedResult } from '@/shared/domain/interfaces/paginated-result.interface';
+import { PaginationParams } from '@/shared/domain/interfaces/pagination-params.interface';
+
 
 @Injectable()
 export class PrismaJobRepository implements IJobRepository {

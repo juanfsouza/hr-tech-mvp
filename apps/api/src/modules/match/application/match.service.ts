@@ -6,9 +6,9 @@ import { AnalyzeCandidateInput } from '@/modules/ai/application/interfaces/analy
 import { ICandidateRepository } from '@/modules/candidates/domain/repositories/icandidate-repository.interface';
 import { IJobRepository } from '@/modules/jobs/domain/repositories/ijob-repository.interface';
 import { MatchResult } from '@/modules/match/domain/interfaces/match-result.interface';
-import { CANDIDATE_REPOSITORY } from '@/repositories/candidate.repository.interface';
-import { JOB_REPOSITORY } from '@/repositories/job.repository.interface';
-import { AiOrchestrationService } from '@/services/ai-orchestration.service';
+import { AiOrchestrationService } from '@/modules/ai/services/ai-orchestration.service';
+import { CANDIDATE_REPOSITORY } from '@/modules/candidates/domain/repositories/candidate.repository.interface';
+import { JOB_REPOSITORY } from '@/modules/jobs/domain/repositories/job.repository.interface';
 
 
 /**
@@ -21,6 +21,7 @@ import { AiOrchestrationService } from '@/services/ai-orchestration.service';
  * 4. Invocar Claude para análise qualitativa
  * 5. Salvar resultado no banco
  */
+
 @Injectable()
 export class MatchService {
   private readonly logger = new Logger(MatchService.name);

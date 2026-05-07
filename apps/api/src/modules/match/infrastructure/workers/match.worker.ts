@@ -1,8 +1,8 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { Logger } from '@nestjs/common';
-import { MatchService } from '@/services/match.service';
 import { AnalyzeCandidateInput } from '@/modules/ai/application/interfaces/analyze-candidate-input.interface';
+import { MatchService } from '../../application/match.service';
 
 @Processor('match-analysis')
 export class MatchWorker extends WorkerHost {

@@ -39,8 +39,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           ? exceptionResponse
           : (exceptionResponse as { message: string }).message ?? exception.message;
     } else if (exception instanceof DomainError) {
-      // DomainErrors não devem chegar aqui — são tratados nos controllers
-      // mas como fallback:
       statusCode = HttpStatus.UNPROCESSABLE_ENTITY;
       code = (exception as DomainError).code;
       message = (exception as DomainError).message;

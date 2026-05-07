@@ -1,5 +1,4 @@
-import { EnneagramType } from "@/services/enneagram.engine";
-
+import { EnneagramType } from "../../engine/enneagram/enneagram.engine";
 
 export interface EnneagramPairAnswer {
     pairId: string;

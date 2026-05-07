@@ -1,6 +1,7 @@
-import { TestSession, TestType } from "@/entities/test-session.entity";
-import { SaveResponseInput } from "./save-response-input.interface";
-import { PsychProfileData } from "./psych-profile-data.interface";
+import { SaveResponseInput } from "../../application/interfaces/save-response-input.interface";
+import { TestSession, TestType } from "../entities/test-session.entity";
+import { PsychProfileData } from "../interfaces/psych-profile-data.interface";
+
 
 export interface ITestRepository {
     findSessionByToken(token: string): Promise<TestSession | null>;

@@ -14,8 +14,7 @@ import {
   PublishJobUseCase,
   CloseJobUseCase,
 } from '@modules/jobs/application/use-cases/jobs.use-cases';
-import { CreateJobDto } from '@/dtos/create-job.dto';
-
+import { CreateJobDto } from '../application/dtos/create-job.dto';
 
 
 @ApiTags('Jobs')

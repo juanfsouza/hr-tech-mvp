@@ -1,4 +1,4 @@
-import { BigFiveDimension } from "@/services/sixteen-personalities.engine";
+import { BigFiveDimension } from "../../engine/sixteen-personalities/sixteen-personalities.engine";
 
 export interface IpipQuestion {
     id: string;

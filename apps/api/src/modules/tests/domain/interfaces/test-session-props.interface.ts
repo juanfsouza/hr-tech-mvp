@@ -1,4 +1,4 @@
-import { TestSessionStatus, TestType } from "@/entities/test-session.entity";
+import { TestSessionStatus, TestType } from "../entities/test-session.entity";
 
 export interface TestSessionProps {
     companyId: string;

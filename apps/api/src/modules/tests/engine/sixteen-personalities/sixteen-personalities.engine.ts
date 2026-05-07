@@ -42,9 +42,7 @@ const MBTI_DESCRIPTIONS: Record<string, string> = {
 };
 
 export class SixteenPersonalitiesEngine {
-  /**
-   * Calcula o perfil MBTI + Big Five a partir das respostas IPIP-120
-   */
+
   static calculate(responses: IpipItemResponse[]): SixteenPResult {
     const rawScores: Record<BigFiveDimension, number[]> = { O: [], C: [], E: [], A: [], N: [] };
 
@@ -54,7 +52,6 @@ export class SixteenPersonalitiesEngine {
       rawScores[dimension].push(adjusted);
     }
 
-    // Média por dimensão → normalizar para 0-100
     const normalize = (scores: number[]): number => {
       if (scores.length === 0) return 50;
       const avg = scores.reduce((s, v) => s + v, 0) / scores.length;
@@ -69,7 +66,6 @@ export class SixteenPersonalitiesEngine {
       neuroticism: normalize(rawScores.N),
     };
 
-    // Mapear para dicotomias MBTI (threshold = 50)
     const E = bigFive.extraversion;
     const I = 100 - E;
     const N = bigFive.openness;

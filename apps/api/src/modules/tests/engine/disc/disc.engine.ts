@@ -26,11 +26,14 @@ const DISC_DESCRIPTIONS: Record<DiscDimension, string> = {
 export class DiscEngine {
 
   static calculate(choices: DiscQuestionChoice[]): DiscResult {
-    const scores: Record<DiscDimension, number> = { D: 0, I: 0, S: 0, C: 0 };
+    const scores: { [key in DiscDimension]: number } = { D: 0, I: 0, S: 0, C: 0 };
 
     for (const choice of choices) {
-      scores[choice.mostLike] += 1;
-      scores[choice.leastLike] -= 1;
+      const mostLike = choice.mostLike as DiscDimension;
+      const leastLike = choice.leastLike as DiscDimension;
+
+      scores[mostLike] += 1;
+      scores[leastLike] -= 1;
     }
 
     const values = Object.values(scores);
