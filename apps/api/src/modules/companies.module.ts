@@ -5,8 +5,10 @@ import { CreateCompanyUseCase } from './companies/application/use-cases/create-c
 import { UpdateOnboardingUseCase } from './companies/application/use-cases/update-onboarding.use-case';
 import { GetCompanyUseCase } from './companies/application/use-cases/get-company.use-case';
 import { CompaniesController } from './companies/controllers/companies.controller';
+import { UsersModule } from './users.module';
 
 @Module({
+  imports: [UsersModule],
   controllers: [CompaniesController],
   providers: [
     { provide: COMPANY_REPOSITORY, useClass: PrismaCompanyRepository },
