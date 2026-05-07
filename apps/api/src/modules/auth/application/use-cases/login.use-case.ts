@@ -7,13 +7,13 @@ import { ITokenRepository } from '@/modules/auth/domain/repositories/itoken-repo
 import { IUserRepository } from '@/modules/users/domain/repositories/iuser-repository.interface';
 import { LoginInput } from '@/modules/auth/domain/interfaces/login-input.interface';
 import { LoginOutput } from '@/modules/auth/domain/interfaces/login-output.interface';
-import { TOKEN_REPOSITORY } from '@/repositories/token.repository.interface';
-import { USER_REPOSITORY } from '@/repositories/user.repository.interface';
-import { HASH_SERVICE } from '@/services/hash.service.interface';
 import { InvalidCredentialsError, EntityNotFoundError } from '@/shared/domain/errors/domain-errors';
 import { Either, left, right } from '@/shared/domain/errors/either';
 import { Email } from '@/shared/domain/value-objects';
 import { UseCase } from '../../../users/domain/interfaces/use-case.interface';
+import { USER_REPOSITORY } from '@/modules/users/domain/repositories/user.repository.interface';
+import { HASH_SERVICE } from '@/shared/domain/services/hash.service.interface';
+import { TOKEN_REPOSITORY } from '../../domain/repositories/token.repository.interface';
 
 type LoginError = InvalidCredentialsError | EntityNotFoundError;
 

@@ -1,4 +1,4 @@
-import { OnboardingStatus } from "@/entities/company.entity";
+import { OnboardingStatus } from "../entities/company.entity";
 import { CompanyAddress } from "./company-address.interface";
 import { CompanyContext } from "./company-context.interface";
 import { Cnpj } from "@shared/domain/value-objects/cnpj.vo";

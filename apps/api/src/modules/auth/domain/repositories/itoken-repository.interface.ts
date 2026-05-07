@@ -1,5 +1,5 @@
-import { SaveTokenInput } from "./save-token-input.interface";
-import { StoredToken } from "./stored-token.interface";
+import { SaveTokenInput } from "../../application/interfaces/save-token-input.interface";
+import { StoredToken } from "../interfaces/stored-token.interface";
 
 export interface ITokenRepository {
     save(input: SaveTokenInput): Promise<void>;

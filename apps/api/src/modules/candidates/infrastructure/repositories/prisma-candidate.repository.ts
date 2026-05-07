@@ -1,4 +1,3 @@
-import { Candidate, CandidateStatus } from '@/entities/candidate.entity';
 import { ICandidateRepository } from '@/modules/candidates/domain/repositories/icandidate-repository.interface';
 import { PaginatedResult } from '@/shared/domain/interfaces/paginated-result.interface';
 import { PaginationParams } from '@/shared/domain/interfaces/pagination-params.interface';
@@ -7,6 +6,7 @@ import { UniqueEntityID } from '@/shared/domain/value-objects';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/database/prisma.service';
 import { PrismaCandidateRecord } from '../interfaces/candidate.interface';
+import { Candidate, CandidateStatus } from '../../domain/entities/candidate.entity';
 
 
 @Injectable()

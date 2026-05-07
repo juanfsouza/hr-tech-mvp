@@ -1,4 +1,4 @@
-import { UserRole } from "@/entities/user.entity";
+import { UserRole } from "@/modules/users/domain/entities/user.entity";
 
 export interface RegisterOutput {
     userId: string;

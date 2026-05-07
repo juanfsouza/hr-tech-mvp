@@ -2,8 +2,8 @@ import { Injectable, Inject } from '@nestjs/common';
 import { Either, right, left } from '@shared/domain/errors/either';
 import { EntityNotFoundError } from '@shared/domain/errors/domain-errors';
 import { GetCompanyOutput } from '@/modules/companies/application/interfaces/get-company-output.interface';
-import { COMPANY_REPOSITORY } from '@/repositories/company.repository.interface';
 import { ICompanyRepository } from '@/modules/companies/domain/repositories/icompany-repository.interface';
+import { COMPANY_REPOSITORY } from '../../domain/repositories/company.repository.interface';
 
 
 @Injectable()
@@ -26,11 +26,11 @@ export class GetCompanyUseCase {
       websiteUrl: company.websiteUrl,
       address: company.address,
       context: {
-        companyProfile: company.context.companyProfile,
-        companyContext: company.context.companyContext,
-        cultureValues: company.context.cultureValues,
-        mainChallenges: company.context.mainChallenges,
-        leadershipStyle: company.context.leadershipStyle,
+        companyProfile: company.context?.companyProfile,
+        companyContext: company.context?.companyContext,
+        cultureValues: company.context?.cultureValues ?? [],
+        mainChallenges: company.context?.mainChallenges,
+        leadershipStyle: company.context?.leadershipStyle,
       },
       onboardingStatus: company.onboardingStatus,
       createdAt: company.createdAt,

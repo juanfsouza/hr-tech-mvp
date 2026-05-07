@@ -2,7 +2,7 @@ import { Controller, Body, Sse, MessageEvent, UseGuards, BadRequestException } f
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
-import { ClaudeService } from '@/services/claude.service';
+import { ClaudeService } from '@/shared/infrastructure/ai/claude.service';
 
 export class ChatMessageDto {
   role!: 'user' | 'assistant';

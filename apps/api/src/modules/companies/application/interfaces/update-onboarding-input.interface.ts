@@ -1,6 +1,5 @@
-import { CompanyAddress } from "./company-address.interface";
-import { CompanyContext } from "./company-context.interface";
-
+import { CompanyAddress } from "../../domain/interfaces/company-address.interface";
+import { CompanyContext } from "../../domain/interfaces/company-context.interface";
 export interface UpdateOnboardingInput {
     companyId: string;
     step: 1 | 2 | 3 | 4;

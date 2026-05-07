@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
-import { CreateCandidateDto } from '@/dtos/create-candidate.dto';
+import { CreateCandidateDto } from '../application/dtos/create-candidate.dto';
 import { UpdateStatusDto } from '../application/dtos/update-status.dto';
 import { CreateCandidateUseCase } from '../application/use-cases/create-candidates.use-case';
 import { GetCandidateByIdUseCase, ListCandidatesByJobUseCase } from '../application/use-cases/list-candidates.use-case';

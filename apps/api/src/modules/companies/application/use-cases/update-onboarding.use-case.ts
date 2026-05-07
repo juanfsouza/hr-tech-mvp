@@ -5,7 +5,7 @@ import { ICompanyRepository } from '@/modules/companies/domain/repositories/icom
 import { UpdateOnboardingInput } from '@/modules/companies/application/interfaces/update-onboarding-input.interface';
 import { UpdateOnboardingOutput } from '@/modules/companies/application/interfaces/update-onboarding-output.interface';
 import { UseCase } from '@/modules/users/domain/interfaces/use-case.interface';
-import { COMPANY_REPOSITORY } from '@/repositories/company.repository.interface';
+import { COMPANY_REPOSITORY } from '../../domain/repositories/company.repository.interface';
 
 type UpdateOnboardingError = EntityNotFoundError | BusinessRuleViolationError;
 

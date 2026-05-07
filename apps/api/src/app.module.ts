@@ -18,7 +18,7 @@ import { JobsModule } from './modules/jobs.module';
 import { MatchModule } from './modules/match.module';
 import { NotificationsModule } from './modules/notifications.module';
 import { TestsModule } from './modules/tests.module';
-import { HealthController } from './controllers/health.controller';
+import { HealthController } from './modules/health/controllers/health.controller';
 
 @Module({
   imports: [

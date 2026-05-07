@@ -1,11 +1,11 @@
-import { Collaborator } from "@/entities/collaborator.entity";
 import { CreateCollaboratorInput } from "@/modules/collaborators/application/interfaces/create-collaborator-input.interface";
 import { CreateCollaboratorOutput } from "@/modules/collaborators/application/interfaces/create-collaborator-output.interface";
 import { ICollaboratorRepository } from "@/modules/collaborators/domain/repositories/icollaborator-repository.interface";
-import { COLLABORATOR_REPOSITORY } from "@/repositories/collaborator.repository.interface";
 import { ResourceAlreadyExistsError, EntityNotFoundError } from "@/shared/domain/errors/domain-errors";
 import { Either, left, right } from "@/shared/domain/errors/either";
 import { Injectable, Inject } from "@nestjs/common";
+import { COLLABORATOR_REPOSITORY } from "../../domain/repositories/collaborator.repository.interface";
+import { Collaborator } from "../../domain/entities/collaborator.entity";
 
 @Injectable()
 export class CreateCollaboratorUseCase {

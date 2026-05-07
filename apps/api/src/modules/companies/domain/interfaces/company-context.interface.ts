@@ -1,4 +1,4 @@
-import { CompanyProfile } from "@/entities/company.entity";
+import { CompanyProfile } from "../entities/company.entity";
 
 export interface CompanyContext {
     companyProfile?: CompanyProfile;

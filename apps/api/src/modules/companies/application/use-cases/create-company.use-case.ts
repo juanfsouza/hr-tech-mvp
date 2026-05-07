@@ -9,8 +9,8 @@ import { Company } from '@modules/companies/domain/entities/company.entity';
 import { CreateCompanyInput } from '@/modules/companies/application/interfaces/create-company-input.interface';
 import { ICompanyRepository } from '@/modules/companies/domain/repositories/icompany-repository.interface';
 import { CreateCompanyOutput } from '@/modules/companies/application/interfaces/create-company-output.interface';
-import { COMPANY_REPOSITORY } from '@/repositories/company.repository.interface';
 import { UseCase } from '@/modules/users/domain/interfaces/use-case.interface';
+import { COMPANY_REPOSITORY } from '../../domain/repositories/company.repository.interface';
 
 type CreateCompanyError = ResourceAlreadyExistsError | InvalidValueObjectError;
 

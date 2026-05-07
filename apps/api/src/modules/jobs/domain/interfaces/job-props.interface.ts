@@ -1,4 +1,4 @@
-import { JobStatus } from "@/entities/job.entity";
+import { JobStatus } from "../entities/job.entity";
 
 export interface JobProps {
     companyId: string;

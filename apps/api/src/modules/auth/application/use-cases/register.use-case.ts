@@ -10,13 +10,13 @@ import { Password } from '@shared/domain/value-objects/password.vo';
 import { User } from '@modules/users/domain/entities/user.entity';
 import { ICompanyRepository } from '@/modules/companies/domain/repositories/icompany-repository.interface';
 import { IHashService } from '@/modules/auth/application/interfaces/ihash-service.interface';
-import { IUserRepository } from '@/modules/users/domain/repositories/iuser-repository.interface';
 import { RegisterInput } from '@/modules/auth/domain/interfaces/register-input.interface';
 import { RegisterOutput } from '@/modules/auth/domain/interfaces/register-output.interface';
-import { COMPANY_REPOSITORY } from '@/repositories/company.repository.interface';
-import { USER_REPOSITORY } from '@/repositories/user.repository.interface';
-import { HASH_SERVICE } from '@/services/hash.service.interface';
 import { UseCase } from '../../../users/domain/interfaces/use-case.interface';
+import { USER_REPOSITORY } from '@/modules/users/domain/repositories/user.repository.interface';
+import { COMPANY_REPOSITORY } from '@/modules/companies/domain/repositories/company.repository.interface';
+import { IUserRepository } from '@/modules/users/domain/repositories/iuser-repository.interface';
+import { HASH_SERVICE } from '@/shared/domain/services/hash.service.interface';
 
 type RegisterError =
   | ResourceAlreadyExistsError

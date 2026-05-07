@@ -1,4 +1,4 @@
-import { Collaborator } from "@/entities/collaborator.entity";
+import { Collaborator } from "../entities/collaborator.entity";
 
 
 export interface ICollaboratorRepository {
