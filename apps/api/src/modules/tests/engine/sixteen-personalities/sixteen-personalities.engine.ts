@@ -50,14 +50,15 @@ export class SixteenPersonalitiesEngine {
 
     for (const r of responses) {
       const adjusted = r.keyed === '-' ? (6 - r.score) : r.score;
-      rawScores[r.dimension].push(adjusted);
+      const dimension = r.dimension as BigFiveDimension;
+      rawScores[dimension].push(adjusted);
     }
 
     // Média por dimensão → normalizar para 0-100
     const normalize = (scores: number[]): number => {
       if (scores.length === 0) return 50;
       const avg = scores.reduce((s, v) => s + v, 0) / scores.length;
-      return Math.round(((avg - 1) / 4) * 100); // Likert 1-5 → 0-100
+      return Math.round(((avg - 1) / 4) * 100);
     };
 
     const bigFive: BigFiveScores = {

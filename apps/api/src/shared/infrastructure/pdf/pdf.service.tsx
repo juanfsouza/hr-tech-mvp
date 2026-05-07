@@ -22,10 +22,10 @@ const ProfileDocument = ({ data }: { data: PsychProfileData }) => (
         <Text style={styles.title}>DISC</Text>
         <Text style={styles.text}>Perfil Dominante: {data.discDominant}</Text>
         {data.discSecondary && <Text style={styles.text}>Perfil Secundário: {data.discSecondary}</Text>}
-        <Text style={styles.text}>D (Dominância): {data.discD.toFixed(1)}%</Text>
-        <Text style={styles.text}>I (Influência): {data.discI.toFixed(1)}%</Text>
-        <Text style={styles.text}>S (Estabilidade): {data.discS.toFixed(1)}%</Text>
-        <Text style={styles.text}>C (Conformidade): {data.discS.toFixed(1)}%</Text>
+        <Text style={styles.text}>D (Dominância): {data.discD}%</Text>
+        <Text style={styles.text}>I (Influência): {data.discI}%</Text>
+        <Text style={styles.text}>S (Estabilidade): {data.discS}%</Text>
+        <Text style={styles.text}>C (Conformidade): {data.discC}%</Text>
       </View>
 
       <View style={styles.section}>

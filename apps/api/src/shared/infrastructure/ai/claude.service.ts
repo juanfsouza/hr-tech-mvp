@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
 import { AppConfig } from 'src/config/app.config';
-import { ClaudeMessage } from '@/interfaces/claude-message.interface';
-import { ClaudeOptions } from '@/interfaces/claude-options.interface';
-import { ClaudeResponse } from '@/modules/ai/interfaces/claude-response.interface';
+import { ClaudeResponse } from '@/shared/infrastructure/interfaces/claude-response.interface';
+import { ClaudeMessage } from '../interfaces/claude-message.interface';
+import { ClaudeOptions } from '../interfaces/claude-options.interface';
+
 
 
 @Injectable()

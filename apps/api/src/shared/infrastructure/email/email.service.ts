@@ -16,13 +16,14 @@ export class EmailService {
     this.defaultFrom = config.get('EMAIL_FROM') ?? 'noreply@psicometriaai.com';
   }
 
-  async send(input: SendEmailInput): Promise<void> {
+  async send(input: SendEmailInput, attachments?: Array<{ filename: string; content: Buffer }>): Promise<void> {
     try {
       await this.client.emails.send({
         from: input.from ?? this.defaultFrom,
         to: input.to,
         subject: input.subject,
         html: input.html,
+        attachments,
       });
       this.logger.log(`Email sent to ${input.to}: ${input.subject}`);
     } catch (error) {
@@ -123,16 +124,11 @@ export class EmailService {
     mbtiType: string,
     pdfBuffer?: Buffer,
   ): Promise<void> {
-    await this.send({
-      to,
-      subject: `Seus Resultados: Avaliação Psicométrica Concluída!`,
-      attachments: pdfBuffer ? [
-        {
-          filename: 'mapa_comportamental.pdf',
-          content: pdfBuffer,
-        }
-      ] : undefined,
-      html: `
+    await this.send(
+      {
+        to,
+        subject: `Seus Resultados: Avaliação Psicométrica Concluída!`,
+        html: `
         <!DOCTYPE html>
         <html lang="pt-BR">
         <body style="font-family: Inter, sans-serif; background: #f9fafb; padding: 40px 0;">
@@ -153,6 +149,13 @@ export class EmailService {
         </body>
         </html>
       `,
-    });
+      },
+      pdfBuffer ? [
+        {
+          filename: 'mapa_comportamental.pdf',
+          content: pdfBuffer,
+        }
+      ] : undefined,
+    );
   }
 }

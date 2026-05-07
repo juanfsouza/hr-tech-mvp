@@ -1,6 +1,6 @@
 import { Email } from "@/shared/domain/value-objects/email.vo";
-import { UserRole } from "@/entities/user.entity";
 import { Password } from "@/shared/domain/value-objects/password.vo";
+import { UserRole } from "../entities/user.entity";
 
 export interface UserProps {
     companyId: string;
