@@ -14,17 +14,17 @@ export class LoginDto {
   @MinLength(8)
   password!: string;
 
-  @ApiProperty({ example: 'uuid-da-empresa' })
+  @ApiPropertyOptional({ example: 'uuid-da-empresa' })
   @IsUUID()
-  @IsNotEmpty()
-  companyId!: string;
+  @IsOptional()
+  companyId?: string;
 }
 
 export class RegisterDto {
-  @ApiProperty({ example: 'uuid-da-empresa' })
+  @ApiPropertyOptional({ example: 'uuid-da-empresa' })
   @IsUUID()
-  @IsNotEmpty()
-  companyId!: string;
+  @IsOptional()
+  companyId?: string;
 
   @ApiProperty({ example: 'João Silva' })
   @IsString()

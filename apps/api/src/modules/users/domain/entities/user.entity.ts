@@ -27,7 +27,7 @@ export class User extends Entity<UserProps> {
     return new User(props, id);
   }
 
-  get companyId(): string { return this.props.companyId; }
+  get companyId(): string | undefined { return this.props.companyId; }
   get email(): Email { return this.props.email; }
   get password(): Password { return this.props.password; }
   get name(): string { return this.props.name; }
@@ -57,6 +57,11 @@ export class User extends Entity<UserProps> {
 
   changeRole(role: UserRole): void {
     this.props.role = role;
+    this.props.updatedAt = new Date();
+  }
+
+  assignToCompany(companyId: string): void {
+    this.props.companyId = companyId;
     this.props.updatedAt = new Date();
   }
 

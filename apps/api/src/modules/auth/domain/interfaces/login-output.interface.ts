@@ -6,7 +6,7 @@ export interface LoginOutput {
         name: string;
         email: string;
         role: string;
-        companyId: string;
+        companyId?: string;
         avatarUrl?: string;
         };
 }

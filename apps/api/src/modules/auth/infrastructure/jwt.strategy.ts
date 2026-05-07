@@ -17,11 +17,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   validate(payload: JwtPayload): AuthenticatedUser {
-    if (!payload.sub || !payload.companyId) {
+    if (!payload.sub) {
       throw new UnauthorizedException();
     }
 
     return {
+      id: payload.sub,
       sub: payload.sub,
       email: payload.email,
       companyId: payload.companyId,

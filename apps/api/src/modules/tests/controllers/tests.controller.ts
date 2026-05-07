@@ -58,7 +58,7 @@ export class TestsController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<{ token: string; portalUrl: string; expiresAt: Date }> {
     const result = await this.createSession.execute({
-      companyId: user.companyId,
+      companyId: user.companyId!,
       candidateId: dto.candidateId,
       expiryHours: dto.expiryHours,
     });

@@ -32,10 +32,12 @@ export class RegisterUseCase implements UseCase<RegisterInput, RegisterOutput, R
   ) { }
 
   async execute(input: RegisterInput): Promise<Either<RegisterError, RegisterOutput>> {
-    // 1. Verificar que a empresa existe
-    const company = await this.companyRepository.findById(input.companyId);
-    if (!company) {
-      return left(new BusinessRuleViolationError('Company not found or inactive.'));
+    // 1. Verificar que a empresa existe (opcional no cadastro inicial)
+    if (input.companyId) {
+      const company = await this.companyRepository.findById(input.companyId);
+      if (!company) {
+        return left(new BusinessRuleViolationError('Company not found or inactive.'));
+      }
     }
 
     // 2. Validar Email VO

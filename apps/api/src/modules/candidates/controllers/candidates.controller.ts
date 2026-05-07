@@ -36,7 +36,7 @@ export class CandidatesController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<{ id: string; name: string; email: string }> {
     const result = await this.createCandidateUseCase.execute({
-      companyId: user.companyId,
+      companyId: user.companyId!,
       ...dto,
     });
     if (result.isLeft()) throw new ConflictException(result.value.message);
@@ -53,7 +53,7 @@ export class CandidatesController {
   ): Promise<object> {
     const result = await this.listCandidatesUseCase.execute({
       jobId,
-      companyId: user.companyId,
+      companyId: user.companyId!,
       cursor,
       take: take ? parseInt(take, 10) : undefined,
     });
@@ -66,7 +66,7 @@ export class CandidatesController {
     @Param('id') id: string,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<object> {
-    const result = await this.getCandidateUseCase.execute(id, user.companyId);
+    const result = await this.getCandidateUseCase.execute(id, user.companyId!);
     if (result.isLeft()) throw new NotFoundException(result.value.message);
     return result.value;
   }
@@ -78,7 +78,7 @@ export class CandidatesController {
     @Body() dto: UpdateStatusDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<{ status: string }> {
-    const result = await this.updateStatusUseCase.execute(id, user.companyId, dto.status);
+    const result = await this.updateStatusUseCase.execute(id, user.companyId!, dto.status);
     if (result.isLeft()) throw new NotFoundException(result.value.message);
     return result.value;
   }
@@ -90,7 +90,7 @@ export class CandidatesController {
     @Param('id') id: string,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<void> {
-    const result = await this.anonymizeUseCase.execute(id, user.companyId);
+    const result = await this.anonymizeUseCase.execute(id, user.companyId!);
     if (result.isLeft()) throw new NotFoundException(result.value.message);
   }
 }

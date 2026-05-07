@@ -39,7 +39,7 @@ export class JobsController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<{ id: string; title: string; status: string }> {
     const result = await this.createJobUseCase.execute({
-      companyId: user.companyId,
+      companyId: user.companyId!,
       ...dto,
     });
     return result.value;
@@ -55,7 +55,7 @@ export class JobsController {
     @Query('take') take?: string,
   ): Promise<object> {
     const result = await this.listJobsUseCase.execute({
-      companyId: user.companyId,
+      companyId: user.companyId!,
       cursor,
       take: take ? parseInt(take, 10) : undefined,
     });
@@ -68,7 +68,7 @@ export class JobsController {
     @Param('id') id: string,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<object> {
-    const result = await this.getJobByIdUseCase.execute(id, user.companyId);
+    const result = await this.getJobByIdUseCase.execute(id, user.companyId!);
     if (result.isLeft()) {
       if (result.value.code === 'ENTITY_NOT_FOUND') throw new NotFoundException(result.value.message);
       throw new BadRequestException(result.value.message);
@@ -82,7 +82,7 @@ export class JobsController {
     @Param('id') id: string,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<{ jd: string }> {
-    const result = await this.generateJdUseCase.execute(id, user.companyId);
+    const result = await this.generateJdUseCase.execute(id, user.companyId!);
     if (result.isLeft()) {
       if (result.value.code === 'ENTITY_NOT_FOUND') throw new NotFoundException(result.value.message);
       throw new BadRequestException(result.value.message);
@@ -96,7 +96,7 @@ export class JobsController {
     @Param('id') id: string,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<{ status: string }> {
-    const result = await this.publishJobUseCase.execute(id, user.companyId);
+    const result = await this.publishJobUseCase.execute(id, user.companyId!);
     if (result.isLeft()) throw new NotFoundException(result.value.message);
     return result.value;
   }
@@ -107,7 +107,7 @@ export class JobsController {
     @Param('id') id: string,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<{ status: string }> {
-    const result = await this.closeJobUseCase.execute(id, user.companyId);
+    const result = await this.closeJobUseCase.execute(id, user.companyId!);
     if (result.isLeft()) throw new NotFoundException(result.value.message);
     return result.value;
   }

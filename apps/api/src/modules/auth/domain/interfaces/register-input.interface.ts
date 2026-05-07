@@ -1,7 +1,7 @@
 import { UserRole } from "@/modules/users/domain/entities/user.entity";
 
 export interface RegisterInput {
-    companyId: string;
+    companyId?: string;
     name: string;
     email: string;
     password: string;

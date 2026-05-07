@@ -36,11 +36,15 @@ export class CompaniesController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Criar nova empresa (passo 1 do onboarding)' })
-  async create(@Body() dto: CreateCompanyDto): Promise<{ companyId: string; cnpj: string }> {
+  async create(
+    @Body() dto: CreateCompanyDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<{ companyId: string; cnpj: string }> {
     const result = await this.createCompany.execute({
       razaoSocial: dto.razaoSocial,
       cnpj: dto.cnpj,
       websiteUrl: dto.websiteUrl,
+      userId: user.id,
     });
 
     if (result.isLeft()) {

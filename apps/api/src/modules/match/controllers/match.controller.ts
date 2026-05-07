@@ -37,7 +37,7 @@ export class MatchController {
     const jobQueueId = await this.matchService.enqueueAnalysis({
       candidateId: dto.candidateId,
       jobId: dto.jobId,
-      companyId: user.companyId,
+      companyId: user.companyId!,
     });
 
     return {
@@ -53,7 +53,7 @@ export class MatchController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<object[]> {
     const matches = await this.prisma.match.findMany({
-      where: { candidateId, companyId: user.companyId },
+      where: { candidateId, companyId: user.companyId! },
       orderBy: { createdAt: 'desc' },
       take: 10,
       select: {
@@ -71,7 +71,7 @@ export class MatchController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<object> {
     const match = await this.prisma.match.findFirst({
-      where: { id: matchId, companyId: user.companyId },
+      where: { id: matchId, companyId: user.companyId! },
     });
     if (!match) throw new NotFoundException('Match analysis not found.');
 

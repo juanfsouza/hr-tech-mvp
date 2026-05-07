@@ -3,7 +3,7 @@ import { Password } from "@/shared/domain/value-objects/password.vo";
 import { UserRole } from "../entities/user.entity";
 
 export interface UserProps {
-    companyId: string;
+    companyId?: string;
     email: Email;
     password: Password;
     name: string;

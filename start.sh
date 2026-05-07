@@ -59,7 +59,7 @@ echo ""
 echo "⏳ Aguardando API responder no health check..."
 MAX=30
 COUNT=0
-until curl -sf http://localhost:3333/health > /dev/null 2>&1; do
+until curl -sf http://127.0.0.1:3333/health > /dev/null 2>&1; do
   COUNT=$((COUNT + 1))
   if [ $COUNT -ge $MAX ]; then
     echo ""

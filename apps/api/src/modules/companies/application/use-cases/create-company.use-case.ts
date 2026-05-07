@@ -11,8 +11,11 @@ import { ICompanyRepository } from '@/modules/companies/domain/repositories/icom
 import { CreateCompanyOutput } from '@/modules/companies/application/interfaces/create-company-output.interface';
 import { UseCase } from '@/modules/users/domain/interfaces/use-case.interface';
 import { COMPANY_REPOSITORY } from '../../domain/repositories/company.repository.interface';
+import { USER_REPOSITORY } from '@/modules/users/domain/repositories/user.repository.interface';
+import { IUserRepository } from '@/modules/users/domain/repositories/iuser-repository.interface';
+import { BusinessRuleViolationError } from '@/shared/domain/errors/domain-errors';
 
-type CreateCompanyError = ResourceAlreadyExistsError | InvalidValueObjectError;
+type CreateCompanyError = ResourceAlreadyExistsError | InvalidValueObjectError | BusinessRuleViolationError;
 
 
 @Injectable()
@@ -20,6 +23,7 @@ export class CreateCompanyUseCase
   implements UseCase<CreateCompanyInput, CreateCompanyOutput, CreateCompanyError> {
   constructor(
     @Inject(COMPANY_REPOSITORY) private readonly companyRepository: ICompanyRepository,
+    @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
   ) { }
 
   async execute(input: CreateCompanyInput): Promise<Either<CreateCompanyError, CreateCompanyOutput>> {
@@ -41,6 +45,13 @@ export class CreateCompanyUseCase
     });
 
     await this.companyRepository.save(company);
+
+    // ─── Associar empresa ao usuário que a criou ───────────────────────────────
+    const user = await this.userRepository.findById(input.userId);
+    if (user) {
+      user.assignToCompany(company.id.value);
+      await this.userRepository.save(user);
+    }
 
     return right({
       companyId: company.id.value,
