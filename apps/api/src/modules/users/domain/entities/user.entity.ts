@@ -2,7 +2,7 @@ import { Entity } from '@shared/domain/value-objects/entity';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
 import { Email } from '@shared/domain/value-objects/email.vo';
 import { Password } from '@shared/domain/value-objects/password.vo';
-import { UserProps } from '@/interfaces/user-props.interface';
+import { UserProps } from '@/modules/users/domain/interfaces/user-props.interface';
 
 export type UserRole = 'ADMIN' | 'HR' | 'VIEWER';
 

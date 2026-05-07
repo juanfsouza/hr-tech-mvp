@@ -5,7 +5,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
 import { IsIn, IsString } from 'class-validator';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
 import { Body } from '@nestjs/common';
-import { StorageBucket, StorageService } from '../storage.service';
+import { StorageBucket, StorageService } from '../services/storage.service';
 
 class GetUploadUrlDto {
   @IsIn(['resumes', 'logos', 'reports']) folder!: StorageBucket;

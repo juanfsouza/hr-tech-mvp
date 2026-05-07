@@ -1,9 +1,9 @@
 import { Entity } from '@shared/domain/value-objects/entity';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
 import { Cnpj } from '@shared/domain/value-objects/cnpj.vo';
-import { CompanyProps } from '@/interfaces/company-props.interface';
-import { CompanyAddress } from '@/interfaces/company-address.interface';
-import { CompanyContext } from '@/interfaces/company-context.interface';
+import { CompanyProps } from '@/modules/companies/domain/interfaces/company-props.interface';
+import { CompanyAddress } from '@/modules/companies/domain/interfaces/company-address.interface';
+import { CompanyContext } from '@/modules/companies/domain/interfaces/company-context.interface';
 
 export type CompanyProfile = 'STARTUP' | 'CONSOLIDATED' | 'RESTRUCTURING' | 'OTHER';
 export type OnboardingStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';

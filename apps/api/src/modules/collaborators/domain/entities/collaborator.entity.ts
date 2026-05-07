@@ -1,6 +1,6 @@
 import { Entity } from '@shared/domain/value-objects/entity';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
-import { CollaboratorProps } from '@/interfaces/collaborator-props.interface';
+import { CollaboratorProps } from '@/modules/collaborators/domain/interfaces/collaborator-props.interface';
 
 export class Collaborator extends Entity<CollaboratorProps> {
   private constructor(props: CollaboratorProps, id?: UniqueEntityID) {

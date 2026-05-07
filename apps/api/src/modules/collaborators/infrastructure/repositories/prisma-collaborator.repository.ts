@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/database/prisma.service';
 import { Collaborator } from '@modules/collaborators/domain/entities/collaborator.entity';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
-import { ICollaboratorRepository } from '@/interfaces/icollaborator-repository.interface';
+import { ICollaboratorRepository } from '@/modules/collaborators/domain/repositories/icollaborator-repository.interface';
 import { PrismaCollaboratorRecord } from '../interfaces/collaborator.interface';
 
 @Injectable()

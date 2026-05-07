@@ -1,6 +1,6 @@
-import { ITokenRepository } from '@/interfaces/itoken-repository.interface';
-import { SaveTokenInput } from '@/interfaces/save-token-input.interface';
-import { StoredToken } from '@/interfaces/stored-token.interface';
+import { ITokenRepository } from '@/modules/auth/domain/repositories/itoken-repository.interface';
+import { SaveTokenInput } from '@/modules/auth/application/interfaces/save-token-input.interface';
+import { StoredToken } from '@/modules/auth/domain/interfaces/stored-token.interface';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/database/prisma.service';
 

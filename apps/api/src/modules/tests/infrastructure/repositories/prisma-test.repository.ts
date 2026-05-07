@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { TestSession, TestSessionStatus, TestType } from '@/entities/test-session.entity';
 import { randomUUID } from 'node:crypto';
-import { ITestRepository } from '@/interfaces/itest-repository.interface';
+import { ITestRepository } from '@/modules/tests/domain/repositories/itest-repository.interface';
 import { PrismaService } from '@/services/prisma.service';
-import { SaveResponseInput } from '@/interfaces/save-response-input.interface';
-import { PsychProfileData } from '@/interfaces/psych-profile-data.interface';
+import { SaveResponseInput } from '@/modules/tests/application/interfaces/save-response-input.interface';
+import { PsychProfileData } from '@/modules/tests/domain/interfaces/psych-profile-data.interface';
 import { UniqueEntityID } from '@/shared/domain/value-objects';
 import { PrismaSessionRecord } from '../interfaces/prisma.teste.interface';
 

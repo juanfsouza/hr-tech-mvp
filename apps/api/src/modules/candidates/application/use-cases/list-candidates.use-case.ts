@@ -1,5 +1,5 @@
-import { ICandidateRepository } from "@/interfaces/icandidate-repository.interface";
-import { ListCandidatesByJobInput } from "@/interfaces/list-candidates-by-job-input.interface";
+import { ICandidateRepository } from "@/modules/candidates/domain/repositories/icandidate-repository.interface";
+import { ListCandidatesByJobInput } from "@/modules/candidates/application/interfaces/list-candidates-by-job-input.interface";
 import { CANDIDATE_REPOSITORY } from "@/repositories/candidate.repository.interface";
 import { EntityNotFoundError } from "@/shared/domain/errors/domain-errors";
 import { Either, left, right } from "@/shared/domain/errors/either";

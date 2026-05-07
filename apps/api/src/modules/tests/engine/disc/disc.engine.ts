@@ -12,8 +12,8 @@
  *   Normalizado para 0-100%
  */
 
-import { DiscQuestionChoice } from "@/interfaces/disc-question-choice.interface";
-import { DiscResult } from "@/interfaces/disc-result.interface";
+import { DiscQuestionChoice } from "@/modules/tests/domain/interfaces/disc-question-choice.interface";
+import { DiscResult } from "@/modules/tests/domain/interfaces/disc-result.interface";
 
 export type DiscDimension = 'D' | 'I' | 'S' | 'C';
 const DISC_DESCRIPTIONS: Record<DiscDimension, string> = {

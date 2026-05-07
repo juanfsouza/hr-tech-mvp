@@ -1,4 +1,4 @@
-import { CandidateProps } from '@/interfaces/candidate-props.interface';
+import { CandidateProps } from '@/modules/candidates/domain/interfaces/candidate-props.interface';
 import { Entity } from '@shared/domain/value-objects/entity';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
 

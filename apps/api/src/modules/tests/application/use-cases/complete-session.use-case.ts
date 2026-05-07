@@ -1,6 +1,7 @@
-import { CompleteTestInput } from "@/interfaces/complete-test-input.interface";
-import { CompleteTestOutput } from "@/interfaces/complete-test-output.interface";
-import { ITestRepository } from "@/interfaces/itest-repository.interface";
+import { PsychProfileData } from "@/interfaces/psych-profile-data.interface";
+import { CompleteTestInput } from "@/modules/tests/application/interfaces/complete-test-input.interface";
+import { CompleteTestOutput } from "@/modules/tests/application/interfaces/complete-test-output.interface";
+import { ITestRepository } from "@/modules/tests/domain/repositories/itest-repository.interface";
 import { TEST_REPOSITORY } from "@/repositories/test.repository.interface";
 import { DiscEngine } from "@/services/disc.engine";
 import { EmailService } from "@/services/email.service";
@@ -114,16 +115,12 @@ export class CompleteTestUseCase {
         sessionId: string,
         candidateId?: string,
         candidateName: string = 'Indefinido',
-    ): Promise<{ profileId: string, profileData: any }> {
-        // Buscar respostas de cada teste
+    ): Promise<{ profileId: string, profileData: PsychProfileData }> {
         const discRaw = await this.repo.findResponses(sessionId, 'DISC');
         const ennRaw = await this.repo.findResponses(sessionId, 'ENNEAGRAM');
         const sixRaw = await this.repo.findResponses(sessionId, 'SIXTEEN_PERSONALITIES');
-
-        // Calcular resultados
         const discChoices = DiscEngine.parseResponses(discRaw);
         const disc = DiscEngine.calculate(discChoices);
-
         const ennAnswers = EnneagramEngine.parseResponses(ennRaw);
         const enn = EnneagramEngine.calculate(ennAnswers);
 

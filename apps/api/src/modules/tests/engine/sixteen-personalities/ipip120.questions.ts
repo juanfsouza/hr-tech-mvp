@@ -8,7 +8,7 @@
  * - 24 itens por dimensão Big Five (O, C, E, A, N)
  * - Itens keyed='-' são invertidos: score = 6 - resposta
  */
-import { IpipQuestion } from '@/interfaces/ipip-question.interface';
+import { IpipQuestion } from '@/modules/tests/domain/interfaces/ipip-question.interface';
 
 export const IPIP_120_QUESTIONS: IpipQuestion[] = [
   { id: 'ipip-1', itemNumber: 1, text: 'Tenho uma imaginação vívida', dimension: 'O', keyed: '+' },

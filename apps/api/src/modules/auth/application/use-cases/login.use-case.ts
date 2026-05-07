@@ -2,18 +2,18 @@ import { Injectable, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@/config/app.config';
-import { IHashService } from '@/interfaces/ihash-service.interface';
-import { ITokenRepository } from '@/interfaces/itoken-repository.interface';
-import { IUserRepository } from '@/interfaces/iuser-repository.interface';
-import { LoginInput } from '@/interfaces/login-input.interface';
-import { LoginOutput } from '@/interfaces/login-output.interface';
-import { UseCase } from '@/interfaces/use-case.interface';
+import { IHashService } from '@/modules/auth/application/interfaces/ihash-service.interface';
+import { ITokenRepository } from '@/modules/auth/domain/repositories/itoken-repository.interface';
+import { IUserRepository } from '@/modules/users/domain/repositories/iuser-repository.interface';
+import { LoginInput } from '@/modules/auth/domain/interfaces/login-input.interface';
+import { LoginOutput } from '@/modules/auth/domain/interfaces/login-output.interface';
 import { TOKEN_REPOSITORY } from '@/repositories/token.repository.interface';
 import { USER_REPOSITORY } from '@/repositories/user.repository.interface';
 import { HASH_SERVICE } from '@/services/hash.service.interface';
 import { InvalidCredentialsError, EntityNotFoundError } from '@/shared/domain/errors/domain-errors';
 import { Either, left, right } from '@/shared/domain/errors/either';
 import { Email } from '@/shared/domain/value-objects';
+import { UseCase } from '../../../users/domain/interfaces/use-case.interface';
 
 type LoginError = InvalidCredentialsError | EntityNotFoundError;
 

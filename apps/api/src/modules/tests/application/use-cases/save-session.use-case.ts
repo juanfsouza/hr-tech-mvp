@@ -1,5 +1,5 @@
-import { ITestRepository } from "@/interfaces/itest-repository.interface";
-import { SaveProgressInput } from "@/interfaces/save-progress-input.interface";
+import { ITestRepository } from "@/modules/tests/domain/repositories/itest-repository.interface";
+import { SaveProgressInput } from "@/modules/tests/application/interfaces/save-progress-input.interface";
 import { TEST_REPOSITORY } from "@/repositories/test.repository.interface";
 import { EntityNotFoundError, BusinessRuleViolationError } from "@/shared/domain/errors/domain-errors";
 import { Either, left, right } from "@/shared/domain/errors/either";

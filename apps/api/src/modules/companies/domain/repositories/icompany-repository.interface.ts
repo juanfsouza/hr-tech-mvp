@@ -1,6 +1,6 @@
-/**
- * ICompanyRepository — contrato do repositório de empresas
- */
+import { Company } from "../entities/company.entity";
+import { Cnpj } from "@shared/domain/value-objects/cnpj.vo";
+
 export interface ICompanyRepository {
     findById(id: string): Promise<Company | null>;
     findByCnpj(cnpj: Cnpj): Promise<Company | null>;

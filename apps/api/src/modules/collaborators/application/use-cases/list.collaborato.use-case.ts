@@ -1,5 +1,5 @@
-import { ICollaboratorRepository } from "@/interfaces/icollaborator-repository.interface";
-import { OrgChartNode } from "@/interfaces/org-chart-node.interface";
+import { ICollaboratorRepository } from "@/modules/collaborators/domain/repositories/icollaborator-repository.interface";
+import { OrgChartNode } from "@/modules/collaborators/application/interfaces/org-chart-node.interface";
 import { COLLABORATOR_REPOSITORY } from "@/repositories/collaborator.repository.interface";
 import { Injectable, Inject } from "@nestjs/common";
 

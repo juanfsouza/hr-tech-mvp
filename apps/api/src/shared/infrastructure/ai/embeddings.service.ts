@@ -1,4 +1,4 @@
-import { EmbeddingResult } from '@/interfaces/embedding-result.interface';
+import { EmbeddingResult } from '@/modules/ai/application/interfaces/embedding-result.interface';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';

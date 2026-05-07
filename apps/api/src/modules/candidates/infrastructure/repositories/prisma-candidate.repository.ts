@@ -1,7 +1,7 @@
 import { Candidate, CandidateStatus } from '@/entities/candidate.entity';
-import { ICandidateRepository } from '@/interfaces/icandidate-repository.interface';
-import { PaginatedResult } from '@/interfaces/paginated-result.interface';
-import { PaginationParams } from '@/interfaces/pagination-params.interface';
+import { ICandidateRepository } from '@/modules/candidates/domain/repositories/icandidate-repository.interface';
+import { PaginatedResult } from '@/shared/domain/interfaces/paginated-result.interface';
+import { PaginationParams } from '@/shared/domain/interfaces/pagination-params.interface';
 import { normalizePaginationParams } from '@/shared/application/pagination';
 import { UniqueEntityID } from '@/shared/domain/value-objects';
 import { Injectable } from '@nestjs/common';

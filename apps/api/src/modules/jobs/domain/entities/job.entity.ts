@@ -1,6 +1,6 @@
 import { Entity } from '@shared/domain/value-objects/entity';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
-import { JobProps } from '@/interfaces/job-props.interface';
+import { JobProps } from '@/modules/jobs/domain/interfaces/job-props.interface';
 
 export type JobStatus = 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'CLOSED';
 

@@ -11,7 +11,7 @@ import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard'
 import { DISC_QUESTIONS } from '@modules/tests/engine/disc/disc.questions';
 import { ENNEAGRAM_QUESTIONS } from '@modules/tests/engine/enneagram/enneagram.questions';
 import { IPIP_120_QUESTIONS } from '@modules/tests/engine/sixteen-personalities/ipip120.questions';
-import { AuthenticatedUser } from '@/interfaces/authenticated-user.interface';
+import { AuthenticatedUser } from '@/shared/infrastructure/http/interfaces/authenticated-user.interface';
 import { CompleteTestUseCase } from '../application/use-cases/complete-session.use-case';
 import { CreateTestSessionUseCase } from '../application/use-cases/create-session.use-case';
 import { GetTestSessionByTokenUseCase } from '../application/use-cases/list.session.use-case';

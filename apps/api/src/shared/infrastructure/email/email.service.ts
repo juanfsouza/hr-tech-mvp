@@ -1,4 +1,4 @@
-import { SendEmailInput } from '@/interfaces/send-email-input.interface';
+import { SendEmailInput } from '@/shared/application/interfaces/send-email-input.interface';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Resend } from 'resend';

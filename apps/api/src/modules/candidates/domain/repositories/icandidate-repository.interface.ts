@@ -1,6 +1,6 @@
 import { Candidate } from "@/entities/candidate.entity";
-import { PaginationParams } from "@/interfaces/pagination-params.interface";
-import { PaginatedResult } from "@/interfaces/paginated-result.interface";
+import { PaginationParams } from "@/shared/domain/interfaces/pagination-params.interface";
+import { PaginatedResult } from "@/shared/domain/interfaces/paginated-result.interface";
 
 
 export interface ICandidateRepository {

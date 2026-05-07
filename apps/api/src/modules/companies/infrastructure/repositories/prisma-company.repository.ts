@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/database/prisma.service';
 import { Cnpj } from '@shared/domain/value-objects/cnpj.vo';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
-import { ICompanyRepository } from '@/interfaces/icompany-repository.interface';
-import { CompanyContext } from '@/interfaces/company-context.interface';
-import { CompanyAddress } from '@/interfaces/company-address.interface';
+import { ICompanyRepository } from '@/modules/companies/domain/repositories/icompany-repository.interface';
+import { CompanyContext } from '@/modules/companies/domain/interfaces/company-context.interface';
+import { CompanyAddress } from '@/modules/companies/domain/interfaces/company-address.interface';
 import { PrismaCompanyRecord } from '../interface/prisma.interface';
 import { Company, CompanyProfile, OnboardingStatus } from '../../domain/entities/company.entity';
 
@@ -93,7 +93,6 @@ export class PrismaCompanyRepository implements ICompanyRepository {
     return count > 0;
   }
 
-  // ─── Mapper: Prisma → Domain ───────────────────────────────────────────────
   private toDomain(record: PrismaCompanyRecord): Company {
     const cnpjOrError = Cnpj.create(record.cnpj);
     if (cnpjOrError.isLeft()) {

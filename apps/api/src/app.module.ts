@@ -33,8 +33,8 @@ import { TestsModule } from './modules/tests.module';
     // ─── Rate Limiting ─────────────────────────────────────────────────────
     ThrottlerModule.forRoot([
       {
-        ttl: 60_000,   // 60 segundos
-        limit: 100,    // 100 requests por IP
+        ttl: 60_000,
+        limit: 100,
       },
     ]),
 

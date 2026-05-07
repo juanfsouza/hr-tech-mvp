@@ -1,4 +1,4 @@
-import { AuthenticatedUser } from '@/interfaces/authenticated-user.interface';
+import { AuthenticatedUser } from '@/shared/infrastructure/http/interfaces/authenticated-user.interface';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
 

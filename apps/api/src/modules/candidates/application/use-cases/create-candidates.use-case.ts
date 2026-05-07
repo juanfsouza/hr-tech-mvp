@@ -1,6 +1,6 @@
 import { Candidate } from "@/entities/candidate.entity";
-import { CreateCandidateInput } from "@/interfaces/create-candidate-input.interface";
-import { ICandidateRepository } from "@/interfaces/icandidate-repository.interface";
+import { CreateCandidateInput } from "@/modules/candidates/application/interfaces/create-candidate-input.interface";
+import { ICandidateRepository } from "@/modules/candidates/domain/repositories/icandidate-repository.interface";
 import { CANDIDATE_REPOSITORY } from "@/repositories/candidate.repository.interface";
 import { BusinessRuleViolationError } from "@/shared/domain/errors/domain-errors";
 import { Either, left, right } from "@/shared/domain/errors/either";

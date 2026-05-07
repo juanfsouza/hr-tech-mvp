@@ -7,10 +7,7 @@ import { randomUUID } from 'node:crypto';
 
 export type StorageBucket = 'resumes' | 'logos' | 'reports';
 
-/**
- * StorageService — wrapper S3/Cloudflare R2 com presigned URLs
- * Nunca retorna URL direta — sempre presigned com expiração
- */
+
 @Injectable()
 export class StorageService {
   private readonly client: S3Client;
@@ -30,9 +27,6 @@ export class StorageService {
     });
   }
 
-  /**
-   * Gerar presigned URL para upload direto (browser → S3, sem passar pelo servidor)
-   */
   async getUploadPresignedUrl(
     folder: StorageBucket,
     extension: string,
@@ -50,9 +44,7 @@ export class StorageService {
     return { uploadUrl, key };
   }
 
-  /**
-   * Gerar presigned URL para download (acesso temporário)
-   */
+
   async getDownloadPresignedUrl(key: string, expiresIn = 3600): Promise<string> {
     const command = new GetObjectCommand({ Bucket: this.bucket, Key: key });
     return getSignedUrl(this.client, command, { expiresIn });

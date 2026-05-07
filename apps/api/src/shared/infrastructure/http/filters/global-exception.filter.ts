@@ -17,10 +17,6 @@ interface ErrorResponse {
   path: string;
 }
 
-/**
- * Filtro global de exceções — traduz DomainErrors e HttpExceptions
- * para respostas padronizadas sem vazar stack traces
- */
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(GlobalExceptionFilter.name);

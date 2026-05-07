@@ -10,7 +10,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
 import { CurrentUser, AuthenticatedUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
 import { CreateCollaboratorUseCase } from '../application/use-cases/create.collaborator.use-case';
-import { OrgChartNode } from '@/interfaces/org-chart-node.interface';
+import { OrgChartNode } from '@/modules/collaborators/application/interfaces/org-chart-node.interface';
 import { GetOrgChartUseCase } from '../application/use-cases/list.collaborato.use-case';
 
 class CreateCollaboratorDto {

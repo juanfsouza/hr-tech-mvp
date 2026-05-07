@@ -5,10 +5,10 @@ import { Either, left, right } from '@shared/domain/errors/either';
 import { UnauthorizedError } from '@shared/domain/errors/domain-errors';
 import { TOKEN_REPOSITORY } from '@modules/auth/domain/repositories/token.repository.interface';
 import { AppConfig } from 'src/config/app.config';
-import { RefreshTokenInput } from '@/interfaces/refresh-token-input.interface';
-import { RefreshTokenOutput } from '@/interfaces/refresh-token-output.interface';
-import { UseCase } from '@/interfaces/use-case.interface';
-import { ITokenRepository } from '@/interfaces/itoken-repository.interface';
+import { RefreshTokenInput } from '@/modules/auth/application/interfaces/refresh-token-input.interface';
+import { RefreshTokenOutput } from '@/modules/auth/application/interfaces/refresh-token-output.interface';
+import { ITokenRepository } from '@/modules/auth/domain/repositories/itoken-repository.interface';
+import { UseCase } from '../../../users/domain/interfaces/use-case.interface';
 
 
 @Injectable()

@@ -11,8 +11,8 @@
  *        5-Investigador, 6-Leal, 7-Entusiasta, 8-Desafiador, 9-Pacificador
  */
 
-import { EnneagramPairAnswer } from "@/interfaces/enneagram-pair-answer.interface";
-import { EnneagramResult } from "@/interfaces/enneagram-result.interface";
+import { EnneagramPairAnswer } from "@/modules/tests/domain/interfaces/enneagram-pair-answer.interface";
+import { EnneagramResult } from "@/modules/tests/domain/interfaces/enneagram-result.interface";
 
 export type EnneagramType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 const TYPE_NAMES: Record<EnneagramType, string> = {

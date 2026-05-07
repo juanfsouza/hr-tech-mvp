@@ -9,7 +9,7 @@ import { CreateCandidateDto } from '@/dtos/create-candidate.dto';
 import { UpdateStatusDto } from '../application/dtos/update-status.dto';
 import { CreateCandidateUseCase } from '../application/use-cases/create-candidates.use-case';
 import { GetCandidateByIdUseCase, ListCandidatesByJobUseCase } from '../application/use-cases/list-candidates.use-case';
-import { AuthenticatedUser } from '@/interfaces/authenticated-user.interface';
+import { AuthenticatedUser } from '@/shared/infrastructure/http/interfaces/authenticated-user.interface';
 import { CurrentUser } from '@/shared/infrastructure/http/decorators/current-user.decorator';
 import { AnonymizeCandidateUseCase } from '../application/use-cases/anonymize-candidate.use-case';
 import { UpdateCandidateStatusUseCase } from '../application/use-cases/update-candidates.use.case';

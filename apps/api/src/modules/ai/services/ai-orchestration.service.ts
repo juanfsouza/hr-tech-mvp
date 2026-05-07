@@ -1,6 +1,6 @@
-import { GenerateJdInput } from '@/interfaces/generate-jd-input.interface';
-import { MatchAnalysisInput } from '@/interfaces/match-analysis-input.interface';
-import { MatchAnalysisOutput } from '@/interfaces/match-analysis-output.interface';
+import { GenerateJdInput } from '@/modules/ai/application/interfaces/generate-jd-input.interface';
+import { MatchAnalysisInput } from '@/modules/match/application/interfaces/match-analysis-input.interface';
+import { MatchAnalysisOutput } from '@/modules/match/application/interfaces/match-analysis-output.interface';
 import { ClaudeService } from '@/services/claude.service';
 import { Injectable } from '@nestjs/common';
 

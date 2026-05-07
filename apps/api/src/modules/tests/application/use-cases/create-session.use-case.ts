@@ -1,8 +1,8 @@
 import { AppConfig } from "@/config/app.config";
 import { TestSession } from "@/entities/test-session.entity";
-import { CreateTestSessionInput } from "@/interfaces/create-test-session-input.interface";
-import { CreateTestSessionOutput } from "@/interfaces/create-test-session-output.interface";
-import { ITestRepository } from "@/interfaces/itest-repository.interface";
+import { CreateTestSessionInput } from "@/modules/tests/application/interfaces/create-test-session-input.interface";
+import { CreateTestSessionOutput } from "@/modules/tests/application/interfaces/create-test-session-output.interface";
+import { ITestRepository } from "@/modules/tests/domain/repositories/itest-repository.interface";
 import { TEST_REPOSITORY } from "@/repositories/test.repository.interface";
 import { Either, right } from "@/shared/domain/errors/either";
 import { Injectable, Inject } from "@nestjs/common";

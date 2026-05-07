@@ -2,18 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/database/prisma.service';
 import { Job, JobStatus } from '@modules/jobs/domain/entities/job.entity';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
-import { IJobRepository } from '@/interfaces/ijob-repository.interface';
+import { IJobRepository } from '@/modules/jobs/domain/repositories/ijob-repository.interface';
+import { normalizePaginationParams } from '@/shared/application/pagination';
 import { PaginatedResult } from '@/interfaces/paginated-result.interface';
 import { PaginationParams } from '@/interfaces/pagination-params.interface';
-import { normalizePaginationParams } from '@/shared/application/pagination';
-
-interface PrismaJobRecord {
-  id: string; companyId: string; title: string; description: string | null;
-  requirements: string[]; salaryMin: unknown; salaryMax: unknown;
-  location: string | null; isRemote: boolean; status: string;
-  responsibleId: string | null; aiGeneratedJd: string | null;
-  createdAt: Date; updatedAt: Date; deletedAt: Date | null;
-}
 
 @Injectable()
 export class PrismaJobRepository implements IJobRepository {

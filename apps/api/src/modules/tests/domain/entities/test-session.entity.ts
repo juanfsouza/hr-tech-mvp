@@ -1,7 +1,7 @@
 import { Entity } from '@shared/domain/value-objects/entity';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
 import { randomBytes } from 'node:crypto';
-import { TestSessionProps } from '@/interfaces/test-session-props.interface';
+import { TestSessionProps } from '@/modules/tests/domain/interfaces/test-session-props.interface';
 
 export type TestSessionStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'EXPIRED';
 export type TestType = 'DISC' | 'ENNEAGRAM' | 'SIXTEEN_PERSONALITIES';

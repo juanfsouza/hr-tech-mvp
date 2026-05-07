@@ -13,10 +13,6 @@ interface SuccessResponse<T> {
   timestamp: string;
 }
 
-/**
- * Interceptor de resposta — envolve todos os resultados em envelope padrão
- * { success: true, data: T, timestamp: string }
- */
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, SuccessResponse<T>> {
   intercept(_context: ExecutionContext, next: CallHandler): Observable<SuccessResponse<T>> {

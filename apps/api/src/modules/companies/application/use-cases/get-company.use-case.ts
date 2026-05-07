@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Either, right, left } from '@shared/domain/errors/either';
 import { EntityNotFoundError } from '@shared/domain/errors/domain-errors';
-import { GetCompanyOutput } from '@/interfaces/get-company-output.interface';
+import { GetCompanyOutput } from '@/modules/companies/application/interfaces/get-company-output.interface';
 import { COMPANY_REPOSITORY } from '@/repositories/company.repository.interface';
-import { ICompanyRepository } from '@/interfaces/icompany-repository.interface';
+import { ICompanyRepository } from '@/modules/companies/domain/repositories/icompany-repository.interface';
 
 
 @Injectable()

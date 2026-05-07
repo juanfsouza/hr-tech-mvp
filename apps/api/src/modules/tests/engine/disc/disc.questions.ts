@@ -7,7 +7,7 @@
  * Fonte: Baseado no modelo clássico de William Marston (domínio público)
  */
 
-import { DiscQuestionBlock } from "@/interfaces/disc-question-block.interface";
+import { DiscQuestionBlock } from "@/modules/tests/domain/interfaces/disc-question-block.interface";
 
 export const DISC_QUESTIONS: DiscQuestionBlock[] = [
   {

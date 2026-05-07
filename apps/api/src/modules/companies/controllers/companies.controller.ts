@@ -19,7 +19,7 @@ import { CurrentUser, AuthenticatedUser } from '@shared/infrastructure/http/deco
 import { CreateCompanyUseCase } from '@modules/companies/application/use-cases/create-company.use-case';
 import { UpdateOnboardingUseCase } from '@modules/companies/application/use-cases/update-onboarding.use-case';
 import { GetCompanyUseCase } from '@modules/companies/application/use-cases/get-company.use-case';
-import { GetCompanyOutput } from '@/interfaces/get-company-output.interface';
+import { GetCompanyOutput } from '@/modules/companies/application/interfaces/get-company-output.interface';
 import { CreateCompanyDto, UpdateOnboardingDto } from '../application/dtos/create-company.dto';
 
 @ApiTags('Companies')

@@ -1,7 +1,6 @@
-import React from 'react';
 import { Document, Page, Text, View, StyleSheet, renderToStream } from '@react-pdf/renderer';
 import { Injectable } from '@nestjs/common';
-import { PsychProfileData } from '@/interfaces/psych-profile-data.interface';
+import { PsychProfileData } from '@/modules/tests/domain/interfaces/psych-profile-data.interface';
 
 const styles = StyleSheet.create({
   page: { padding: 40, backgroundColor: '#ffffff', fontFamily: 'Helvetica' },
@@ -26,7 +25,7 @@ const ProfileDocument = ({ data }: { data: PsychProfileData }) => (
         <Text style={styles.text}>D (Dominância): {data.discD.toFixed(1)}%</Text>
         <Text style={styles.text}>I (Influência): {data.discI.toFixed(1)}%</Text>
         <Text style={styles.text}>S (Estabilidade): {data.discS.toFixed(1)}%</Text>
-        <Text style={styles.text}>C (Conformidade): {data.discC.toFixed(1)}%</Text>
+        <Text style={styles.text}>C (Conformidade): {data.discS.toFixed(1)}%</Text>
       </View>
 
       <View style={styles.section}>

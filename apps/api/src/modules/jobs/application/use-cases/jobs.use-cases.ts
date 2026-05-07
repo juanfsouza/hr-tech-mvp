@@ -1,11 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Either, left, right } from '@shared/domain/errors/either';
 import { BusinessRuleViolationError, EntityNotFoundError } from '@shared/domain/errors/domain-errors';
-import { CreateJobInput } from '@/interfaces/create-job-input.interface';
-import { ListJobsInput } from '@/interfaces/list-jobs-input.interface';
-import { IJobRepository } from '@/interfaces/ijob-repository.interface';
+import { CreateJobInput } from '@/modules/jobs/application/interfaces/create-job-input.interface';
+import { ListJobsInput } from '@/modules/jobs/application/interfaces/list-jobs-input.interface';
+import { IJobRepository } from '@/modules/jobs/domain/repositories/ijob-repository.interface';
 import { JOB_REPOSITORY } from '@/repositories/job.repository.interface';
-import { ICompanyRepository } from '@/interfaces/icompany-repository.interface';
+import { ICompanyRepository } from '@/modules/companies/domain/repositories/icompany-repository.interface';
 import { COMPANY_REPOSITORY } from '@/repositories/company.repository.interface';
 import { Job } from '@/entities/job.entity';
 import { AiOrchestrationService } from '@/services/ai-orchestration.service';

@@ -5,7 +5,7 @@
  * Cada par mede dois tipos diferentes do Eneagrama
  */
 
-import { EnneagramQuestionPair } from "@/interfaces/enneagram-question-pair.interface";
+import { EnneagramQuestionPair } from "@/modules/tests/domain/interfaces/enneagram-question-pair.interface";
 
 export const ENNEAGRAM_QUESTIONS: EnneagramQuestionPair[] = [
   { id: 'enn-1', pairNumber: 1, statementA: 'Tenho altos padrões e me cobro por cumpri-los', statementB: 'Me preocupo muito com as necessidades dos outros', typeA: 1, typeB: 2 },

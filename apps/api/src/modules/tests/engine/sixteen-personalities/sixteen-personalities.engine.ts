@@ -16,9 +16,9 @@
  *   Neuroticism    → indicador de estabilidade emocional (não mapeado diretamente)
  */
 
-import { BigFiveScores } from "@/interfaces/big-five-scores.interface";
-import { IpipItemResponse } from "@/interfaces/ipip-item-response.interface";
-import { SixteenPResult } from "@/interfaces/sixteen-presult.interface";
+import { BigFiveScores } from "@/modules/tests/domain/interfaces/big-five-scores.interface";
+import { IpipItemResponse } from "@/modules/tests/domain/interfaces/ipip-item-response.interface";
+import { SixteenPResult } from "@/modules/tests/domain/interfaces/sixteen-presult.interface";
 
 export type MbtiLetter = 'E' | 'I' | 'N' | 'S' | 'T' | 'F' | 'J' | 'P';
 export type BigFiveDimension = 'O' | 'C' | 'E' | 'A' | 'N';

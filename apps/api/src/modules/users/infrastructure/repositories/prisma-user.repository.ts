@@ -3,7 +3,7 @@ import { User, UserRole } from '@modules/users/domain/entities/user.entity';
 import { Email } from '@shared/domain/value-objects/email.vo';
 import { Password } from '@shared/domain/value-objects/password.vo';
 import { UniqueEntityID } from '@shared/domain/value-objects/unique-entity-id';
-import { IUserRepository } from '@/interfaces/iuser-repository.interface';
+import { IUserRepository } from '@/modules/users/domain/repositories/iuser-repository.interface';
 import { PrismaService } from '@/services/prisma.service';
 import { PrismaUserRecord } from '../interfaces/user.interface';
 
