@@ -9,8 +9,11 @@ import { Input } from "@/components/atoms/input";
 import { Label } from "@/components/atoms/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/atoms/card";
 import { useOnboardingStore } from "@/store/onboarding-store";
-import { Building2, MapPin, Globe, Loader2 } from "lucide-react";
+import { companyService } from "@/services/company-service";
+import { useMutation } from "@tanstack/react-query";
+import { Building2, MapPin, Globe, Loader2, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const companySchema = z.object({
   name: z.string().min(3, "Razão social deve ter pelo menos 3 caracteres"),
@@ -29,11 +32,31 @@ export function CompanyDataStep() {
   const { companyData, updateCompanyData, nextStep } = useOnboardingStore();
   const [isFetchingCep, setIsFetchingCep] = useState(false);
 
+  const mutation = useMutation({
+    mutationFn: (data: CompanyFormData) => 
+      companyService.create({
+        razaoSocial: data.name,
+        cnpj: data.cnpj,
+        websiteUrl: data.website,
+      }),
+    onSuccess: (data) => {
+      toast.success("Empresa cadastrada com sucesso!");
+      updateCompanyData({
+        name: briefing.title, // Just placeholder update, we use the store for current session
+      });
+      nextStep();
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao salvar empresa", {
+        description: error.response?.data?.message || "Tente novamente.",
+      });
+    }
+  });
+
   const {
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors, isValid },
   } = useForm<CompanyFormData>({
     resolver: zodResolver(companySchema),
@@ -60,7 +83,6 @@ export function CompanyDataStep() {
           setValue("street", data.logradouro);
           setValue("city", data.localidade);
           setValue("state", data.uf);
-          // Foca no número após preencher o resto
           document.getElementById("number")?.focus();
         }
       } catch (error) {
@@ -83,7 +105,7 @@ export function CompanyDataStep() {
         state: data.state,
       },
     });
-    nextStep();
+    mutation.mutate(data);
   };
 
   return (
