@@ -6,7 +6,6 @@ import { OrganogramStep } from "./OrganogramStep";
 import { PersonalityTestsStep } from "./PersonalityTestsStep";
 import { CompanyContextStep } from "./CompanyContextStep";
 import { motion, AnimatePresence } from "framer-motion";
-import { Progress } from "@/components/atoms/progress";
 
 export function OnboardingWizard() {
   const { step } = useOnboardingStore();

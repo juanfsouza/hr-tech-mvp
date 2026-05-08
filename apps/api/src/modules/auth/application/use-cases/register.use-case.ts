@@ -17,6 +17,8 @@ import { USER_REPOSITORY } from '@/modules/users/domain/repositories/user.reposi
 import { COMPANY_REPOSITORY } from '@/modules/companies/domain/repositories/company.repository.interface';
 import { IUserRepository } from '@/modules/users/domain/repositories/iuser-repository.interface';
 import { HASH_SERVICE } from '@/shared/domain/services/hash.service.interface';
+import { EmailService } from '@/shared/infrastructure/email/email.service';
+import { v4 as uuidv4 } from 'uuid';
 
 type RegisterError =
   | ResourceAlreadyExistsError
@@ -29,6 +31,7 @@ export class RegisterUseCase implements UseCase<RegisterInput, RegisterOutput, R
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
     @Inject(COMPANY_REPOSITORY) private readonly companyRepository: ICompanyRepository,
     @Inject(HASH_SERVICE) private readonly hashService: IHashService,
+    private readonly emailService: EmailService,
   ) { }
 
   async execute(input: RegisterInput): Promise<Either<RegisterError, RegisterOutput>> {
@@ -62,7 +65,8 @@ export class RegisterUseCase implements UseCase<RegisterInput, RegisterOutput, R
     const hash = await this.hashService.hash(passwordOrError.value.getRawValue());
     const hashedPassword = Password.createHashed(hash);
 
-    // 6. Criar entidade User
+    // 6. Criar entidade User com token de verificação
+    const verificationToken = uuidv4();
     const user = User.create({
       companyId: input.companyId,
       email: emailOrError.value,
@@ -70,9 +74,14 @@ export class RegisterUseCase implements UseCase<RegisterInput, RegisterOutput, R
       name: input.name.trim(),
       role: input.role ?? 'HR',
     });
+    user.setVerificationToken(verificationToken);
 
     // 7. Persistir
     await this.userRepository.save(user);
+
+    // 8. Enviar e-mail de verificação (sem travar o fluxo principal)
+    this.emailService.sendVerificationEmail(user.email.value, user.name, verificationToken)
+      .catch(err => console.error('Failed to send verification email:', err));
 
     return right({
       userId: user.id.value,

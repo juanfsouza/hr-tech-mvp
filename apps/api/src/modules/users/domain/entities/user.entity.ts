@@ -11,11 +11,12 @@ export class User extends Entity<UserProps> {
     super(props, id);
   }
 
-  static create(props: Omit<UserProps, 'createdAt' | 'updatedAt' | 'isActive'>, id?: UniqueEntityID): User {
+  static create(props: Omit<UserProps, 'createdAt' | 'updatedAt' | 'isActive' | 'isVerified'>, id?: UniqueEntityID): User {
     return new User(
       {
         ...props,
         isActive: true,
+        isVerified: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -35,6 +36,8 @@ export class User extends Entity<UserProps> {
   get avatarUrl(): string | undefined { return this.props.avatarUrl; }
   get lastLoginAt(): Date | undefined { return this.props.lastLoginAt; }
   get isActive(): boolean { return this.props.isActive; }
+  get isVerified(): boolean { return this.props.isVerified; }
+  get verificationToken(): string | undefined { return this.props.verificationToken; }
   get createdAt(): Date { return this.props.createdAt; }
   get updatedAt(): Date { return this.props.updatedAt; }
   get deletedAt(): Date | undefined { return this.props.deletedAt; }
@@ -71,5 +74,16 @@ export class User extends Entity<UserProps> {
 
   canManageHR(): boolean {
     return this.props.role === 'ADMIN' || this.props.role === 'HR';
+  }
+
+  verifyEmail(): void {
+    this.props.isVerified = true;
+    this.props.verificationToken = undefined;
+    this.props.updatedAt = new Date();
+  }
+
+  setVerificationToken(token: string): void {
+    this.props.verificationToken = token;
+    this.props.updatedAt = new Date();
   }
 }

@@ -23,14 +23,8 @@ export const authService = {
     return data;
   },
 
-  async register(name: string, email: string, password: string): Promise<LoginResponse> {
-    const { data } = await api.post<LoginResponse>('/auth/register', { name, email, password });
-    
-    if (data.accessToken) {
-      localStorage.setItem('@SaaS:token', data.accessToken);
-      localStorage.setItem('@SaaS:user', JSON.stringify(data.user));
-    }
-    
+  async register(name: string, email: string, password: string): Promise<{ userId: string; message: string }> {
+    const { data } = await api.post('/auth/register', { name, email, password });
     return data;
   },
 

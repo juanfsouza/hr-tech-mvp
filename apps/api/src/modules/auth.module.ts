@@ -6,6 +6,7 @@ import { AppConfig } from 'src/config/app.config';
 import { LoginUseCase } from './auth/application/use-cases/login.use-case';
 import { RegisterUseCase } from './auth/application/use-cases/register.use-case';
 import { RefreshTokenUseCase } from './auth/application/use-cases/refresh-token.use-case';
+import { VerifyEmailUseCase } from './auth/application/use-cases/verify-email.use-case';
 import { JwtStrategy } from './auth/infrastructure/jwt.strategy';
 import { BcryptHashService } from './auth/infrastructure/services/bcrypt-hash.service';
 import { PrismaTokenRepository } from './auth/infrastructure/repositories/prisma-token.repository';
@@ -35,6 +36,7 @@ import { UsersModule } from './users.module';
     LoginUseCase,
     RegisterUseCase,
     RefreshTokenUseCase,
+    VerifyEmailUseCase,
     JwtStrategy,
     { provide: HASH_SERVICE, useClass: BcryptHashService },
     { provide: TOKEN_REPOSITORY, useClass: PrismaTokenRepository },

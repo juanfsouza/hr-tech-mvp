@@ -7,7 +7,7 @@ import { ITokenRepository } from '@/modules/auth/domain/repositories/itoken-repo
 import { IUserRepository } from '@/modules/users/domain/repositories/iuser-repository.interface';
 import { LoginInput } from '@/modules/auth/domain/interfaces/login-input.interface';
 import { LoginOutput } from '@/modules/auth/domain/interfaces/login-output.interface';
-import { InvalidCredentialsError, EntityNotFoundError } from '@/shared/domain/errors/domain-errors';
+import { InvalidCredentialsError, EntityNotFoundError, BusinessRuleViolationError } from '@/shared/domain/errors/domain-errors';
 import { Either, left, right } from '@/shared/domain/errors/either';
 import { Email } from '@/shared/domain/value-objects';
 import { UseCase } from '../../../users/domain/interfaces/use-case.interface';
@@ -15,7 +15,7 @@ import { USER_REPOSITORY } from '@/modules/users/domain/repositories/user.reposi
 import { HASH_SERVICE } from '@/shared/domain/services/hash.service.interface';
 import { TOKEN_REPOSITORY } from '../../domain/repositories/token.repository.interface';
 
-type LoginError = InvalidCredentialsError | EntityNotFoundError;
+type LoginError = InvalidCredentialsError | EntityNotFoundError | BusinessRuleViolationError;
 
 
 @Injectable()
@@ -41,6 +41,11 @@ export class LoginUseCase implements UseCase<LoginInput, LoginOutput, LoginError
     // Comparamos usando == para que null e undefined sejam tratados como iguais
     if (!user || user.companyId != input.companyId || !user.isActive) {
       return left(new InvalidCredentialsError());
+    }
+
+    // 2.1 Verificar se está verificado
+    if (!user.isVerified) {
+      return left(new BusinessRuleViolationError('Por favor, verifique seu e-mail antes de fazer login.'));
     }
 
     // 3. Verificar senha

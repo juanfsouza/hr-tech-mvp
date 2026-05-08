@@ -46,6 +46,8 @@ export class PrismaUserRepository implements IUserRepository {
         role: user.role,
         avatarUrl: user.avatarUrl,
         isActive: user.isActive,
+        isVerified: user.isVerified,
+        verificationToken: user.verificationToken,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
@@ -60,6 +62,8 @@ export class PrismaUserRepository implements IUserRepository {
         role: user.role,
         avatarUrl: user.avatarUrl,
         isActive: user.isActive,
+        isVerified: user.isVerified,
+        verificationToken: user.verificationToken,
         lastLoginAt: user.lastLoginAt,
         companyId: user.companyId,
         deletedAt: user.deletedAt,
@@ -92,6 +96,13 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
+  async findByVerificationToken(token: string): Promise<User | null> {
+    const record = await this.prisma.user.findFirst({
+      where: { verificationToken: token, deletedAt: null },
+    });
+    return record ? this.toDomain(record) : null;
+  }
+
   private toDomain(record: PrismaUserRecord): User {
     const emailOrError = Email.create(record.email);
     if (emailOrError.isLeft()) {
@@ -108,6 +119,8 @@ export class PrismaUserRepository implements IUserRepository {
         avatarUrl: record.avatarUrl ?? undefined,
         lastLoginAt: record.lastLoginAt ?? undefined,
         isActive: record.isActive,
+        isVerified: (record as any).isVerified ?? false,
+        verificationToken: (record as any).verificationToken ?? undefined,
         createdAt: record.createdAt,
         updatedAt: record.updatedAt,
         deletedAt: record.deletedAt ?? undefined,

@@ -22,8 +22,10 @@ import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { jobService } from "@/services/job-service";
 import { candidateService } from "@/services/candidate-service";
+import { authService } from "@/services/auth-service";
 
 export default function DashboardPage() {
+  const user = authService.getUser();
   // Buscar vagas reais
   const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
     queryKey: ["jobs"],
@@ -52,7 +54,7 @@ export default function DashboardPage() {
         <header className="flex justify-between items-end">
           <div>
             <h1 className="text-4xl font-bold font-outfit mb-2">Painel de Controle</h1>
-            <p className="text-muted-foreground text-lg">Olá Juan, veja como estão seus processos seletivos hoje.</p>
+            <p className="text-muted-foreground text-lg">Olá {user?.name || "Usuário"}, veja como estão seus processos seletivos hoje.</p>
           </div>
           <Link href="/dashboard/jobs/new">
             <Button className="bg-forest dark:bg-neon dark:text-chumbo h-12 px-6 font-bold text-lg gap-2 shadow-lg shadow-forest/20 dark:shadow-neon/20">

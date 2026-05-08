@@ -5,16 +5,6 @@ import { PrismaClient } from '@saas-rh/database';
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
 
-  constructor() {
-    super({
-      log: [
-        { emit: 'event', level: 'query' },
-        { emit: 'stdout', level: 'error' },
-        { emit: 'stdout', level: 'warn' },
-      ],
-    });
-  }
-
   async onModuleInit(): Promise<void> {
     await this.$connect();
     this.logger.log('✅ Conectado ao PostgreSQL via Prisma');
@@ -25,10 +15,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     this.logger.log('🔌 Desconectado do PostgreSQL');
   }
 
-  async softDelete(model: string, id: string): Promise<void> {
-    await (this as any)[model].update({
-      where: { id },
-      data: { deletedAt: new Date() },
-    });
+  async cleanDatabase(): Promise<void> {
+    if (process.env['NODE_ENV'] !== 'test') return;
+    
+    const models = Reflect.ownKeys(this).filter((key) => 
+      typeof key === 'string' && !key.startsWith('_') && !key.startsWith('$')
+    );
+
+    for (const model of models) {
+      await (this as any)[model].deleteMany();
+    }
   }
 }

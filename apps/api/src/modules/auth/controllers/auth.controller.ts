@@ -16,6 +16,7 @@ import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth, ApiCookieAuth } from '@n
 import { LoginUseCase } from '@modules/auth/application/use-cases/login.use-case';
 import { RegisterUseCase } from '@modules/auth/application/use-cases/register.use-case';
 import { RefreshTokenUseCase } from '@modules/auth/application/use-cases/refresh-token.use-case';
+import { VerifyEmailUseCase } from '@modules/auth/application/use-cases/verify-email.use-case';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
 import { CurrentUser, AuthenticatedUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
 import { LoginDto, RegisterDto } from '../application/dtos/login.dto';
@@ -27,6 +28,7 @@ export class AuthController {
     private readonly loginUseCase: LoginUseCase,
     private readonly registerUseCase: RegisterUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
+    private readonly verifyEmailUseCase: VerifyEmailUseCase,
   ) { }
 
   // ─── POST /auth/login ──────────────────────────────────────────────────────
@@ -83,6 +85,18 @@ export class AuthController {
     }
 
     return { userId: result.value.userId, message: 'User registered successfully.' };
+  }
+
+  // ─── GET /auth/verify ──────────────────────────────────────────────────────
+  @Get('verify')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verificar e-mail do usuário' })
+  async verify(@Body('token') token: string): Promise<{ message: string }> {
+    const result = await this.verifyEmailUseCase.execute({ token });
+    if (result.isLeft()) {
+      throw new BadRequestException(result.value.message);
+    }
+    return { message: result.value.message };
   }
 
   // ─── POST /auth/refresh ────────────────────────────────────────────────────

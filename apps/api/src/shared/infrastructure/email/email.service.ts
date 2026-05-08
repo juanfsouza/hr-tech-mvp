@@ -13,7 +13,8 @@ export class EmailService {
 
   constructor(config: ConfigService<AppConfig>) {
     this.client = new Resend(config.getOrThrow('RESEND_API_KEY'));
-    this.defaultFrom = config.get('EMAIL_FROM') ?? 'noreply@psicometriaai.com';
+    this.defaultFrom = config.get('EMAIL_FROM') ?? 'noreply@saasrh.app';
+    this.logger.log('EmailService: Usando Resend API');
   }
 
   async send(input: SendEmailInput, attachments?: Array<{ filename: string; content: Buffer }>): Promise<void> {
@@ -25,11 +26,32 @@ export class EmailService {
         html: input.html,
         attachments,
       });
-      this.logger.log(`Email sent to ${input.to}: ${input.subject}`);
+      this.logger.log(`Email enviado para ${input.to}: ${input.subject}`);
     } catch (error) {
-      this.logger.error(`Failed to send email to ${input.to}:`, error);
+      this.logger.error(`Falha ao enviar email para ${input.to}:`, error);
       throw error;
     }
+  }
+
+  async sendVerificationEmail(to: string, name: string, token: string): Promise<void> {
+    const verificationUrl = `${process.env['FRONTEND_URL']}/verify-email?token=${token}`;
+
+    await this.send({
+      to,
+      subject: 'Verifique seu e-mail - SaaS RH',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #6366f1;">Bem-vindo, ${name}!</h2>
+          <p>Obrigado por se cadastrar no SaaS RH. Para começar, confirme seu e-mail clicando no botão abaixo:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${verificationUrl}" style="background-color: #6366f1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+              Confirmar E-mail
+            </a>
+          </div>
+          <p style="font-size: 12px; color: #666;">Se você não criou esta conta, ignore este e-mail.</p>
+        </div>
+      `,
+    });
   }
 
   async sendTestInvite(to: string, name: string, testUrl: string, expiresAt: Date): Promise<void> {

@@ -11,6 +11,8 @@ export interface UserProps {
     avatarUrl?: string;
     lastLoginAt?: Date;
     isActive: boolean;
+    isVerified: boolean;
+    verificationToken?: string;
     createdAt: Date;
     updatedAt: Date;
     deletedAt?: Date;
