@@ -18,6 +18,10 @@ export const chatService = {
       body: JSON.stringify({ messages })
     });
 
+    if (!response.ok) {
+      throw new Error(`Chat request failed with status ${response.status}`);
+    }
+
     if (!response.body) return;
 
     const reader = response.body.getReader();
