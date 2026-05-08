@@ -45,7 +45,7 @@ export function JobCreationWizard() {
     mutationFn: (data: typeof briefing) => 
       jobService.create({ 
         title: data.title,
-        responsibilities: [data.responsibilities],
+        description: data.responsibilities, // Mapeando responsabilidades para a descrição inicial
       }),
   });
 

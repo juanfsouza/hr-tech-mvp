@@ -38,6 +38,13 @@ export class JobsController {
     @Body() dto: CreateJobDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<{ id: string; title: string; status: string }> {
+    console.log('[JobsController] Criando vaga. User:', JSON.stringify(user));
+    console.log('[JobsController] Payload recebido:', JSON.stringify(dto));
+
+    if (!user.companyId) {
+      console.error('[JobsController] ERRO: Usuário sem companyId no Token!');
+    }
+
     const result = await this.createJobUseCase.execute({
       companyId: user.companyId!,
       ...dto,
