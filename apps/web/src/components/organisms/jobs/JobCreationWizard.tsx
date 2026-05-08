@@ -21,6 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { jobService } from "@/services/job-service";
+import { authService } from "@/services/auth-service";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -73,6 +74,15 @@ export function JobCreationWizard() {
   const handleStartIA = async () => {
     if (!briefing.title) {
       toast.error("Por favor, informe pelo menos o título da vaga.");
+      return;
+    }
+
+    const user = authService.getUser();
+    if (!user?.companyId) {
+      toast.error("Empresa não identificada", {
+        description: "Você precisa cadastrar sua empresa no Onboarding antes de criar vagas.",
+      });
+      router.push("/onboarding");
       return;
     }
 

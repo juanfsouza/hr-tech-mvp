@@ -10,6 +10,7 @@ import { Label } from "@/components/atoms/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/atoms/card";
 import { useOnboardingStore } from "@/store/onboarding-store";
 import { companyService } from "@/services/company-service";
+import { authService } from "@/services/auth-service";
 import { useMutation } from "@tanstack/react-query";
 import { Building2, MapPin, Globe, Loader2, ChevronRight } from "lucide-react";
 import { useState } from "react";
@@ -33,16 +34,27 @@ export function CompanyDataStep() {
   const [isFetchingCep, setIsFetchingCep] = useState(false);
 
   const mutation = useMutation({
-    mutationFn: (data: CompanyFormData) => 
-      companyService.create({
+    mutationFn: (data: CompanyFormData) => {
+      const user = authService.getUser();
+      return companyService.create({
         razaoSocial: data.name,
         cnpj: data.cnpj,
         websiteUrl: data.website,
-      }),
+        userId: user.id,
+      });
+    },
     onSuccess: (data) => {
       toast.success("Empresa cadastrada com sucesso!");
+      
+      // Atualizar o usuário no localStorage para refletir a nova empresa imediatamente
+      const currentUser = authService.getUser();
+      if (currentUser) {
+        const updatedUser = { ...currentUser, companyId: data.companyId };
+        localStorage.setItem('@SaaS:user', JSON.stringify(updatedUser));
+      }
+      
       updateCompanyData({
-        name: briefing.title, // Just placeholder update, we use the store for current session
+        name: data.razaoSocial,
       });
       nextStep();
     },
