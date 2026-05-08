@@ -2,6 +2,7 @@
 
 import { useOnboardingStore } from "@/store/onboarding-store";
 import { CompanyDataStep } from "./CompanyDataStep";
+import { OrganogramStep } from "./OrganogramStep";
 import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/atoms/progress";
 
@@ -13,12 +14,7 @@ export function OnboardingWizard() {
       case 1:
         return <CompanyDataStep key="step1" />;
       case 2:
-        return (
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-bold">Etapa 2: Organograma</h2>
-            <p className="text-muted-foreground mt-2">Em breve...</p>
-          </div>
-        );
+        return <OrganogramStep key="step2" />;
       default:
         return null;
     }
