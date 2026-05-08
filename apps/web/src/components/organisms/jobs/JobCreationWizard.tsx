@@ -20,10 +20,18 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { jobService } from "@/services/job-service";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
 type WizardMode = "IDLE" | "IA_BRIEFING" | "GENERATING" | "REVIEW" | "MANUAL";
 
 export function JobCreationWizard() {
+  const router = useRouter();
   const [mode, setMode] = useState<WizardMode>("IDLE");
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [generatedJd, setGeneratedJd] = useState("");
   const [briefing, setBriefing] = useState({
     title: "",
     leader: "",
@@ -31,12 +39,54 @@ export function JobCreationWizard() {
     responsibilities: "",
   });
 
-  const handleStartIA = () => {
-    setMode("GENERATING");
-    // Simular chamada ao backend (Claude)
-    setTimeout(() => {
+  // Mutação para criar a vaga inicial
+  const createMutation = useMutation({
+    mutationFn: (data: typeof briefing) => 
+      jobService.create({ 
+        title: data.title,
+        responsibilities: [data.responsibilities],
+      }),
+  });
+
+  // Mutação para gerar JD com IA
+  const generateMutation = useMutation({
+    mutationFn: (id: string) => jobService.generateJd(id),
+    onSuccess: (data) => {
+      setGeneratedJd(data.jd);
       setMode("REVIEW");
-    }, 3500);
+    },
+    onError: () => {
+      toast.error("Erro ao gerar descrição com IA");
+      setMode("IA_BRIEFING");
+    }
+  });
+
+  // Mutação para publicar a vaga
+  const publishMutation = useMutation({
+    mutationFn: (id: string) => jobService.publish(id),
+    onSuccess: () => {
+      toast.success("Vaga publicada com sucesso!");
+      router.push("/dashboard");
+    }
+  });
+
+  const handleStartIA = async () => {
+    setMode("GENERATING");
+    try {
+      // 1. Criar a vaga
+      const job = await createMutation.mutateAsync(briefing);
+      setJobId(job.id);
+      
+      // 2. Chamar geração por IA
+      generateMutation.mutate(job.id);
+    } catch (error) {
+      toast.error("Erro ao iniciar criação da vaga");
+      setMode("IA_BRIEFING");
+    }
+  };
+
+  const handlePublish = () => {
+    if (jobId) publishMutation.mutate(jobId);
   };
 
   if (mode === "IDLE") {
@@ -196,15 +246,8 @@ export function JobCreationWizard() {
                 <CardTitle>Job Description Gerada</CardTitle>
                 <CardDescription>Revise e edite a descrição antes de publicar.</CardDescription>
               </CardHeader>
-              <CardContent className="p-6 prose dark:prose-invert max-w-none">
-                <h3 className="text-forest dark:text-neon">Sobre a Vaga: {briefing.title}</h3>
-                <p>Buscamos um profissional apaixonado por desafios para atuar em nosso time de alta performance. Você será responsável por...</p>
-                <h4>Responsabilidades:</h4>
-                <ul>
-                  <li>Desenvolvimento de funcionalidades ponta-a-ponta</li>
-                  <li>Arquitetura de sistemas resilientes</li>
-                  <li>Mentoria de desenvolvedores juniores</li>
-                </ul>
+              <CardContent className="p-6 prose dark:prose-invert max-w-none text-foreground">
+                <div dangerouslySetInnerHTML={{ __html: generatedJd.replace(/\n/g, '<br/>') }} />
               </CardContent>
             </Card>
           </div>
@@ -238,9 +281,17 @@ export function JobCreationWizard() {
               </CardContent>
             </Card>
 
-            <Button className="w-full h-14 text-xl font-bold bg-forest dark:bg-neon dark:text-chumbo shadow-xl shadow-forest/20 dark:shadow-neon/20">
-              Publicar Vaga
-              <ChevronRight className="ml-2 w-6 h-6" />
+            <Button 
+              onClick={handlePublish}
+              disabled={publishMutation.isPending}
+              className="w-full h-14 text-xl font-bold bg-forest dark:bg-neon dark:text-chumbo shadow-xl shadow-forest/20 dark:shadow-neon/20"
+            >
+              {publishMutation.isPending ? <Loader2 className="animate-spin" /> : (
+                <>
+                  Publicar Vaga
+                  <ChevronRight className="ml-2 w-6 h-6" />
+                </>
+              )}
             </Button>
           </div>
         </div>
