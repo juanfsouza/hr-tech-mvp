@@ -14,7 +14,8 @@ import {
   ArrowUpRight,
   MoreVertical,
   CheckCircle2,
-  Brain
+  Brain,
+  Sparkles
 } from "lucide-react";
 import { motion } from "framer-motion";
 
