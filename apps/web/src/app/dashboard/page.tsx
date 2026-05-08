@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
+import Link from "next/link";
 import { 
   Plus, 
   TrendingUp, 
