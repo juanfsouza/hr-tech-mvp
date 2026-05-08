@@ -79,11 +79,11 @@ async function bootstrap(): Promise<void> {
       swaggerOptions: { persistAuthorization: true },
     });
 
-    logger.log(`Swagger disponível em: http://localhost:${process.env['PORT'] ?? 3333}/api/docs`);
+    logger.log(`Swagger disponível em: http://localhost:3001/api/docs`);
   }
 
   // ─── Start ────────────────────────────────────────────────────────────────
-  const port = parseInt(process.env['PORT'] ?? '3333', 10);
+  const port = 3001;
   await app.listen(port, '0.0.0.0');
 
   logger.log(`API rodando em: http://localhost:${port}/api/v1`);
