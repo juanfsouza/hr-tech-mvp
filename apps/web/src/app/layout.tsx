@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/atoms/sonner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -25,6 +26,7 @@ export default function RootLayout({
           outfit.variable
         )}
       >
+        <Toaster position="top-right" richColors />
         <div className="relative flex min-h-screen flex-col">
           {/* Background Decorative Elements */}
           <div className="fixed inset-0 -z-10 h-full w-full bg-background">
