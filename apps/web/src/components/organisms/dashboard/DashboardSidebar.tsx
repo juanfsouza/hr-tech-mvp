@@ -20,7 +20,8 @@ const MENU_ITEMS = [
   { icon: Briefcase, label: "Gestão de Vagas", href: "/dashboard/jobs" },
   { icon: Users, label: "Candidatos", href: "/dashboard/candidates" },
   { icon: BrainCircuit, label: "Motor de Testes", href: "/dashboard/tests" },
-  { icon: MessageSquare, label: "Assistente de IA", href: "/dashboard/chat" },
+  { icon: Sparkles, label: "Assistente IA", href: "/dashboard/chat" },
+  { icon: Settings, label: "Configurações", href: "/dashboard/settings" },
 ];
 
 export function DashboardSidebar() {
