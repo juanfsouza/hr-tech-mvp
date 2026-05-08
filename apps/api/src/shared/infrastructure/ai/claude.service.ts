@@ -39,74 +39,60 @@ export class ClaudeService {
         outputTokens: response.usage.output_tokens,
         model: response.model,
       };
-    } catch (error: any) {
-      if (error.message?.includes('credit balance') || error.status === 400) {
-        console.warn('[ClaudeService] Erro de créditos na Anthropic.');
-        throw new Error('ANTHROPIC_CREDITS_EXHAUSTED');
-      }
-      throw error;
     }
-  }
 
   async chatWithStructuredOutput<T>(
-    messages: ClaudeMessage[],
-    toolSchema: Record<string, unknown>,
-    toolName: string,
-    options: ClaudeOptions = {},
-  ): Promise<{ result: T; inputTokens: number; outputTokens: number }> {
-    try {
-      const response = await this.client.messages.create({
-        model: this.model,
-        max_tokens: options.maxTokens ?? 4096,
-        system: options.systemPrompt ?? 'Você é um assistente especializado em RH.',
-        messages: messages.map((m) => ({ role: m.role, content: m.content })),
-        tools: [
-          {
-            name: toolName,
-            description: `Generate structured ${toolName} output`,
-            input_schema: toolSchema as Anthropic.Tool['input_schema'],
-          },
-        ],
-        tool_choice: { type: 'tool', name: toolName },
-      });
+      messages: ClaudeMessage[],
+      toolSchema: Record<string, unknown>,
+      toolName: string,
+      options: ClaudeOptions = {},
+    ): Promise < { result: T; inputTokens: number; outputTokens: number } > {
+      try {
+        const response = await this.client.messages.create({
+          model: this.model,
+          max_tokens: options.maxTokens ?? 4096,
+          system: options.systemPrompt ?? 'Você é um assistente especializado em RH.',
+          messages: messages.map((m) => ({ role: m.role, content: m.content })),
+          tools: [
+            {
+              name: toolName,
+              description: `Generate structured ${toolName} output`,
+              input_schema: toolSchema as Anthropic.Tool['input_schema'],
+            },
+          ],
+          tool_choice: { type: 'tool', name: toolName },
+        });
 
-      const toolUseBlock = response.content.find(
-        (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use',
-      );
+        const toolUseBlock = response.content.find(
+          (block): block is Anthropic.ToolUseBlock => block.type === 'tool_use',
+        );
 
-      if (!toolUseBlock) {
-        throw new Error(`Claude did not return tool_use block for ${toolName}`);
+        if(!toolUseBlock) {
+          throw new Error(`Claude did not return tool_use block for ${toolName}`);
+        }
+
+    return {
+          result: toolUseBlock.input as T,
+          inputTokens: response.usage.input_tokens,
+          outputTokens: response.usage.output_tokens,
+        };
       }
-
-      return {
-        result: toolUseBlock.input as T,
-        inputTokens: response.usage.input_tokens,
-        outputTokens: response.usage.output_tokens,
-      };
-    } catch (error: any) {
-      if (error.message?.includes('credit balance') || error.status === 400) {
-        console.warn(`[ClaudeService] Erro de créditos para saída estruturada (${toolName}).`);
-        throw new Error('ANTHROPIC_CREDITS_EXHAUSTED');
-      }
-      throw error;
-    }
-  }
 
   async *stream(messages: ClaudeMessage[], options: ClaudeOptions = {}): AsyncGenerator<string> {
-    const stream = this.client.messages.stream({
-      model: this.model,
-      max_tokens: options.maxTokens ?? 2048,
-      system: options.systemPrompt,
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
-    });
+        const stream = this.client.messages.stream({
+          model: this.model,
+          max_tokens: options.maxTokens ?? 2048,
+          system: options.systemPrompt,
+          messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        });
 
-    for await (const event of stream) {
-      if (
-        event.type === 'content_block_delta' &&
-        event.delta.type === 'text_delta'
-      ) {
-        yield event.delta.text;
+        for await (const event of stream) {
+          if (
+            event.type === 'content_block_delta' &&
+            event.delta.type === 'text_delta'
+          ) {
+            yield event.delta.text;
+          }
+        }
       }
     }
-  }
-}
