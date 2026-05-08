@@ -115,7 +115,7 @@ export class MatchService {
         cultureMatchScore: analysis.cultureMatch.score,
         recommendation: analysis.recommendation,
         summary: analysis.summary,
-        fullAnalysis: analysis as unknown as Record<string, unknown>,
+        fullAnalysis: analysis as any,
         createdAt: new Date(),
       },
     });

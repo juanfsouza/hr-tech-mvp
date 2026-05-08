@@ -1,8 +1,6 @@
-
-
 export interface PrismaUserRecord {
     id: string;
-    companyId: string;
+    companyId: string | null;
     email: string;
     passwordHash: string;
     name: string;

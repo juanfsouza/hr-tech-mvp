@@ -100,7 +100,7 @@ export class PrismaUserRepository implements IUserRepository {
 
     return User.reconstitute(
       {
-        companyId: record.companyId,
+        companyId: record.companyId ?? undefined,
         email: emailOrError.value,
         password: Password.createHashed(record.passwordHash),
         name: record.name,
