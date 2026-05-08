@@ -19,20 +19,33 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-const STATS = [
-  { label: "Vagas Ativas", value: "12", icon: Briefcase, color: "text-forest dark:text-neon", bg: "bg-forest/10 dark:bg-neon/10" },
-  { label: "Candidatos em Processo", value: "48", icon: Users, color: "text-azure", bg: "bg-azure/10" },
-  { label: "Média de Match IA", value: "84%", icon: TrendingUp, color: "text-coral", bg: "bg-coral/10" },
-  { label: "Testes Concluídos", value: "124", icon: Brain, color: "text-primary", bg: "bg-primary/10" },
-];
-
-const RECENT_JOBS = [
-  { id: 1, title: "Desenvolvedor Full Stack Sênior", candidates: 14, matchAvg: 88, status: "Aberto", date: "2 dias atrás" },
-  { id: 2, title: "Gerente de Produto (PM)", candidates: 8, matchAvg: 75, status: "Aberto", date: "5 dias atrás" },
-  { id: 3, title: "Designer de Produto (UX/UI)", candidates: 22, matchAvg: 92, status: "Em Análise", date: "1 semana atrás" },
-];
+import { useQuery } from "@tanstack/react-query";
+import { jobService } from "@/services/job-service";
+import { candidateService } from "@/services/candidate-service";
 
 export default function DashboardPage() {
+  // Buscar vagas reais
+  const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
+    queryKey: ["jobs"],
+    queryFn: () => jobService.list(undefined, 5),
+  });
+
+  // Buscar candidatos para estatísticas
+  const { data: candidates, isLoading: isLoadingCandidates } = useQuery({
+    queryKey: ["candidates"],
+    queryFn: () => candidateService.list(),
+  });
+
+  const jobs = (jobsData as any)?.items || [];
+  const activeJobsCount = jobs.filter((j: any) => j.status === "ACTIVE" || j.status === "Aberto").length;
+  const candidatesCount = candidates?.length || 0;
+
+  const STATS = [
+    { label: "Vagas Ativas", value: activeJobsCount.toString(), icon: Briefcase, color: "text-forest dark:text-neon", bg: "bg-forest/10 dark:bg-neon/10" },
+    { label: "Candidatos em Processo", value: candidatesCount.toString(), icon: Users, color: "text-azure", bg: "bg-azure/10" },
+    { label: "Média de Match IA", value: "88%", icon: TrendingUp, color: "text-coral", bg: "bg-coral/10" },
+    { label: "Testes Concluídos", value: "32", icon: Brain, color: "text-primary", bg: "bg-primary/10" },
+  ];
   return (
     <DashboardLayout>
       <div className="space-y-8">
@@ -85,46 +98,50 @@ export default function DashboardPage() {
               <Button variant="link" className="text-forest dark:text-neon font-bold">Ver todas</Button>
             </div>
             <div className="grid gap-4">
-              {RECENT_JOBS.map((job) => (
-                <Card key={job.id} className="border-border/50 bg-card/30 hover:bg-card/50 transition-colors group">
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
-                        <Briefcase className="w-6 h-6 text-muted-foreground" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-lg leading-none mb-1 group-hover:text-forest dark:group-hover:text-neon transition-colors">
-                          {job.title}
-                        </h4>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {job.candidates} candidatos</span>
-                          <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {job.date}</span>
+              {isLoadingJobs ? (
+                [1, 2, 3].map((i) => <div key={i} className="h-20 bg-muted animate-pulse rounded-2xl" />)
+              ) : (
+                jobs.map((job: any) => (
+                  <Card key={job.id} className="border-border/50 bg-card/30 hover:bg-card/50 transition-colors group">
+                    <CardContent className="p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
+                          <Briefcase className="w-6 h-6 text-muted-foreground" />
                         </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-6">
-                      <div className="text-right">
-                        <p className="text-xs text-muted-foreground mb-1 uppercase font-bold tracking-wider">Avg. Match</p>
-                        <div className="flex items-center gap-2">
-                          <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
-                            <div className="h-full bg-neon" style={{ width: `${job.matchAvg}%` }} />
+                        <div>
+                          <h4 className="font-bold text-lg leading-none mb-1 group-hover:text-forest dark:group-hover:text-neon transition-colors">
+                            {job.title}
+                          </h4>
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {job._count?.candidates || 0} candidatos</span>
+                            <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(job.createdAt).toLocaleDateString()}</span>
                           </div>
-                          <span className="text-sm font-bold">{job.matchAvg}%</span>
                         </div>
                       </div>
-                      <Badge variant={job.status === "Aberto" ? "default" : "secondary"} className={cn(
-                        "rounded-lg px-3 py-1 font-bold",
-                        job.status === "Aberto" ? "bg-forest/10 text-forest dark:bg-neon/10 dark:text-neon border-transparent" : ""
-                      )}>
-                        {job.status}
-                      </Badge>
-                      <Button variant="ghost" size="icon" className="rounded-xl">
-                        <MoreVertical className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground mb-1 uppercase font-bold tracking-wider">Avg. Match</p>
+                          <div className="flex items-center gap-2">
+                            <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
+                              <div className="h-full bg-neon" style={{ width: `85%` }} />
+                            </div>
+                            <span className="text-sm font-bold">85%</span>
+                          </div>
+                        </div>
+                        <Badge variant={job.status === "ACTIVE" ? "default" : "secondary"} className={cn(
+                          "rounded-lg px-3 py-1 font-bold",
+                          job.status === "ACTIVE" ? "bg-forest/10 text-forest dark:bg-neon/10 dark:text-neon border-transparent" : ""
+                        )}>
+                          {job.status}
+                        </Badge>
+                        <Button variant="ghost" size="icon" className="rounded-xl">
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </div>
 
@@ -167,6 +184,3 @@ export default function DashboardPage() {
   );
 }
 
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(" ");
-}

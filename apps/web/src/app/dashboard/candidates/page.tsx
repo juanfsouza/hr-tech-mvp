@@ -25,37 +25,25 @@ import {
   DialogDescription 
 } from "@/components/atoms/dialog";
 
-// MOCK DATA PARA DEMONSTRAÇÃO DO RELATÓRIO
-const MOCK_CANDIDATES = [
-  { 
-    id: "1", 
-    name: "Ana Oliveira", 
-    role: "UX Designer", 
-    matchScore: 94, 
-    status: "Analista IA",
-    analysis: {
-      id: "m1",
-      candidateId: "1",
-      jobId: "j1",
-      overallScore: 94,
-      recommendation: "HIRE" as const,
-      summary: "Ana demonstra uma altíssima compatibilidade com a cultura de inovação da empresa. Seu perfil DISC é predominantemente Influente, o que casa perfeitamente com a necessidade de colaboração do time de design.",
-      details: {
-        cultureMatch: 98,
-        technicalSkills: 85,
-        leadershipPotential: 70,
-        softSkills: ["Empatia", "Comunicação Assertiva", "Criatividade"],
-        risks: ["Pode ter dificuldade com processos muito burocráticos"]
-      },
-      createdAt: new Date().toISOString()
-    }
-  },
-  { id: "2", name: "Ricardo Santos", role: "Frontend Developer", matchScore: 72, status: "Aguardando Testes" },
-  { id: "3", name: "Mariana Costa", role: "Product Manager", matchScore: 85, status: "Analista IA" },
-];
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { candidateService } from "@/services/candidate-service";
+import { matchService } from "@/services/match-service";
 
 export default function CandidatesPage() {
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
+
+  // Buscar candidatos reais do banco
+  const { data: candidates, isLoading } = useQuery({
+    queryKey: ["candidates"],
+    queryFn: () => candidateService.list(),
+  });
+
+  // Buscar detalhes do match ao abrir o modal
+  const { data: fullMatch, isLoading: isLoadingMatch } = useQuery({
+    queryKey: ["match", selectedCandidate?.matchId],
+    queryFn: () => matchService.getMatch(selectedCandidate.matchId),
+    enabled: !!selectedCandidate?.matchId,
+  });
 
   return (
     <DashboardLayout>
@@ -75,78 +63,93 @@ export default function CandidatesPage() {
         </header>
 
         <div className="grid gap-4">
-          {MOCK_CANDIDATES.map((candidate) => (
-            <Card key={candidate.id} className="border-border/50 bg-card/30 hover:bg-card/50 transition-all group">
-              <CardContent className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-azure/10 flex items-center justify-center">
-                    <UserCircle2 className="w-7 h-7 text-azure" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-lg leading-none mb-1">{candidate.name}</h4>
-                    <p className="text-sm text-muted-foreground">{candidate.role}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-8">
-                  <div className="text-center">
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Status</p>
-                    <Badge variant="secondary" className="bg-muted/50">{candidate.status}</Badge>
-                  </div>
-
-                  <div className="text-center">
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Match IA</p>
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className={cn("h-full", candidate.matchScore > 80 ? "bg-neon" : "bg-azure")} 
-                          style={{ width: `${candidate.matchScore}%` }} 
-                        />
-                      </div>
-                      <span className="text-sm font-bold">{candidate.matchScore}%</span>
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-20 w-full bg-muted animate-pulse rounded-2xl" />
+              ))}
+            </div>
+          ) : (
+            candidates?.map((candidate) => (
+              <Card key={candidate.id} className="border-border/50 bg-card/30 hover:bg-card/50 transition-all group">
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-azure/10 flex items-center justify-center">
+                      <UserCircle2 className="w-7 h-7 text-azure" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg leading-none mb-1">{candidate.name}</h4>
+                      <p className="text-sm text-muted-foreground">{candidate.email}</p>
                     </div>
                   </div>
 
-                  <Button 
-                    onClick={() => candidate.analysis && setSelectedCandidate(candidate)}
-                    variant={candidate.analysis ? "default" : "outline"}
-                    disabled={!candidate.analysis}
-                    className={cn(
-                      "rounded-xl gap-2",
-                      candidate.analysis ? "bg-forest dark:bg-neon dark:text-chumbo" : ""
-                    )}
-                  >
-                    <BrainCircuit className="w-4 h-4" />
-                    Ver Relatório
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <div className="flex items-center gap-8">
+                    <div className="text-center">
+                      <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Status</p>
+                      <Badge variant="secondary" className="bg-muted/50">{candidate.status}</Badge>
+                    </div>
+
+                    <div className="text-center">
+                      <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Match IA</p>
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className={cn("h-full", (candidate.matchScore || 0) > 80 ? "bg-neon" : "bg-azure")} 
+                            style={{ width: `${candidate.matchScore || 0}%` }} 
+                          />
+                        </div>
+                        <span className="text-sm font-bold">{candidate.matchScore || 0}%</span>
+                      </div>
+                    </div>
+
+                    <Button 
+                      onClick={() => candidate.matchId && setSelectedCandidate(candidate)}
+                      variant={candidate.matchId ? "default" : "outline"}
+                      disabled={!candidate.matchId}
+                      className={cn(
+                        "rounded-xl gap-2",
+                        candidate.matchId ? "bg-forest dark:bg-neon dark:text-chumbo" : ""
+                      )}
+                    >
+                      <BrainCircuit className="w-4 h-4" />
+                      Ver Relatório
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
 
         {/* DIALOG DO RELATÓRIO */}
         <Dialog open={!!selectedCandidate} onOpenChange={() => setSelectedCandidate(null)}>
-          <DialogContent className="max-w-5xl h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-xl border-border/50">
-            <DialogHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <Badge className="bg-neon/10 text-neon border-neon/20">Análise Claude 3.5 Sonnet</Badge>
-                <span className="text-sm text-muted-foreground italic">Gerado em {selectedCandidate && new Date(selectedCandidate.analysis.createdAt).toLocaleDateString()}</span>
-              </div>
-              <DialogTitle className="text-3xl font-outfit flex items-center justify-between">
-                Relatório de Match: {selectedCandidate?.name}
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm"><FileText className="w-4 h-4 mr-2" /> PDF</Button>
-                  <Button variant="outline" size="sm"><ExternalLink className="w-4 h-4 mr-2" /> Compartilhar</Button>
+          <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] md:h-auto max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-xl border-border/50 p-0 md:p-6">
+            <div className="p-6 md:p-0">
+              <DialogHeader>
+                <div className="flex flex-wrap items-center gap-3 mb-2">
+                  <Badge className="bg-neon/10 text-neon border-neon/20">Análise Claude 3.5 Sonnet</Badge>
+                  <span className="text-sm text-muted-foreground italic">Gerado em {selectedCandidate && new Date().toLocaleDateString()}</span>
                 </div>
-              </DialogTitle>
-            </DialogHeader>
-            
-            {selectedCandidate?.analysis && (
-              <div className="py-6">
-                <MatchReportView analysis={selectedCandidate.analysis} />
-              </div>
-            )}
+                <DialogTitle className="text-2xl md:text-3xl font-outfit flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  Relatório de Match: {selectedCandidate?.name}
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="flex-1 md:flex-none"><FileText className="w-4 h-4 mr-2" /> PDF</Button>
+                    <Button variant="outline" size="sm" className="flex-1 md:flex-none"><ExternalLink className="w-4 h-4 mr-2" /> Partilhar</Button>
+                  </div>
+                </DialogTitle>
+              </DialogHeader>
+              
+              {isLoadingMatch ? (
+                <div className="py-20 text-center space-y-4">
+                  <Loader2 className="w-10 h-10 animate-spin mx-auto text-forest dark:text-neon" />
+                  <p className="text-muted-foreground">Analisando dados com IA...</p>
+                </div>
+              ) : fullMatch && (
+                <div className="py-6">
+                  <MatchReportView analysis={fullMatch} />
+                </div>
+              )}
+            </div>
           </DialogContent>
         </Dialog>
       </div>

@@ -71,6 +71,11 @@ export function JobCreationWizard() {
   });
 
   const handleStartIA = async () => {
+    if (!briefing.title) {
+      toast.error("Por favor, informe pelo menos o título da vaga.");
+      return;
+    }
+
     setMode("GENERATING");
     try {
       // 1. Criar a vaga
@@ -79,9 +84,14 @@ export function JobCreationWizard() {
       
       // 2. Chamar geração por IA
       generateMutation.mutate(job.id);
-    } catch (error) {
-      toast.error("Erro ao iniciar criação da vaga");
-      setMode("IA_BRIEFING");
+    } catch (error: any) {
+      console.error("Erro ao iniciar criação da vaga:", error);
+      toast.error("Erro ao iniciar criação da vaga", {
+        description: error.response?.status === 401 
+          ? "Sua sessão expirou. Por favor, faça login novamente." 
+          : "Não foi possível conectar ao servidor.",
+      });
+      setMode("IA_BRIEFING"); // Volta para o estado anterior para permitir correção
     }
   };
 
