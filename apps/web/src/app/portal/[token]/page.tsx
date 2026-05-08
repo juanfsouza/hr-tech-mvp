@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { testService, TestSession, TestType } from "@/services/test-service";
+import { testService } from "@/services/test-service";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/atoms/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
-import { Progress } from "@/components/atoms/progress";
 import { Loader2, Brain, CheckCircle2, ShieldCheck, Clock, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 import { DiscTest } from "@/components/organisms/tests/DiscTest";
+import error from "next/error";
 
 export default function CandidatePortal() {
   const { token } = useParams<{ token: string }>();
@@ -174,8 +174,8 @@ export default function CandidatePortal() {
                 </div>
 
                 <div className="flex justify-center pt-10">
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     onClick={() => setView("TESTING")}
                     className="h-16 px-12 text-xl font-bold bg-forest dark:bg-neon dark:text-chumbo shadow-2xl shadow-forest/20 dark:shadow-neon/20 rounded-2xl group"
                   >
@@ -201,13 +201,13 @@ export default function CandidatePortal() {
                 ) : (
                   <>
                     {session?.currentTest === "DISC" && questionsData && (
-                      <DiscTest 
+                      <DiscTest
                         questions={questionsData.questions}
                         onSaveProgress={handleSaveProgress}
                         onComplete={handleCompleteTest}
                       />
                     )}
-                    
+
                     {session?.currentTest !== "DISC" && (
                       <Card className="p-12 text-center border-dashed border-2">
                         <h2 className="text-2xl font-bold mb-4">{session?.currentTest}</h2>

@@ -29,8 +29,8 @@ async function bootstrap(): Promise<void> {
       directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:', 'https:'],
-        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:', 'validator.swagger.io'],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
       },
     },
   });
