@@ -2,12 +2,15 @@ import { GenerateJdInput } from '@/modules/ai/application/interfaces/generate-jd
 import { MatchAnalysisInput } from '@/modules/match/application/interfaces/match-analysis-input.interface';
 import { MatchAnalysisOutput } from '@/modules/match/application/interfaces/match-analysis-output.interface';
 import { ClaudeService } from '@/shared/infrastructure/ai/claude.service';
+import { OpenAiService } from '@/shared/infrastructure/ai/openai.service';
 import { Injectable } from '@nestjs/common';
-
 
 @Injectable()
 export class AiOrchestrationService {
-  constructor(private readonly claude: ClaudeService) { }
+  constructor(
+    private readonly claude: ClaudeService,
+    private readonly grok: OpenAiService,
+  ) { }
 
   async generateJobDescription(input: GenerateJdInput): Promise<string> {
     const prompt = `
@@ -25,12 +28,43 @@ Estruture a JD com: Sobre a empresa, Responsabilidades, Requisitos obrigatórios
 Seja direto, profissional e engajante. Máximo 600 palavras.
     `.trim();
 
-    const response = await this.claude.chat([{ role: 'user', content: prompt }], {
-      systemPrompt: 'Você é um especialista em recrutamento e employer branding.',
-      maxTokens: 1500,
-    });
+    try {
+      console.log('[AiOrchestration] Tentando gerar JD com Claude...');
+      const response = await this.claude.chat([{ role: 'user', content: prompt }], {
+        systemPrompt: 'Você é um especialista em recrutamento e employer branding.',
+        maxTokens: 1500,
+      });
 
-    return response.content;
+      // Se o Claude devolveu o mock (porque ele mesmo já tem fallback), tentamos o Grok
+      if (response.model === 'mock-fallback') {
+        throw new Error('Claude no credits');
+      }
+
+      return response.content;
+    } catch (error) {
+      try {
+        console.warn('[AiOrchestration] Claude falhou. Tentando gerar JD com Grok (xAI)...');
+        const response = await this.grok.chat([{ role: 'user', content: prompt }], {
+          systemPrompt: 'Você é um especialista em recrutamento e employer branding.',
+          maxTokens: 1500,
+        });
+        return response.content;
+      } catch (grokError) {
+        console.error('[AiOrchestration] Ambas as IAs falharam. Usando Modo Simulado.');
+        return `### Descrição da Vaga (MODO SIMULADO)
+
+Esta é uma descrição gerada automaticamente porque o serviço de IA está indisponível ou sem créditos.
+
+**Requisitos:**
+- Experiência prévia na função
+- Boa comunicação
+- Trabalho em equipe
+
+**Responsabilidades:**
+- Atuar no desenvolvimento de projetos
+- Participar de reuniões de alinhamento`;
+      }
+    }
   }
 
   async analyzeCandidateMatch(input: MatchAnalysisInput): Promise<MatchAnalysisOutput> {
@@ -88,13 +122,36 @@ ${input.companyContext}
 Avalie com rigor mas construtividade. Considere compatibilidade de personalidade, estilo de trabalho e cultura.
     `.trim();
 
-    const { result } = await this.claude.chatWithStructuredOutput<MatchAnalysisOutput>(
-      [{ role: 'user', content: prompt }],
-      toolSchema,
-      'analyze_match',
-      { systemPrompt: 'Você é um psicólogo organizacional especializado em assessment de pessoas.', maxTokens: 2048 },
-    );
-
-    return result;
+    try {
+      console.log('[AiOrchestration] Analisando match com Claude...');
+      const { result } = await this.claude.chatWithStructuredOutput<MatchAnalysisOutput>(
+        [{ role: 'user', content: prompt }],
+        toolSchema,
+        'analyze_match',
+        { systemPrompt: 'Você é um psicólogo organizacional especializado em assessment de pessoas.', maxTokens: 2048 },
+      );
+      return result;
+    } catch (error) {
+      try {
+        console.warn('[AiOrchestration] Claude falhou na análise. Tentando com Grok...');
+        const { result } = await this.grok.chatWithStructuredOutput<MatchAnalysisOutput>(
+          [{ role: 'user', content: prompt }],
+          toolSchema,
+          { systemPrompt: 'Você é um psicólogo organizacional especializado em assessment de pessoas.', maxTokens: 2048 },
+        );
+        return result;
+      } catch (grokError) {
+        console.error('[AiOrchestration] Falha total na análise. Usando Mock.');
+        return {
+          overallScore: 75,
+          jobMatch: { score: 70, rationale: 'Análise simulada.', strengths: ['Proatividade'], risks: ['Adaptação'] },
+          leaderMatch: { score: 80, rationale: 'Alinhamento ok.', communicationTip: 'Seja direto.' },
+          cultureMatch: { score: 75, rationale: 'Cultura compatível.' },
+          recommendation: 'YES',
+          developmentPlan: ['Curso de gestão'],
+          summary: 'O candidato possui bom perfil para a vaga em modo de teste.'
+        };
+      }
+    }
   }
 }

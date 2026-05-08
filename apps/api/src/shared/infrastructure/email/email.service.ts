@@ -19,14 +19,14 @@ export class EmailService {
 
   async send(input: SendEmailInput, attachments?: Array<{ filename: string; content: Buffer }>): Promise<void> {
     try {
-      await this.client.emails.send({
+      const response = await this.client.emails.send({
         from: input.from ?? this.defaultFrom,
         to: input.to,
         subject: input.subject,
         html: input.html,
         attachments,
       });
-      this.logger.log(`Email enviado para ${input.to}: ${input.subject}`);
+      this.logger.log(`Email enviado para ${input.to} (ID: ${response.data?.id})`);
     } catch (error) {
       this.logger.error(`Falha ao enviar email para ${input.to}:`, error);
       throw error;
@@ -38,11 +38,11 @@ export class EmailService {
 
     await this.send({
       to,
-      subject: 'Verifique seu e-mail - SaaS RH',
-      html: `
+      subject: 'Verifique seu e-mail - RH TECH',
+      html: ` 
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #6366f1;">Bem-vindo, ${name}!</h2>
-          <p>Obrigado por se cadastrar no SaaS RH. Para começar, confirme seu e-mail clicando no botão abaixo:</p>
+          <p>Obrigado por se cadastrar no RH TECH. Para começar, confirme seu e-mail clicando no botão abaixo:</p>
           <div style="text-align: center; margin: 30px 0;">
             <a href="${verificationUrl}" style="background-color: #6366f1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
               Confirmar E-mail

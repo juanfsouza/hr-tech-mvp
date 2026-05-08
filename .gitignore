@@ -40,3 +40,8 @@ coverage
 .DS_Store
 Thumbs.db
 apps/generated
+
+# Environment files
+.env
+.env.local
+.env.*.local

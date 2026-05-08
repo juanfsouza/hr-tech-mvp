@@ -35,11 +35,17 @@ export class LoginUseCase implements UseCase<LoginInput, LoginOutput, LoginError
       return left(new InvalidCredentialsError());
     }
 
-    // 2. Buscar usuário por email + company (isolamento tenant)
+    // 2. Buscar usuário por email
     const user = await this.userRepository.findByEmail(emailOrError.value);
+    
+    if (!user || !user.isActive) {
+      return left(new InvalidCredentialsError());
+    }
 
-    // Comparamos usando == para que null e undefined sejam tratados como iguais
-    if (!user || user.companyId != input.companyId || !user.isActive) {
+    // Se o usuário já tem empresa vinculada, mas o login não informou nenhuma
+    // ou informou uma diferente, barramos. 
+    // Se o usuário NÃO tem empresa (onboarding pendente), deixamos passar.
+    if (user.companyId && input.companyId && user.companyId !== input.companyId) {
       return left(new InvalidCredentialsError());
     }
 

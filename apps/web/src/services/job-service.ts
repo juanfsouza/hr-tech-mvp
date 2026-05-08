@@ -2,6 +2,7 @@ import { api } from '@/lib/api';
 
 export interface CreateJobInput {
   title: string;
+  description?: string;
   department?: string;
   location?: string;
   type?: string;

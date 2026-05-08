@@ -27,7 +27,7 @@ import { HealthController } from './modules/health/controllers/health.controller
       isGlobal: true,
       load: [appConfig],
       validate: validateConfig,
-      envFilePath: ['.env.local', '.env'],
+      envFilePath: ['.env.local', '.env', '../../.env'],
     }),
 
     // ─── Rate Limiting ─────────────────────────────────────────────────────

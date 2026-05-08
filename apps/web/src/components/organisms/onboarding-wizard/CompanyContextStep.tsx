@@ -11,6 +11,8 @@ import { Input } from "@/components/atoms/input";
 import { useOnboardingStore } from "@/store/onboarding-store";
 import { Rocket, ShieldCheck, RefreshCcw, X, Plus, Sparkles, ChevronRight, ArrowLeft, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const COMPANY_PROFILES = [
   { id: "startup", label: "Startup", icon: Rocket, desc: "Alto crescimento e ritmo acelerado." },
@@ -41,11 +43,16 @@ export function CompanyContextStep() {
 
   const removeTag = (t: string) => setTags(tags.filter(tag => tag !== t));
 
+  const router = useRouter();
+
   const handleFinish = () => {
     setIsFinishing(true);
-    // Simular salvamento
+    toast.success("Onboarding concluído com sucesso!", {
+      description: "Sua conta está configurada. Redirecionando para o Dashboard...",
+    });
+    
     setTimeout(() => {
-      window.location.href = "/dashboard";
+      router.push("/dashboard");
     }, 2000);
   };
 

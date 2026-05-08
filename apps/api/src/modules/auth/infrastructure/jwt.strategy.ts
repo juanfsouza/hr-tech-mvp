@@ -17,8 +17,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   validate(payload: JwtPayload): AuthenticatedUser {
+    console.log(`[JWT] Validando payload para sub: ${payload.sub}`);
     if (!payload.sub) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Token inválido: sub ausente');
     }
 
     return {

@@ -23,6 +23,7 @@ export class VerifyEmailUseCase implements UseCase<VerifyEmailInput, VerifyEmail
   ) { }
 
   async execute(input: VerifyEmailInput): Promise<Either<VerifyEmailError, VerifyEmailOutput>> {
+    console.log(`[VerifyEmail] Tentando verificar token: ${input.token}`);
     const user = await this.userRepository.findByVerificationToken(input.token);
 
     if (!user) {

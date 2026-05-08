@@ -21,7 +21,7 @@ const loginSchema = z.object({
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
-21
+
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -36,11 +36,20 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
+    console.log("[Login] Iniciando tentativa para:", data.email);
     try {
-      await authService.login(data.email, data.password);
-      toast.success("Login realizado com sucesso!");
-      router.push("/dashboard");
+      const response = await authService.login(data.email, data.password);
+      console.log("[Login] Sucesso! Resposta recebida:", response);
+      
+      if (response.accessToken) {
+        toast.success("Login realizado com sucesso!");
+        router.push("/dashboard");
+      } else {
+        console.error("[Login] Erro: Resposta sem accessToken!");
+        toast.error("Erro interno: Token não recebido.");
+      }
     } catch (error: any) {
+      console.error("[Login] Falha na requisição:", error);
       toast.error("Erro ao realizar login", {
         description: error.response?.data?.message || "Verifique suas credenciais.",
       });

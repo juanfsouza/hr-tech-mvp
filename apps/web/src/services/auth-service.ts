@@ -16,6 +16,7 @@ export const authService = {
     const { data } = await api.post<LoginResponse>('/auth/login', { email, password });
     
     if (data.accessToken) {
+      console.log("[Auth] Salvando token no localStorage:", data.accessToken.substring(0, 10) + "...");
       localStorage.setItem('@SaaS:token', data.accessToken);
       localStorage.setItem('@SaaS:user', JSON.stringify(data.user));
     }

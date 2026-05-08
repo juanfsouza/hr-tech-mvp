@@ -18,8 +18,14 @@ export class CreateCompanyDto {
 
   @ApiPropertyOptional({ example: 'https://empresa.com' })
   @IsOptional()
-  @IsUrl()
+  @IsUrl({}, { message: 'websiteUrl must be a valid URL' })
+  @Matches(/^https?:\/\/.+|^$/, { message: 'websiteUrl must be a valid URL or empty' })
   websiteUrl?: string;
+
+  @ApiProperty({ example: 'uuid-do-usuario' })
+  @IsString()
+  @IsNotEmpty()
+  userId!: string;
 }
 
 export class UpdateOnboardingDto {

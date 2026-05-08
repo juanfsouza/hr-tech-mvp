@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
-import { PrismaClient } from '@saas-rh/database';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
@@ -17,8 +17,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   async cleanDatabase(): Promise<void> {
     if (process.env['NODE_ENV'] !== 'test') return;
-    
-    const models = Reflect.ownKeys(this).filter((key) => 
+
+    const models = Reflect.ownKeys(this).filter((key) =>
       typeof key === 'string' && !key.startsWith('_') && !key.startsWith('$')
     );
 

@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/atoms/select";
 import { useOnboardingStore, OrganogramNode } from "@/store/onboarding-store";
-import { Hierarchy, UserPlus, Trash2, ChevronRight, ArrowLeft, Users2, Network } from "lucide-react";
+import { UserPlus, Trash2, ChevronRight, ArrowLeft, Users2, Network } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
 export function OrganogramStep() {
@@ -54,7 +54,7 @@ export function OrganogramStep() {
                 Monte a hierarquia da sua empresa. Isso ajudará a IA a entender o contexto de liderança.
               </CardDescription>
             </div>
-            <Button 
+            <Button
               onClick={() => setIsAdding(!isAdding)}
               variant={isAdding ? "ghost" : "default"}
               className={isAdding ? "" : "bg-forest dark:bg-neon dark:text-chumbo"}
@@ -81,7 +81,7 @@ export function OrganogramStep() {
                 <div className="p-6 rounded-2xl border border-forest/20 dark:border-neon/20 bg-forest/5 dark:bg-neon/5 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Nome Completo</Label>
-                    <Input 
+                    <Input
                       value={newNode.name}
                       onChange={(e) => setNewNode({ ...newNode, name: e.target.value })}
                       placeholder="Ex: João Silva"
@@ -89,7 +89,7 @@ export function OrganogramStep() {
                   </div>
                   <div className="space-y-2">
                     <Label>Cargo</Label>
-                    <Input 
+                    <Input
                       value={newNode.role}
                       onChange={(e) => setNewNode({ ...newNode, role: e.target.value })}
                       placeholder="Ex: Gerente de Vendas"
@@ -97,7 +97,7 @@ export function OrganogramStep() {
                   </div>
                   <div className="space-y-2">
                     <Label>Departamento</Label>
-                    <Input 
+                    <Input
                       value={newNode.department}
                       onChange={(e) => setNewNode({ ...newNode, department: e.target.value })}
                       placeholder="Ex: Comercial"
@@ -105,8 +105,8 @@ export function OrganogramStep() {
                   </div>
                   <div className="space-y-2">
                     <Label>Líder Direto</Label>
-                    <Select 
-                      onValueChange={(val) => setNewNode({ ...newNode, parentId: val === "none" ? null : val })}
+                    <Select
+                      onValueChange={(val: string | null) => setNewNode({ ...newNode, parentId: val === "none" ? null : val })}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione o líder..." />
@@ -168,9 +168,9 @@ export function OrganogramStep() {
                           )}
                         </div>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10 transition-opacity"
                         onClick={() => removeOrganogramNode(node.id)}
                       >
@@ -188,8 +188,8 @@ export function OrganogramStep() {
               <ArrowLeft className="mr-2 w-5 h-5" />
               Voltar
             </Button>
-            <Button 
-              onClick={nextStep} 
+            <Button
+              onClick={nextStep}
               className="flex-[2] h-12 text-lg font-bold bg-forest dark:bg-neon dark:text-chumbo"
               disabled={organogram.length === 0}
             >
