@@ -4,6 +4,7 @@ import { useOnboardingStore } from "@/store/onboarding-store";
 import { CompanyDataStep } from "./CompanyDataStep";
 import { OrganogramStep } from "./OrganogramStep";
 import { PersonalityTestsStep } from "./PersonalityTestsStep";
+import { CompanyContextStep } from "./CompanyContextStep";
 import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/atoms/progress";
 
@@ -18,6 +19,8 @@ export function OnboardingWizard() {
         return <OrganogramStep key="step2" />;
       case 3:
         return <PersonalityTestsStep key="step3" />;
+      case 4:
+        return <CompanyContextStep key="step4" />;
       default:
         return null;
     }
