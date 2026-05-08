@@ -26,7 +26,7 @@ export class VerifyEmailUseCase implements UseCase<VerifyEmailInput, VerifyEmail
     const user = await this.userRepository.findByVerificationToken(input.token);
 
     if (!user) {
-      return left(new EntityNotFoundError('Invalid or expired verification token.'));
+      return left(new EntityNotFoundError('VerificationToken', input.token));
     }
 
     if (user.isVerified) {

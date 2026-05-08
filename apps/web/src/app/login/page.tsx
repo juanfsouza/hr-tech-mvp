@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { z } from "zod";
 import { motion } from "framer-motion";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
@@ -13,6 +13,7 @@ import { authService } from "@/services/auth-service";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Sparkles, Loader2, LogIn } from "lucide-react";
+import Link from "next/link";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -20,7 +21,7 @@ const loginSchema = z.object({
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
-
+21
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();

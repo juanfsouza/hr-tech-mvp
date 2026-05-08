@@ -8,12 +8,12 @@ import { IUserRepository } from '@/modules/users/domain/repositories/iuser-repos
 import { LoginInput } from '@/modules/auth/domain/interfaces/login-input.interface';
 import { LoginOutput } from '@/modules/auth/domain/interfaces/login-output.interface';
 import { InvalidCredentialsError, EntityNotFoundError, BusinessRuleViolationError } from '@/shared/domain/errors/domain-errors';
-import { Either, left, right } from '@/shared/domain/errors/either';
 import { Email } from '@/shared/domain/value-objects';
 import { UseCase } from '../../../users/domain/interfaces/use-case.interface';
 import { USER_REPOSITORY } from '@/modules/users/domain/repositories/user.repository.interface';
 import { HASH_SERVICE } from '@/shared/domain/services/hash.service.interface';
 import { TOKEN_REPOSITORY } from '../../domain/repositories/token.repository.interface';
+import { Either, left, right } from '@/shared/domain/errors/either';
 
 type LoginError = InvalidCredentialsError | EntityNotFoundError | BusinessRuleViolationError;
 
@@ -37,7 +37,7 @@ export class LoginUseCase implements UseCase<LoginInput, LoginOutput, LoginError
 
     // 2. Buscar usuário por email + company (isolamento tenant)
     const user = await this.userRepository.findByEmail(emailOrError.value);
-    
+
     // Comparamos usando == para que null e undefined sejam tratados como iguais
     if (!user || user.companyId != input.companyId || !user.isActive) {
       return left(new InvalidCredentialsError());
@@ -102,3 +102,4 @@ export class LoginUseCase implements UseCase<LoginInput, LoginOutput, LoginError
     });
   }
 }
+
