@@ -1,18 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/atoms/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/atoms/card";
 import { RadioGroup, RadioGroupItem } from "@/components/atoms/radio-group";
 import { Label } from "@/components/atoms/label";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "@/components/atoms/table";
 import { useOnboardingStore } from "@/store/onboarding-store";
 import { Brain, ClipboardCopy, CheckCircle2, ArrowLeft, ChevronRight, Link as LinkIcon, ExternalLink } from "lucide-react";
@@ -49,7 +49,7 @@ export function PersonalityTestsStep() {
         </CardHeader>
 
         <CardContent className="px-0">
-          <RadioGroup 
+          <RadioGroup
             onValueChange={(val) => setOption(val as "A" | "B")}
             className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10"
           >
@@ -108,7 +108,7 @@ export function PersonalityTestsStep() {
                     Links para Colaboradores
                   </h3>
                 </div>
-                
+
                 <div className="rounded-2xl border border-border overflow-hidden">
                   <Table>
                     <TableHeader className="bg-muted/50">
@@ -124,9 +124,9 @@ export function PersonalityTestsStep() {
                           <TableCell className="font-medium">{node.name}</TableCell>
                           <TableCell>{node.role}</TableCell>
                           <TableCell className="text-right">
-                            <Button 
-                              variant="secondary" 
-                              size="sm" 
+                            <Button
+                              variant="secondary"
+                              size="sm"
                               className="h-8 gap-2"
                               onClick={() => copyLink(node.name)}
                             >
@@ -162,8 +162,8 @@ export function PersonalityTestsStep() {
               <ArrowLeft className="mr-2 w-5 h-5" />
               Voltar
             </Button>
-            <Button 
-              onClick={nextStep} 
+            <Button
+              onClick={nextStep}
               className="flex-[2] h-12 text-lg font-bold bg-forest dark:bg-neon dark:text-chumbo"
               disabled={!option}
             >

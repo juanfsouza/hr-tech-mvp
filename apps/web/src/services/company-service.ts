@@ -17,7 +17,7 @@ export interface UpdateOnboardingInput {
 
 export const companyService = {
   async create(input: CreateCompanyInput) {
-    const { data } = await api.post<{ companyId: string; cnpj: string }>('/companies', input);
+    const { data } = await api.post<{ companyId: string; cnpj: string; razaoSocial: string }>('/companies', input);
     return data;
   },
 

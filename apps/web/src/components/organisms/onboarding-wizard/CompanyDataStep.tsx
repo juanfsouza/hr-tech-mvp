@@ -39,7 +39,7 @@ export function CompanyDataStep() {
       return companyService.create({
         razaoSocial: data.name,
         cnpj: data.cnpj,
-        websiteUrl: data.website,
+        websiteUrl: data.website || undefined,
         userId: user.id,
       });
     },
