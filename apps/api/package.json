@@ -12,8 +12,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "db:generate": "prisma generate --schema=../../packages/database/prisma/schema.prisma",
-    "db:migrate": "prisma migrate dev --schema=../../packages/database/prisma/schema.prisma",
+    "db:generate": "npx prisma generate --schema=../../packages/database/prisma/schema.prisma",
+    "db:migrate": "npx prisma migrate dev --schema=../../packages/database/prisma/schema.prisma",
     "db:seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
@@ -39,7 +39,7 @@
     "@nestjs/schedule": "^4.1.2",
     "@nestjs/swagger": "^7.4.2",
     "@nestjs/throttler": "^6.4.0",
-    "@prisma/client": "^6.7.0",
+    "@saas-rh/database": "workspace:*",
     "@react-pdf/renderer": "^3.4.4",
     "axios": "^1.8.4",
     "bcrypt": "^5.1.1",

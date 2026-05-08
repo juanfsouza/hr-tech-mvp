@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
+    "dev:all": "turbo run dev --filter=web --filter=@saas-rh/api",
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
