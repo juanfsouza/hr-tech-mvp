@@ -10,6 +10,7 @@ import {
   ConflictException,
   BadRequestException,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
 import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth, ApiCookieAuth } from '@nestjs/swagger';
@@ -47,7 +48,11 @@ export class AuthController {
     });
 
     if (result.isLeft()) {
-      throw new UnauthorizedException(result.value.message);
+      const err = result.value;
+      if (err.code === 'INVALID_CREDENTIALS') {
+        throw new UnauthorizedException(err.message);
+      }
+      throw new BadRequestException(err.message);
     }
 
     const { accessToken, refreshToken, user } = result.value;
@@ -91,7 +96,7 @@ export class AuthController {
   @Get('verify')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verificar e-mail do usuário' })
-  async verify(@Body('token') token: string): Promise<{ message: string }> {
+  async verify(@Query('token') token: string): Promise<{ message: string }> {
     const result = await this.verifyEmailUseCase.execute({ token });
     if (result.isLeft()) {
       throw new BadRequestException(result.value.message);

@@ -8,6 +8,8 @@ export interface PrismaUserRecord {
     avatarUrl: string | null;
     lastLoginAt: Date | null;
     isActive: boolean;
+    isVerified: boolean;
+    verificationToken: string | null;
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date | null;

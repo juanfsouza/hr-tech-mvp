@@ -79,9 +79,8 @@ export class RegisterUseCase implements UseCase<RegisterInput, RegisterOutput, R
     // 7. Persistir
     await this.userRepository.save(user);
 
-    // 8. Enviar e-mail de verificação (sem travar o fluxo principal)
-    this.emailService.sendVerificationEmail(user.email.value, user.name, verificationToken)
-      .catch(err => console.error('Failed to send verification email:', err));
+    // 8. Enviar e-mail de verificação (Síncrono para debug)
+    await this.emailService.sendVerificationEmail(user.email.value, user.name, verificationToken);
 
     return right({
       userId: user.id.value,
