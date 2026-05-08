@@ -18,7 +18,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { motion } from "framer-motion";
-
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { jobService } from "@/services/job-service";
 import { candidateService } from "@/services/candidate-service";
