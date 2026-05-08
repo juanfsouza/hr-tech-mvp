@@ -39,10 +39,12 @@ export default function DashboardPage() {
             <h1 className="text-4xl font-bold font-outfit mb-2">Painel de Controle</h1>
             <p className="text-muted-foreground text-lg">Olá Juan, veja como estão seus processos seletivos hoje.</p>
           </div>
-          <Button className="bg-forest dark:bg-neon dark:text-chumbo h-12 px-6 font-bold text-lg gap-2 shadow-lg shadow-forest/20 dark:shadow-neon/20">
-            <Plus className="w-5 h-5" />
-            Nova Vaga
-          </Button>
+          <Link href="/dashboard/jobs/new">
+            <Button className="bg-forest dark:bg-neon dark:text-chumbo h-12 px-6 font-bold text-lg gap-2 shadow-lg shadow-forest/20 dark:shadow-neon/20">
+              <Plus className="w-5 h-5" />
+              Nova Vaga
+            </Button>
+          </Link>
         </header>
 
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
