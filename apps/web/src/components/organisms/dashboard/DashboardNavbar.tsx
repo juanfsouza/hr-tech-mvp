@@ -20,6 +20,7 @@ import {
 } from "@/components/atoms/dropdown-menu";
 import { Button } from "@/components/atoms/button";
 import { KineticText } from "@/components/atoms/KineticText";
+import { motion } from "framer-motion";
 
 export function DashboardNavbar() {
   const user = authService.getUser();
@@ -40,14 +41,25 @@ export function DashboardNavbar() {
   return (
     <header className="h-16 border-b border-slate-200 dark:border-border/40 bg-white/80 dark:bg-card/30 backdrop-blur-xl sticky top-0 z-40 px-6 flex items-center justify-between transition-colors duration-300">
       <div className="flex items-center gap-8">
-        <Link href="/dashboard" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-neon flex items-center justify-center shadow-lg shadow-neon/20 group-hover:scale-110 transition-transform">
-            <Sparkles className="w-5 h-5 text-chumbo" />
+        <Link href="/dashboard" className="flex items-center gap-2.5 group">
+          <div className="relative w-9 h-9 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            {/* Logo para Modo Claro (Texto Preto) */}
+            <img
+              src="/logo_white.png"
+              alt="RH TECH Logo"
+              className="w-full h-full object-contain dark:hidden drop-shadow-sm"
+            />
+            {/* Logo para Modo Escuro (Texto Branco) */}
+            <img
+              src="/logo_black.png"
+              alt="RH TECH Logo"
+              className="w-full h-full object-contain hidden dark:block drop-shadow-[0_0_8px_rgba(196,255,87,0.3)]"
+            />
           </div>
-          <KineticText 
-            text="RH TECH" 
-            as="span" 
-            className="font-outfit font-bold text-xl tracking-tight text-slate-900 dark:text-white" 
+          <KineticText
+            text="RH TECH"
+            as="span"
+            className="font-outfit font-bold text-xl tracking-tight text-slate-900 dark:text-white"
           />
         </Link>
       </div>
