@@ -40,7 +40,8 @@ export default function DashboardPage() {
 
   const jobs = (jobsData as any)?.items || [];
   const activeJobsCount = jobs.filter((j: any) => j.status === "ACTIVE" || j.status === "Aberto").length;
-  const candidatesCount = candidates?.length || 0;
+  const candidatesItems = (candidates as any)?.items || [];
+  const candidatesCount = candidatesItems.length;
 
   const STATS = [
     { label: "Vagas Ativas", value: activeJobsCount.toString(), icon: Briefcase, color: "text-forest dark:text-neon", bg: "bg-forest/10 dark:bg-neon/10" },
@@ -135,7 +136,7 @@ export default function DashboardPage() {
                             {job.title}
                           </h4>
                           <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {job._count?.candidates || 0} candidatos</span>
+                            <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {job.candidatesCount || 0} candidatos</span>
                             <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(job.createdAt).toLocaleDateString()}</span>
                           </div>
                         </div>
@@ -171,20 +172,28 @@ export default function DashboardPage() {
             <h2 className="text-2xl font-bold font-outfit">Atividade Recente</h2>
             <Card className="border-none bg-forest/5 dark:bg-neon/5">
               <CardContent className="p-6 space-y-6">
-                {[1, 2, 3].map((_, i) => (
-                  <div key={i} className="flex gap-4 relative">
-                    {i !== 2 && <div className="absolute left-5 top-10 bottom-0 w-px bg-border/50" />}
-                    <div className="w-10 h-10 rounded-full bg-background border border-border flex items-center justify-center shrink-0 z-10">
-                      <CheckCircle2 className="w-5 h-5 text-forest dark:text-neon" />
+                {isLoadingCandidates ? (
+                   [1, 2, 3].map((i) => <div key={i} className="h-12 bg-muted/50 animate-pulse rounded-xl" />)
+                ) : candidatesItems.length > 0 ? (
+                  candidatesItems.slice(0, 3).map((candidate: any, i: number) => (
+                    <div key={candidate.id} className="flex gap-4 relative">
+                      {i !== Math.min(candidatesItems.length, 3) - 1 && <div className="absolute left-5 top-10 bottom-0 w-px bg-border/50" />}
+                      <div className="w-10 h-10 rounded-full bg-background border border-border flex items-center justify-center shrink-0 z-10 shadow-sm">
+                        <Users className="w-5 h-5 text-forest dark:text-neon" />
+                      </div>
+                      <div>
+                        <p className="text-sm">
+                          <span className="font-bold">{candidate.name}</span> se inscreveu para uma vaga.
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date().toLocaleDateString() === new Date(candidate.createdAt || new Date()).toLocaleDateString() ? 'Hoje' : new Date(candidate.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm">
-                        <span className="font-bold">João Paulo</span> concluiu os testes psicométricos para <span className="font-bold">UX Designer</span>.
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">Hoje, 14:30</p>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4 italic">Nenhuma atividade recente encontrada.</p>
+                )}
               </CardContent>
             </Card>
             

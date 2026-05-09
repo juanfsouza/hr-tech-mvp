@@ -49,6 +49,7 @@ export class ListJobsUseCase {
         description: job.description,
         status: job.status,
         createdAt: job.createdAt,
+        candidatesCount: (job as any).candidatesCount || 0,
       })),
       nextCursor: result.nextCursor,
       hasNextPage: result.hasNextPage,

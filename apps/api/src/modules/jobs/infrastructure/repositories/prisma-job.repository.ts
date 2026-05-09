@@ -23,6 +23,11 @@ export class PrismaJobRepository implements IJobRepository {
       where: { companyId, deletedAt: null },
       take: take + 1,
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      include: {
+        _count: {
+          select: { candidates: true }
+        }
+      },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -30,8 +35,12 @@ export class PrismaJobRepository implements IJobRepository {
     const items = hasNextPage ? records.slice(0, take) : records;
 
     return {
-      items: items.map((r: PrismaJobRecord) => this.toDomain(r)),
-      nextCursor: hasNextPage ? items[items.length - 1]!.id : null,
+      items: items.map((r: any) => {
+        const domain = this.toDomain(r);
+        (domain as any).candidatesCount = r._count?.candidates || 0;
+        return domain;
+      }),
+      nextCursor: hasNextPage ? (items[items.length - 1] as any).id : null,
       hasNextPage,
     };
   }
