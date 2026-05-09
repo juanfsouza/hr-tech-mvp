@@ -1,3 +1,5 @@
+"use client";
+
 import { DashboardSidebar } from "../organisms/dashboard/DashboardSidebar";
 import { DashboardNavbar } from "../organisms/dashboard/DashboardNavbar";
 

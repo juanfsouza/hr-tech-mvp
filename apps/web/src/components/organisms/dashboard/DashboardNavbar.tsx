@@ -39,7 +39,7 @@ export function DashboardNavbar() {
     : "??";
 
   return (
-    <header className="h-16 border-b border-slate-200 dark:border-border/40 bg-white/80 dark:bg-card/30 backdrop-blur-xl sticky top-0 z-40 px-6 flex items-center justify-between transition-colors duration-300">
+    <header className="h-16 border-b border-slate-200 dark:border-border/10 bg-white/80 dark:bg-card/30 backdrop-blur-xl sticky top-0 z-40 px-6 flex items-center justify-between transition-colors duration-300">
       <div className="flex items-center gap-8">
         <Link href="/dashboard" className="flex items-center gap-2.5 group">
           <div className="relative w-9 h-9 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -65,6 +65,15 @@ export function DashboardNavbar() {
       </div>
 
       <div className="flex items-center gap-4">
+        {!user?.companyId && (
+          <Link href="/onboarding">
+            <Button variant="outline" className="hidden md:flex items-center gap-2 border-azure/30 text-azure hover:bg-azure/10 rounded-full font-bold px-4 h-10 transition-all group">
+              <LayoutDashboard className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+              Finalizar Configuração
+            </Button>
+          </Link>
+        )}
+
         <Button size="icon" className="rounded-full bg-transparent hover:bg-primary/30 dark:hover:bg-muted/50 relative hover:bg-slate-100 dark:hover:bg-muted/50 transition-colors">
           <Bell className="w-5 h-5 text-slate-600 dark:text-foreground" />
           <span className="absolute top-2 right-2 w-2 h-2 bg-coral rounded-full border-2 border-white dark:border-chumbo" />

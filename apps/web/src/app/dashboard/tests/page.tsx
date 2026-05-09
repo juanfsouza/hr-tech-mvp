@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
-import { ClipboardCheck, Brain, Layout, BarChart } from "lucide-react";
+import { Brain, Layout, BarChart } from "lucide-react";
 
 export default function TestsPage() {
   return (

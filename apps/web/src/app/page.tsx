@@ -50,8 +50,8 @@ export default function WelcomePage() {
           </motion.div>
 
           <h1 className="text-6xl font-bold font-outfit tracking-tight mb-6 leading-tight flex flex-col items-center">
-            <KineticText text="RH TECH" className="justify-center" />
-            <KineticText text="Psicometria & IA" className="text-neon" />
+            <KineticText text="RH TECH" as="span" className="justify-center" />
+            <KineticText text="Psicometria & IA" as="span" className="text-neon" />
           </h1>
 
           <p className="text-xl text-chumbo/80 dark:text-offwhite/70 max-w-2xl mx-auto font-light">

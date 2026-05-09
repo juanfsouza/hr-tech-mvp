@@ -17,11 +17,21 @@ export function KineticText({
   style,
   ...rest
 }: KineticTextProps) {
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const mergedStyle = {
     "--hover-padding": "calc(1em / 12)",
     "--text-stroke-width": "calc(1em * 125 / 6000)",
     ...(style as React.CSSProperties | undefined),
   } as React.CSSProperties
+
+  if (!mounted) {
+    return <Tag {...rest} className={cn("flex flex-wrap font-[700]", className)} style={mergedStyle}>{text}</Tag>
+  }
 
   return (
     <Tag
