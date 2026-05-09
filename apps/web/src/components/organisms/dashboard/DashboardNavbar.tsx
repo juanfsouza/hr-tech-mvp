@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/atoms/dropdown-menu";
 import { Button } from "@/components/atoms/button";
+import { KineticText } from "@/components/atoms/KineticText";
 
 export function DashboardNavbar() {
   const user = authService.getUser();
@@ -43,7 +44,11 @@ export function DashboardNavbar() {
           <div className="w-8 h-8 rounded-lg bg-neon flex items-center justify-center shadow-lg shadow-neon/20 group-hover:scale-110 transition-transform">
             <Sparkles className="w-5 h-5 text-chumbo" />
           </div>
-          <span className="font-outfit font-bold text-xl tracking-tight text-slate-900 dark:text-white">RH TECH</span>
+          <KineticText 
+            text="RH TECH" 
+            as="span" 
+            className="font-outfit font-bold text-xl tracking-tight text-slate-900 dark:text-white" 
+          />
         </Link>
       </div>
 

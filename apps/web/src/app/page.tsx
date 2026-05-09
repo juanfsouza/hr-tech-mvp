@@ -5,6 +5,7 @@ import { Button } from "@/components/atoms/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/atoms/card";
 import { BrainCircuit, Users, ChevronRight, Zap } from "lucide-react";
 import Link from "next/link";
+import { KineticText } from "@/components/atoms/KineticText";
 
 export default function WelcomePage() {
   return (
@@ -25,9 +26,9 @@ export default function WelcomePage() {
             <Zap className="w-12 h-12 text-neon" />
           </motion.div>
 
-          <h1 className="text-6xl font-bold font-outfit tracking-tight mb-6 leading-tight">
-            SaaS de RH com <br />
-            <span className="text-neon drop-shadow-[0_0_15px_rgba(196,255,87,0.3)]">Psicometria & IA</span>
+          <h1 className="text-6xl font-bold font-outfit tracking-tight mb-6 leading-tight flex flex-col items-center">
+            <KineticText text="RH TECH" className="justify-center" />
+            <KineticText text="Psicometria & IA" className="text-neon" />
           </h1>
 
           <p className="text-xl text-chumbo/80 dark:text-offwhite/70 max-w-2xl mx-auto font-light">
