@@ -16,6 +16,8 @@ export interface Job {
   status: string;
   description?: string;
   companyId: string;
+  location?: string;
+  createdAt: string;
 }
 
 export const jobService = {
