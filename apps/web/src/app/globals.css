@@ -94,3 +94,16 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+@keyframes shine {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shine {
+  animation: shine 1.5s infinite;
+}

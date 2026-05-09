@@ -9,17 +9,29 @@ import { Button } from "@/components/atoms/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
 import { Badge } from "@/components/atoms/badge";
 import { Textarea } from "@/components/atoms/textarea";
-import { 
-  ArrowLeft, 
-  Briefcase, 
-  Calendar, 
-  MapPin, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/atoms/dialog";
+import {
+  ArrowLeft,
+  Briefcase,
+  Calendar,
+  MapPin,
   BrainCircuit,
   Loader2,
   CheckCircle2,
   Clock,
   Save,
-  X
+  X,
+  Pause,
+  XCircle,
+  Trash2
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -48,6 +60,7 @@ export default function JobDetailsPage() {
     onSuccess: () => {
       toast.success("Vaga atualizada com sucesso!");
       setIsEditing(false);
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
       queryClient.invalidateQueries({ queryKey: ["job", id] });
     },
     onError: () => {
@@ -59,6 +72,7 @@ export default function JobDetailsPage() {
     mutationFn: () => jobService.publish(id),
     onSuccess: () => {
       toast.success("Vaga publicada com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
       queryClient.invalidateQueries({ queryKey: ["job", id] });
     },
     onError: () => {
@@ -66,13 +80,53 @@ export default function JobDetailsPage() {
     }
   });
 
+  const pauseMutation = useMutation({
+    mutationFn: () => jobService.pause(id),
+    onSuccess: () => {
+      toast.success("Vaga pausada com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      queryClient.invalidateQueries({ queryKey: ["job", id] });
+    },
+    onError: () => {
+      toast.error("Erro ao pausar vaga");
+    }
+  });
+
+  const closeMutation = useMutation({
+    mutationFn: () => jobService.close(id),
+    onSuccess: () => {
+      toast.success("Vaga encerrada com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      queryClient.invalidateQueries({ queryKey: ["job", id] });
+    },
+    onError: () => {
+      toast.error("Erro ao encerrar vaga");
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => jobService.delete(id),
+    onSuccess: () => {
+      toast.success("Vaga excluída com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      router.push("/dashboard/jobs");
+    },
+    onError: () => {
+      toast.error("Erro ao excluir vaga");
+    }
+  });
+
   const handlePublish = async () => {
-    if (job.status === "ACTIVE") {
+    if (job?.status === "ACTIVE") {
       toast.info("Esta vaga já está ativa.");
       return;
     }
     publishMutation.mutate();
   };
+
+  const handlePause = () => pauseMutation.mutate();
+  const handleClose = () => closeMutation.mutate();
+  const handleDelete = () => deleteMutation.mutate();
 
   if (isLoading) {
     return (
@@ -114,7 +168,7 @@ export default function JobDetailsPage() {
               </Badge>
             </div>
           </div>
-          
+
           <div className="flex gap-2 w-full md:w-auto">
             {!isEditing ? (
               <Button variant="outline" className="flex-1 md:flex-none" onClick={() => setIsEditing(true)}>
@@ -122,10 +176,38 @@ export default function JobDetailsPage() {
               </Button>
             ) : (
               <>
-                <Button variant="outline" size="icon" onClick={() => setIsEditing(false)} className="border-red-500/50 text-red-500">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="icon" className="border-red-500/50 text-red-500 hover:bg-red-500/10 transition-colors">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-background/95 backdrop-blur-xl border-border/50">
+                    <DialogHeader>
+                      <DialogTitle className="text-2xl font-outfit">Excluir Vaga?</DialogTitle>
+                      <DialogDescription className="text-lg text-muted-foreground">
+                        Esta ação não pode ser desfeita. Isso excluirá permanentemente a vaga 
+                        <strong className="text-foreground ml-1">"{job.title}"</strong> e removerá todos os dados associados.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="gap-2 sm:gap-0 mt-6">
+                      <Button variant="outline" onClick={() => {}} className="flex-1">Cancelar</Button>
+                      <Button 
+                        variant="destructive" 
+                        onClick={handleDelete}
+                        disabled={deleteMutation.isPending}
+                        className="flex-1 bg-red-600 hover:bg-red-700"
+                      >
+                        {deleteMutation.isPending ? <Loader2 className="animate-spin" /> : "Confirmar Exclusão"}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+
+                <Button variant="outline" size="icon" onClick={() => setIsEditing(false)} className="border-muted text-muted-foreground">
                   <X className="w-4 h-4" />
                 </Button>
-                <Button 
+                <Button
                   onClick={() => updateMutation.mutate(editedDescription)}
                   disabled={updateMutation.isPending}
                   className="flex-1 md:flex-none bg-green-600 hover:bg-green-700 text-white font-bold gap-2"
@@ -135,6 +217,29 @@ export default function JobDetailsPage() {
                 </Button>
               </>
             )}
+            {job.status === "ACTIVE" && !isEditing && (
+              <>
+                <Button 
+                  variant="outline" 
+                  onClick={handlePause} 
+                  disabled={pauseMutation.isPending}
+                  className="flex-1 md:flex-none border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10 gap-2"
+                >
+                  {pauseMutation.isPending ? <Loader2 className="animate-spin w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                  Pausar
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleClose} 
+                  disabled={closeMutation.isPending}
+                  className="flex-1 md:flex-none border-red-500/50 text-red-500 hover:bg-red-500/10 gap-2"
+                >
+                  {closeMutation.isPending ? <Loader2 className="animate-spin w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                  Encerrar
+                </Button>
+              </>
+            )}
+
             <Button 
               onClick={handlePublish}
               disabled={isEditing || publishMutation.isPending || job.status === "ACTIVE"}
@@ -160,7 +265,7 @@ export default function JobDetailsPage() {
               </CardHeader>
               <CardContent className="p-0">
                 {isEditing ? (
-                  <Textarea 
+                  <Textarea
                     className="min-h-[600px] border-none focus-visible:ring-0 p-6 text-lg leading-relaxed font-sans bg-transparent"
                     value={editedDescription}
                     onChange={(e) => setEditedDescription(e.target.value)}

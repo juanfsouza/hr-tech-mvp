@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { jobService } from "@/services/job-service";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
+import { Badge } from "@/components/atoms/badge";
 import { Plus, Briefcase, Users, BrainCircuit, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -44,14 +45,38 @@ export default function JobsPage() {
                     <div className="p-2 rounded-lg bg-forest/10 dark:bg-neon/10">
                       <Briefcase className="w-6 h-6 text-forest dark:text-neon" />
                     </div>
-                    <span className={cn(
-                      "text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest",
-                      job.status === "ACTIVE" ? "bg-green-500/10 text-green-500" : "bg-yellow-500/10 text-yellow-500"
+                    <Badge className={cn(
+                      "relative overflow-hidden uppercase tracking-tighter text-[10px] px-3 py-1",
+                      job.status === "ACTIVE" ? "bg-green-500/10 text-green-500 border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.1)]" : "bg-yellow-500/10 text-yellow-500 border-yellow-500/20 shadow-[0_0_15px_rgba(234,179,8,0.1)]"
                     )}>
-                      {job.status}
-                    </span>
+                      {/* Framer Motion Shine Effect */}
+                      <motion.div
+                        className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                        initial={{ x: "-100%" }}
+                        animate={{ x: "100%" }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 2,
+                          ease: "linear",
+                        }}
+                      />
+                      
+                      {/* Subtle Pulse for Active */}
+                      {job.status === "ACTIVE" && (
+                        <motion.span
+                          className="absolute inset-0 rounded-full bg-green-500/20"
+                          animate={{ scale: [1, 1.2, 1], opacity: [0, 0.5, 0] }}
+                          transition={{ repeat: Infinity, duration: 2 }}
+                        />
+                      )}
+                      
+                      <span className="relative z-10 font-bold">{job.status}</span>
+                    </Badge>
                   </div>
                   <CardTitle className="mt-4 font-outfit text-xl">{job.title}</CardTitle>
+                  <CardDescription className="line-clamp-2 mt-2 text-sm text-muted-foreground h-10">
+                    {job.description || "Gerencie esta vaga para atrair novos talentos."}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex gap-4 text-sm text-muted-foreground">

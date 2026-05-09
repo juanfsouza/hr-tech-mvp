@@ -1,5 +1,5 @@
 import {
-  Controller, Post, Get, Patch, Body, Param, Query,
+  Controller, Post, Get, Patch, Delete, Body, Param, Query,
   UseGuards, HttpCode, HttpStatus,
   NotFoundException, BadRequestException,
 } from '@nestjs/common';
@@ -13,6 +13,8 @@ import {
   GenerateJobDescriptionUseCase,
   PublishJobUseCase,
   CloseJobUseCase,
+  PauseJobUseCase,
+  DeleteJobUseCase,
   UpdateJobUseCase,
 } from '@modules/jobs/application/use-cases/jobs.use-cases';
 import { CreateJobDto } from '../application/dtos/create-job.dto';
@@ -30,6 +32,8 @@ export class JobsController {
     private readonly generateJdUseCase: GenerateJobDescriptionUseCase,
     private readonly publishJobUseCase: PublishJobUseCase,
     private readonly closeJobUseCase: CloseJobUseCase,
+    private readonly pauseJobUseCase: PauseJobUseCase,
+    private readonly deleteJobUseCase: DeleteJobUseCase,
     private readonly updateJobUseCase: UpdateJobUseCase,
   ) { }
 
@@ -122,6 +126,17 @@ export class JobsController {
     return result.value;
   }
 
+  @Patch(':id/pause')
+  @ApiOperation({ summary: 'Pausar vaga' })
+  async pause(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<{ status: string }> {
+    const result = await this.pauseJobUseCase.execute(id, user.companyId!);
+    if (result.isLeft()) throw new NotFoundException(result.value.message);
+    return result.value;
+  }
+
   @Patch(':id/close')
   @ApiOperation({ summary: 'Encerrar vaga' })
   async close(
@@ -131,5 +146,15 @@ export class JobsController {
     const result = await this.closeJobUseCase.execute(id, user.companyId!);
     if (result.isLeft()) throw new NotFoundException(result.value.message);
     return result.value;
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Excluir vaga' })
+  async delete(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<void> {
+    const result = await this.deleteJobUseCase.execute(id, user.companyId!);
+    if (result.isLeft()) throw new NotFoundException(result.value.message);
   }
 }

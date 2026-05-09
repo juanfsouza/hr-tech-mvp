@@ -41,6 +41,20 @@ export const jobService = {
     return data;
   },
 
+  async pause(id: string) {
+    const { data } = await api.patch<{ status: string }>(`/jobs/${id}/pause`);
+    return data;
+  },
+
+  async close(id: string) {
+    const { data } = await api.patch<{ status: string }>(`/jobs/${id}/close`);
+    return data;
+  },
+
+  async delete(id: string) {
+    await api.delete(`/jobs/${id}`);
+  },
+
   async update(id: string, input: Partial<CreateJobInput>) {
     const { data } = await api.patch<{ id: string }>(`/jobs/${id}`, input);
     return data;

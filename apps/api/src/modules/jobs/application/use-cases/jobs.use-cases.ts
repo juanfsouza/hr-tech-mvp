@@ -132,6 +132,33 @@ export class CloseJobUseCase {
     return right({ status: job.status });
   }
 }
+
+@Injectable()
+export class PauseJobUseCase {
+  constructor(@Inject(JOB_REPOSITORY) private readonly repo: IJobRepository) { }
+
+  async execute(id: string, companyId: string): Promise<Either<EntityNotFoundError, { status: string }>> {
+    const job = await this.repo.findById(id, companyId);
+    if (!job) return left(new EntityNotFoundError('Job', id));
+
+    job.pause();
+    await this.repo.update(job);
+    return right({ status: job.status });
+  }
+}
+
+@Injectable()
+export class DeleteJobUseCase {
+  constructor(@Inject(JOB_REPOSITORY) private readonly repo: IJobRepository) { }
+
+  async execute(id: string, companyId: string): Promise<Either<EntityNotFoundError, void>> {
+    const job = await this.repo.findById(id, companyId);
+    if (!job) return left(new EntityNotFoundError('Job', id));
+
+    await this.repo.delete(id);
+    return right(undefined);
+  }
+}
 @Injectable()
 export class UpdateJobUseCase {
   constructor(@Inject(JOB_REPOSITORY) private readonly repo: IJobRepository) { }

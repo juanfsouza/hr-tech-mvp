@@ -4,7 +4,7 @@ import { PrismaJobRepository } from './jobs/infrastructure/repositories/prisma-j
 import { JobsController } from './jobs/controllers/jobs.controller';
 import { AiModule } from './ai.module';
 import { CompaniesModule } from './companies.module';
-import { CreateJobUseCase, ListJobsUseCase, GetJobByIdUseCase, GenerateJobDescriptionUseCase, PublishJobUseCase, CloseJobUseCase, UpdateJobUseCase } from './jobs/application/use-cases/jobs.use-cases';
+import { CreateJobUseCase, ListJobsUseCase, GetJobByIdUseCase, GenerateJobDescriptionUseCase, PublishJobUseCase, CloseJobUseCase, PauseJobUseCase, DeleteJobUseCase, UpdateJobUseCase } from './jobs/application/use-cases/jobs.use-cases';
 
 
 @Module({
@@ -18,6 +18,8 @@ import { CreateJobUseCase, ListJobsUseCase, GetJobByIdUseCase, GenerateJobDescri
     GenerateJobDescriptionUseCase,
     PublishJobUseCase,
     CloseJobUseCase,
+    PauseJobUseCase,
+    DeleteJobUseCase,
     UpdateJobUseCase,
   ],
   exports: [JOB_REPOSITORY],
