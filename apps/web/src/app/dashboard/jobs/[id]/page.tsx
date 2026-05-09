@@ -1,35 +1,78 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { jobService } from "@/services/job-service";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { Button } from "@/components/atoms/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
 import { Badge } from "@/components/atoms/badge";
+import { Textarea } from "@/components/atoms/textarea";
 import { 
   ArrowLeft, 
   Briefcase, 
   Calendar, 
   MapPin, 
-  DollarSign, 
   BrainCircuit,
   Loader2,
   CheckCircle2,
-  Clock
+  Clock,
+  Save,
+  X
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export default function JobDetailsPage() {
   const params = useParams();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const id = params.id as string;
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedDescription, setEditedDescription] = useState("");
 
   const { data: job, isLoading, error } = useQuery({
     queryKey: ["job", id],
     queryFn: () => jobService.getById(id),
   });
+
+  useEffect(() => {
+    if (job) setEditedDescription(job.description || "");
+  }, [job]);
+
+  const updateMutation = useMutation({
+    mutationFn: (newDescription: string) => jobService.update(id, { description: newDescription }),
+    onSuccess: () => {
+      toast.success("Vaga atualizada com sucesso!");
+      setIsEditing(false);
+      queryClient.invalidateQueries({ queryKey: ["job", id] });
+    },
+    onError: () => {
+      toast.error("Erro ao atualizar vaga");
+    }
+  });
+
+  const publishMutation = useMutation({
+    mutationFn: () => jobService.publish(id),
+    onSuccess: () => {
+      toast.success("Vaga publicada com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ["job", id] });
+    },
+    onError: () => {
+      toast.error("Erro ao publicar vaga");
+    }
+  });
+
+  const handlePublish = async () => {
+    if (job.status === "ACTIVE") {
+      toast.info("Esta vaga já está ativa.");
+      return;
+    }
+    publishMutation.mutate();
+  };
 
   if (isLoading) {
     return (
@@ -73,9 +116,33 @@ export default function JobDetailsPage() {
           </div>
           
           <div className="flex gap-2 w-full md:w-auto">
-            <Button variant="outline" className="flex-1 md:flex-none">Editar Vaga</Button>
-            <Button className="flex-1 md:flex-none bg-forest dark:bg-neon dark:text-chumbo font-bold">
-              Divulgar Vaga
+            {!isEditing ? (
+              <Button variant="outline" className="flex-1 md:flex-none" onClick={() => setIsEditing(true)}>
+                Editar Descrição
+              </Button>
+            ) : (
+              <>
+                <Button variant="outline" size="icon" onClick={() => setIsEditing(false)} className="border-red-500/50 text-red-500">
+                  <X className="w-4 h-4" />
+                </Button>
+                <Button 
+                  onClick={() => updateMutation.mutate(editedDescription)}
+                  disabled={updateMutation.isPending}
+                  className="flex-1 md:flex-none bg-green-600 hover:bg-green-700 text-white font-bold gap-2"
+                >
+                  {updateMutation.isPending ? <Loader2 className="animate-spin w-4 h-4" /> : <Save className="w-4 h-4" />}
+                  Salvar
+                </Button>
+              </>
+            )}
+            <Button 
+              onClick={handlePublish}
+              disabled={isEditing || publishMutation.isPending || job.status === "ACTIVE"}
+              className="flex-1 md:flex-none bg-forest dark:bg-neon dark:text-chumbo font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            >
+              {publishMutation.isPending ? <Loader2 className="animate-spin w-5 h-5" /> : (
+                job.status === "ACTIVE" ? "Vaga Ativa" : "Divulgar Vaga"
+              )}
             </Button>
           </div>
         </header>
@@ -83,17 +150,26 @@ export default function JobDetailsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="border-border/50 bg-card/30 backdrop-blur-sm">
-              <CardHeader>
-                <div className="flex items-center gap-2 text-forest dark:text-neon mb-2">
+            <Card className="border-border/50 bg-card/30 backdrop-blur-sm overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between bg-muted/20">
+                <div className="flex items-center gap-2 text-forest dark:text-neon">
                   <Briefcase className="w-5 h-5" />
-                  <span className="font-bold uppercase tracking-widest text-xs">Descrição da Vaga</span>
+                  <span className="font-bold uppercase tracking-widest text-xs">Job Description</span>
                 </div>
+                {isEditing && <Badge variant="outline" className="animate-pulse border-forest dark:border-neon">Modo Edição</Badge>}
               </CardHeader>
-              <CardContent>
-                <div className="prose dark:prose-invert max-w-none text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                  {job.description || "Nenhuma descrição fornecida."}
-                </div>
+              <CardContent className="p-0">
+                {isEditing ? (
+                  <Textarea 
+                    className="min-h-[600px] border-none focus-visible:ring-0 p-6 text-lg leading-relaxed font-sans bg-transparent"
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                  />
+                ) : (
+                  <div className="p-6 prose dark:prose-invert max-w-none text-foreground leading-relaxed whitespace-pre-wrap font-sans">
+                    {job.description || "Nenhuma descrição fornecida."}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
