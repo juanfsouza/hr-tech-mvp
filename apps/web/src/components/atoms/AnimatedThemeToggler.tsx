@@ -232,7 +232,7 @@ export const AnimatedThemeToggler = ({
       ref={buttonRef}
       onClick={toggleTheme}
       className={cn(
-        "p-2 rounded-full hover:bg-muted transition-colors flex items-center justify-center",
+        "p-2 rounded-full hover:bg-primary/30 dark:hover:bg-muted/50 transition-colors flex items-center justify-center",
         className
       )}
       {...props}

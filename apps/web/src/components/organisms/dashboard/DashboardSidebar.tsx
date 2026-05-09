@@ -28,7 +28,7 @@ export function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 border-r border-border bg-card/30 backdrop-blur-xl h-screen sticky top-0 flex flex-col">
+    <aside className="w-64 border-r border-slate-200 dark:border-border bg-white dark:bg-card/30 backdrop-blur-xl h-screen sticky top-0 flex flex-col">
       <nav className="flex-1 px-4 py-8 space-y-1">
         {MENU_ITEMS.map((item) => {
           const isActive = pathname === item.href;
@@ -40,7 +40,7 @@ export function DashboardSidebar() {
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group",
                 isActive
                   ? "bg-forest/10 dark:bg-neon/10 text-forest dark:text-neon shadow-sm"
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                  : "text-slate-600 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-muted/50 hover:text-slate-900 dark:hover:text-foreground"
               )}
             >
               <item.icon className={cn(
