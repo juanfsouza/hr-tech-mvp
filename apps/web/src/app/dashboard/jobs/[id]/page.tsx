@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { jobService } from "@/services/job-service";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { Button } from "@/components/atoms/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
+import { Card, CardContent, CardHeader, CardTitle, CardBig } from "@/components/atoms/card";
 import { Badge } from "@/components/atoms/badge";
 import { Textarea } from "@/components/atoms/textarea";
 import {
@@ -257,9 +257,9 @@ export default function JobDetailsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="border-border/50 bg-card/30 backdrop-blur-sm overflow-hidden">
+            <CardBig className="border-border/50 bg-card/30 backdrop-blur-sm overflow-hidden">
               <CardHeader className="flex flex-row items-center justify-between bg-muted/20">
-                <div className="flex items-center gap-2 text-forest dark:text-neon">
+                <div className="flex items-center gap-2 text-forest dark:text-neon mt-2 mb-2">
                   <Briefcase className="w-5 h-5" />
                   <span className="font-bold uppercase tracking-widest text-xs">Job Description</span>
                 </div>
@@ -278,7 +278,7 @@ export default function JobDetailsPage() {
                   </div>
                 )}
               </CardContent>
-            </Card>
+            </CardBig>
           </div>
 
           {/* Sidebar Info */}
