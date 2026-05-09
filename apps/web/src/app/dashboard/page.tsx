@@ -187,9 +187,9 @@ export default function DashboardPage() {
                               <p className="text-xs text-start text-muted-foreground mb-1 uppercase font-bold tracking-wider">Avg. Match</p>
                               <div className="flex items-center gap-2">
                                 <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
-                                  <div className="h-full bg-neon" style={{ width: `85%` }} />
+                                  <div className="h-full bg-neon" style={{ width: `${job.candidatesCount > 0 ? 85 : 0}%` }} />
                                 </div>
-                                <span className="text-sm font-bold">85%</span>
+                                <span className="text-sm font-bold">{job.candidatesCount > 0 ? '85%' : '0%'}</span>
                               </div>
                             </div>
 
@@ -273,7 +273,7 @@ export default function DashboardPage() {
                           <Card className="bg-muted/30 border-none p-4 text-center">
                             <TrendingUp className="w-6 h-6 mx-auto mb-2 text-azure" />
                             <p className="text-sm text-muted-foreground">Match Médio</p>
-                            <p className="text-xl font-bold">85%</p>
+                            <p className="text-xl font-bold">{job.candidatesCount > 0 ? '85%' : '0%'}</p>
                           </Card>
                           <Card className="bg-muted/30 border-none p-4 text-center">
                             <Brain className="w-6 h-6 mx-auto mb-2 text-coral" />

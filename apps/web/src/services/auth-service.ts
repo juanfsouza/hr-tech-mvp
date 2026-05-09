@@ -29,10 +29,16 @@ export const authService = {
     return data;
   },
 
-  logout() {
-    localStorage.removeItem('@SaaS:token');
-    localStorage.removeItem('@SaaS:user');
-    window.location.href = '/login';
+  async logout() {
+    try {
+      await api.post('/auth/logout');
+    } catch (error) {
+      console.error("[Auth] Erro ao deslogar no backend:", error);
+    } finally {
+      localStorage.removeItem('@SaaS:token');
+      localStorage.removeItem('@SaaS:user');
+      window.location.href = '/login';
+    }
   },
 
   getUser() {
