@@ -28,7 +28,7 @@ export function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 border-r border-slate-200 dark:border-border bg-white dark:bg-card/30 backdrop-blur-xl h-screen sticky top-0 flex flex-col">
+    <aside className="w-64 border-r border-slate-200 dark:border-border dark:border-slate-200/5 bg-white dark:bg-card/30 backdrop-blur-xl h-screen sticky top-0 flex flex-col">
       <nav className="flex-1 px-4 py-8 space-y-1">
         {MENU_ITEMS.map((item) => {
           const isActive = pathname === item.href;

@@ -28,27 +28,29 @@ export function OnboardingWizard() {
   const progress = (step / 4) * 100;
 
   return (
-    <div className="w-full max-w-3xl mx-auto py-12 px-6">
-      <div className="mb-12">
-        <div className="flex justify-between items-end mb-4">
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="mb-10">
+        <div className="flex justify-between items-end mb-6">
           <div>
-            <p className="text-sm font-semibold text-forest dark:text-neon uppercase tracking-wider mb-1">
-              Onboarding Empresa
+            <p className="text-xs font-bold text-azure uppercase tracking-[0.2em] mb-2 bg-azure/20 inline-block px-3 py-1 rounded-full border border-azure/20">
+              Passo {step} de 4
             </p>
-            <h1 className="text-2xl font-bold font-outfit">
-              {step === 1 && "Dados Cadastrais"}
-              {step === 2 && "Estrutura do Time"}
-              {step === 3 && "Testes de Personalidade"}
-              {step === 4 && "Cultura e Ritmo"}
+            <h1 className="text-3xl font-bold font-outfit text-slate-900 dark:text-white mt-2">
+              {step === 1 && "Dados da Empresa"}
+              {step === 2 && "Estrutura Organizacional"}
+              {step === 3 && "Configuração de Testes"}
+              {step === 4 && "Cultura Organizacional"}
             </h1>
           </div>
-          <p className="text-sm font-medium text-muted-foreground">
-            Passo <span className="text-foreground font-bold">{step}</span> de 4
-          </p>
+          <div className="hidden md:block text-right">
+            <p className="text-sm font-medium text-slate-400 dark:text-muted-foreground">
+              Seu progresso: <span className="text-slate-900 dark:text-neon font-bold">{Math.round(progress)}%</span>
+            </p>
+          </div>
         </div>
-        <div className="h-2 w-full bg-forest/10 dark:bg-neon/10 rounded-full overflow-hidden">
+        <div className="h-2 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden border border-slate-200/50 dark:border-white/5">
           <motion.div
-            className="h-full bg-forest dark:bg-neon"
+            className="h-full bg-neon shadow-[0_0_15px_rgba(196,255,87,0.4)]"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ type: "spring", stiffness: 50 }}

@@ -6,10 +6,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BrainCircuit, Users, ChevronRight, Zap } from "lucide-react";
 import Link from "next/link";
 import { KineticText } from "@/components/atoms/KineticText";
+import { useRouter } from "next/navigation";
+import { authService } from "@/services/auth-service";
 
 export default function WelcomePage() {
+  const router = useRouter();
+
+  const handleOnboarding = () => {
+    const user = authService.getUser();
+    if (user) {
+      router.push("/onboarding");
+    } else {
+      router.push("/login");
+    }
+  };
   return (
-    <div className="flex min-h-screen items-center justify-center p-6 bg-background">
+    <div className="flex min-h-screen items-center justify-center p-6 bg-slate-50 dark:bg-background transition-colors duration-300">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -18,12 +30,23 @@ export default function WelcomePage() {
       >
         <div className="text-center mb-10">
           <motion.div
-            initial={{ rotate: -10, scale: 0.8 }}
+            initial={{ rotate: 0, scale: 0.5 }}
             animate={{ rotate: 0, scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-            className="inline-flex items-center justify-center p-4 rounded-3xl bg-neon/20 mb-6 border border-neon/30"
+            className="inline-flex items-center justify-center p-6 rounded-3xl bg-white/10 dark:bg-neon/20 mb-6 border border-slate-200 dark:border-neon/30 shadow-xl backdrop-blur-sm"
           >
-            <Zap className="w-12 h-12 text-neon" />
+            {/* Logo para Modo Claro (Texto Preto) */}
+            <img
+              src="/logo_white.png"
+              alt="RH TECH Logo"
+              className="w-[120px] h-[120px] dark:hidden object-contain"
+            />
+            {/* Logo para Modo Escuro (Texto Branco) */}
+            <img
+              src="/logo_black.png"
+              alt="RH TECH Logo"
+              className="w-[120px] h-[120px] hidden dark:block object-contain"
+            />
           </motion.div>
 
           <h1 className="text-6xl font-bold font-outfit tracking-tight mb-6 leading-tight flex flex-col items-center">
@@ -54,12 +77,13 @@ export default function WelcomePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="mt-4">
-                <Link href="/onboarding">
-                  <Button className="w-full bg-forest hover:bg-forest/90 dark:bg-neon dark:text-chumbo dark:hover:bg-neon/90 font-bold h-12 rounded-xl transition-all duration-300 shadow-lg shadow-forest/10 dark:shadow-neon/10">
-                    Começar Onboarding
-                    <ChevronRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </Link>
+                <Button
+                  onClick={handleOnboarding}
+                  className="w-full bg-forest hover:bg-forest/90 dark:bg-neon dark:text-chumbo dark:hover:bg-neon/90 font-bold h-12 rounded-xl transition-all duration-300 shadow-lg shadow-forest/10 dark:shadow-neon/10"
+                >
+                  Começar Onboarding
+                  <ChevronRight className="ml-2 w-5 h-5" />
+                </Button>
               </CardContent>
             </Card>
           </motion.div>
