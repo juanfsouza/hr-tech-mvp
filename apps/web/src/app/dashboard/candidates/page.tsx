@@ -6,23 +6,24 @@ import { Card, CardContent } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
 import { MatchReportView } from "@/components/organisms/match/MatchReportView";
-import { 
-  Users, 
-  Search, 
-  Filter, 
-  ChevronRight, 
-  BrainCircuit, 
+import {
+  Users,
+  Search,
+  Filter,
+  ChevronRight,
+  BrainCircuit,
   UserCircle2,
   FileText,
-  ExternalLink
+  ExternalLink,
+  Loader2
 } from "lucide-react";
 import { Input } from "@/components/atoms/input";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
 } from "@/components/atoms/dialog";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -70,7 +71,7 @@ export default function CandidatesPage() {
               ))}
             </div>
           ) : (
-            candidates?.map((candidate) => (
+            candidates?.items?.map((candidate: any) => (
               <Card key={candidate.id} className="border-border/50 bg-card/30 hover:bg-card/50 transition-all group">
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -93,16 +94,16 @@ export default function CandidatesPage() {
                       <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Match IA</p>
                       <div className="flex items-center gap-2">
                         <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
-                          <div 
-                            className={cn("h-full", (candidate.matchScore || 0) > 80 ? "bg-neon" : "bg-azure")} 
-                            style={{ width: `${candidate.matchScore || 0}%` }} 
+                          <div
+                            className={cn("h-full", (candidate.matchScore || 0) > 80 ? "bg-neon" : "bg-azure")}
+                            style={{ width: `${candidate.matchScore || 0}%` }}
                           />
                         </div>
                         <span className="text-sm font-bold">{candidate.matchScore || 0}%</span>
                       </div>
                     </div>
 
-                    <Button 
+                    <Button
                       onClick={() => candidate.matchId && setSelectedCandidate(candidate)}
                       variant={candidate.matchId ? "default" : "outline"}
                       disabled={!candidate.matchId}
@@ -138,7 +139,7 @@ export default function CandidatesPage() {
                   </div>
                 </DialogTitle>
               </DialogHeader>
-              
+
               {isLoadingMatch ? (
                 <div className="py-20 text-center space-y-4">
                   <Loader2 className="w-10 h-10 animate-spin mx-auto text-forest dark:text-neon" />

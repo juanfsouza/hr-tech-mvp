@@ -39,6 +39,11 @@ export const jobService = {
     return data;
   },
 
+  async update(id: string, input: Partial<CreateJobInput>) {
+    const { data } = await api.patch<{ id: string }>(`/jobs/${id}`, input);
+    return data;
+  },
+
   async getById(id: string) {
     const { data } = await api.get<Job>(`/jobs/${id}`);
     return data;

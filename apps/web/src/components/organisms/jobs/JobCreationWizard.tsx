@@ -1,28 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
 import { Label } from "@/components/atoms/label";
 import { Textarea } from "@/components/atoms/textarea";
 import { Skeleton } from "@/components/atoms/skeleton";
-import { 
-  Sparkles, 
-  FileText, 
-  ChevronRight, 
-  ArrowLeft, 
-  BrainCircuit, 
+import {
+  Sparkles,
+  FileText,
+  ChevronRight,
+  ArrowLeft,
+  BrainCircuit,
   UserCircle2,
   CheckCircle2,
   Loader2
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 import { jobService } from "@/services/job-service";
 import { authService } from "@/services/auth-service";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -30,6 +29,7 @@ type WizardMode = "IDLE" | "IA_BRIEFING" | "GENERATING" | "REVIEW" | "MANUAL";
 
 export function JobCreationWizard() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [mode, setMode] = useState<WizardMode>("IDLE");
   const [jobId, setJobId] = useState<string | null>(null);
   const [generatedJd, setGeneratedJd] = useState("");
@@ -40,13 +40,29 @@ export function JobCreationWizard() {
     responsibilities: "",
   });
 
+  const [manualData, setManualData] = useState({
+    title: "",
+    description: "",
+  });
+
   // Mutação para criar a vaga inicial
   const createMutation = useMutation({
-    mutationFn: (data: typeof briefing) => 
-      jobService.create({ 
+    mutationFn: (data: typeof briefing) =>
+      jobService.create({
         title: data.title,
-        description: data.responsibilities, // Mapeando responsabilidades para a descrição inicial
+        description: data.responsibilities,
       }),
+  });
+
+  // Mutação para criar vaga manual
+  const createManualMutation = useMutation({
+    mutationFn: (data: typeof manualData) => jobService.create(data),
+    onSuccess: (job) => {
+      setJobId(job.id);
+      toast.success("Vaga criada! Agora publique para ativar.");
+      setGeneratedJd(manualData.description);
+      setMode("REVIEW");
+    }
   });
 
   // Mutação para gerar JD com IA
@@ -67,53 +83,61 @@ export function JobCreationWizard() {
     mutationFn: (id: string) => jobService.publish(id),
     onSuccess: () => {
       toast.success("Vaga publicada com sucesso!");
-      router.push("/dashboard");
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      router.push("/dashboard/jobs");
     }
   });
 
   const handleStartIA = async () => {
-    if (!briefing.title) {
-      toast.error("Por favor, informe pelo menos o título da vaga.");
+    if (!briefing.title || !briefing.responsibilities) {
+      toast.error("Preencha o título e as responsabilidades.");
       return;
     }
 
     const user = authService.getUser();
     if (!user?.companyId) {
-      toast.error("Empresa não identificada", {
-        description: "Você precisa cadastrar sua empresa no Onboarding antes de criar vagas.",
-      });
+      toast.error("Empresa não identificada");
       router.push("/onboarding");
       return;
     }
 
     setMode("GENERATING");
     try {
-      // 1. Criar a vaga
       const job = await createMutation.mutateAsync(briefing);
       setJobId(job.id);
-      
-      // 2. Chamar geração por IA
       generateMutation.mutate(job.id);
     } catch (error: any) {
-      console.error("Erro ao iniciar criação da vaga:", error);
-      toast.error("Erro ao iniciar criação da vaga", {
-        description: error.response?.status === 401 
-          ? "Sua sessão expirou. Por favor, faça login novamente." 
-          : "Não foi possível conectar ao servidor.",
-      });
-      setMode("IA_BRIEFING"); // Volta para o estado anterior para permitir correção
+      console.error("Erro ao iniciar criação:", error);
+      toast.error("Erro ao conectar ao servidor.");
+      setMode("IA_BRIEFING");
     }
   };
 
-  const handlePublish = () => {
-    if (jobId) publishMutation.mutate(jobId);
+  const handleStartManual = async () => {
+    if (!manualData.title || !manualData.description) {
+      toast.error("Preencha título e descrição.");
+      return;
+    }
+    createManualMutation.mutate(manualData);
+  };
+
+  const handlePublish = async () => {
+    if (jobId) {
+      try {
+        await jobService.update(jobId, { description: generatedJd });
+        await publishMutation.mutateAsync(jobId);
+      } catch (e) {
+        console.error("Erro ao publicar vaga:", e);
+        toast.error("Erro ao publicar vaga");
+      }
+    }
   };
 
   if (mode === "IDLE") {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-          <Card 
+          <Card
             className="cursor-pointer border-forest/20 hover:border-forest dark:border-neon/20 dark:hover:border-neon bg-card/50 transition-all h-full"
             onClick={() => setMode("IA_BRIEFING")}
           >
@@ -136,7 +160,7 @@ export function JobCreationWizard() {
         </motion.div>
 
         <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-          <Card 
+          <Card
             className="cursor-pointer border-border hover:border-azure transition-all h-full"
             onClick={() => setMode("MANUAL")}
           >
@@ -161,6 +185,51 @@ export function JobCreationWizard() {
     );
   }
 
+  if (mode === "MANUAL") {
+    return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <Card className="border-none bg-transparent">
+          <CardHeader className="px-0">
+            <CardTitle className="text-3xl font-outfit">Cadastro Manual</CardTitle>
+            <CardDescription className="text-lg">Preencha os dados da vaga para começar.</CardDescription>
+          </CardHeader>
+          <CardContent className="px-0 space-y-6">
+            <div className="space-y-2">
+              <Label>Título da Vaga</Label>
+              <Input
+                placeholder="Ex: Gerente de Vendas"
+                value={manualData.title}
+                onChange={e => setManualData({ ...manualData, title: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Descrição da Vaga</Label>
+              <Textarea
+                placeholder="Cole aqui a sua descrição de vaga completa..."
+                className="min-h-[300px]"
+                value={manualData.description}
+                onChange={e => setManualData({ ...manualData, description: e.target.value })}
+              />
+            </div>
+            <div className="flex gap-4 pt-6">
+              <Button variant="outline" onClick={() => setMode("IDLE")} className="flex-1 h-12">
+                <ArrowLeft className="mr-2 w-5 h-5" /> Voltar
+              </Button>
+              <Button
+                onClick={handleStartManual}
+                className="flex-[2] h-12 text-lg font-bold bg-azure text-white"
+                disabled={!manualData.title || !manualData.description || createManualMutation.isPending}
+              >
+                {createManualMutation.isPending ? <Loader2 className="animate-spin" /> : "Continuar"}
+                <ChevronRight className="ml-2 w-5 h-5" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  }
+
   if (mode === "IA_BRIEFING") {
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -179,35 +248,35 @@ export function JobCreationWizard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label>Título da Vaga</Label>
-                <Input placeholder="Ex: Engenheiro de Software Full Stack" value={briefing.title} onChange={e => setBriefing({...briefing, title: e.target.value})} />
+                <Input placeholder="Ex: Engenheiro de Software Full Stack" value={briefing.title} onChange={e => setBriefing({ ...briefing, title: e.target.value })} />
               </div>
               <div className="space-y-2">
                 <Label>Líder Direto</Label>
-                <Input placeholder="Selecione do organograma..." value={briefing.leader} onChange={e => setBriefing({...briefing, leader: e.target.value})} />
+                <Input placeholder="Selecione do organograma..." value={briefing.leader} onChange={e => setBriefing({ ...briefing, leader: e.target.value })} />
               </div>
             </div>
             <div className="space-y-2">
               <Label>Por que está abrindo esta vaga?</Label>
-              <Textarea 
-                placeholder="Ex: Expansão do time de pagamentos, substituição..." 
+              <Textarea
+                placeholder="Ex: Expansão do time de pagamentos, substituição..."
                 value={briefing.reason}
-                onChange={e => setBriefing({...briefing, reason: e.target.value})}
+                onChange={e => setBriefing({ ...briefing, reason: e.target.value })}
               />
             </div>
             <div className="space-y-2">
               <Label>O que essa pessoa vai executar no dia a dia?</Label>
-              <Textarea 
-                placeholder="Descreva as principais responsabilidades..." 
+              <Textarea
+                placeholder="Descreva as principais responsabilidades..."
                 className="min-h-[120px]"
                 value={briefing.responsibilities}
-                onChange={e => setBriefing({...briefing, responsibilities: e.target.value})}
+                onChange={e => setBriefing({ ...briefing, responsibilities: e.target.value })}
               />
             </div>
             <div className="flex gap-4 pt-6">
               <Button variant="outline" onClick={() => setMode("IDLE")} className="flex-1 h-12">
                 <ArrowLeft className="mr-2 w-5 h-5" /> Voltar
               </Button>
-              <Button 
+              <Button
                 onClick={handleStartIA}
                 className="flex-[2] h-12 text-lg font-bold bg-forest dark:bg-neon dark:text-chumbo"
                 disabled={!briefing.title || !briefing.responsibilities}
@@ -254,20 +323,24 @@ export function JobCreationWizard() {
             <div className="p-2 rounded-lg bg-green-500/10 text-green-500">
               <CheckCircle2 className="w-6 h-6" />
             </div>
-            <h2 className="text-3xl font-bold font-outfit tracking-tight">Resultado da Análise IA</h2>
+            <h2 className="text-3xl font-bold font-outfit tracking-tight">Revisão Final</h2>
           </div>
-          <Button variant="outline" onClick={() => setMode("IA_BRIEFING")}>Refinar Briefing</Button>
+          <Button variant="outline" onClick={() => setMode("IDLE")}>Cancelar</Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <Card className="border-forest/20 dark:border-neon/20 overflow-hidden">
               <CardHeader className="bg-muted/30">
-                <CardTitle>Job Description Gerada</CardTitle>
-                <CardDescription>Revise e edite a descrição antes de publicar.</CardDescription>
+                <CardTitle>Job Description</CardTitle>
+                <CardDescription>Edite o texto abaixo para ajustar detalhes finais.</CardDescription>
               </CardHeader>
-              <CardContent className="p-6 prose dark:prose-invert max-w-none text-foreground">
-                <div dangerouslySetInnerHTML={{ __html: generatedJd.replace(/\n/g, '<br/>') }} />
+              <CardContent className="p-0">
+                <Textarea
+                  className="min-h-[500px] border-none focus-visible:ring-0 rounded-none p-6 text-lg leading-relaxed font-sans"
+                  value={generatedJd}
+                  onChange={(e) => setGeneratedJd(e.target.value)}
+                />
               </CardContent>
             </Card>
           </div>
@@ -276,32 +349,26 @@ export function JobCreationWizard() {
             <Card className="bg-forest/5 dark:bg-neon/5 border-none">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <UserCircle2 className="w-5 h-5" /> Perfil Ideal (Psicometria)
+                  <UserCircle2 className="w-5 h-5" /> Perfil Sugerido
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm font-bold">
                     <span>Match DISC</span>
-                    <span className="text-forest dark:text-neon">D-I (Dominante/Influente)</span>
+                    <span className="text-forest dark:text-neon">D-I</span>
                   </div>
                   <div className="h-2 w-full bg-muted rounded-full">
                     <div className="h-full bg-forest dark:bg-neon w-[85%]" />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm font-bold">
-                    <span>Eneagrama Sugerido</span>
-                    <span className="text-forest dark:text-neon">Tipo 3 ou 8</span>
-                  </div>
-                </div>
                 <div className="p-4 bg-background/50 rounded-xl text-xs text-muted-foreground italic">
-                  "Este perfil foi sugerido com base no ritmo acelerado (Startup) e na necessidade de entregas rápidas mencionada no briefing."
+                  "Você pode editar a descrição ao lado. O perfil psicométrico será usado para filtrar os candidatos."
                 </div>
               </CardContent>
             </Card>
 
-            <Button 
+            <Button
               onClick={handlePublish}
               disabled={publishMutation.isPending}
               className="w-full h-14 text-xl font-bold bg-forest dark:bg-neon dark:text-chumbo shadow-xl shadow-forest/20 dark:shadow-neon/20"

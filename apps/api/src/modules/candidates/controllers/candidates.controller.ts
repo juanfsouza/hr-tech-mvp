@@ -8,7 +8,7 @@ import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard'
 import { CreateCandidateDto } from '../application/dtos/create-candidate.dto';
 import { UpdateStatusDto } from '../application/dtos/update-status.dto';
 import { CreateCandidateUseCase } from '../application/use-cases/create-candidates.use-case';
-import { GetCandidateByIdUseCase, ListCandidatesByJobUseCase } from '../application/use-cases/list-candidates.use-case';
+import { GetCandidateByIdUseCase, ListCandidatesByJobUseCase, ListCandidatesByCompanyUseCase } from '../application/use-cases/list-candidates.use-case';
 import { AuthenticatedUser } from '@/shared/infrastructure/http/interfaces/authenticated-user.interface';
 import { CurrentUser } from '@/shared/infrastructure/http/decorators/current-user.decorator';
 import { AnonymizeCandidateUseCase } from '../application/use-cases/anonymize-candidate.use-case';
@@ -23,10 +23,26 @@ export class CandidatesController {
   constructor(
     private readonly createCandidateUseCase: CreateCandidateUseCase,
     private readonly listCandidatesUseCase: ListCandidatesByJobUseCase,
+    private readonly listAllCandidatesUseCase: ListCandidatesByCompanyUseCase,
     private readonly getCandidateUseCase: GetCandidateByIdUseCase,
     private readonly updateStatusUseCase: UpdateCandidateStatusUseCase,
     private readonly anonymizeUseCase: AnonymizeCandidateUseCase,
   ) { }
+
+  @Get()
+  @ApiOperation({ summary: 'Listar todos os candidatos da empresa' })
+  async listAll(
+    @Query('cursor') cursor: string | undefined,
+    @Query('take') take: string | undefined,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<object> {
+    const result = await this.listAllCandidatesUseCase.execute({
+      companyId: user.companyId!,
+      cursor,
+      take: take ? parseInt(take, 10) : undefined,
+    });
+    return result.value;
+  }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)

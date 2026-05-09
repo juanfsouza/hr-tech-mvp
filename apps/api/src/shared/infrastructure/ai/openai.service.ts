@@ -16,7 +16,7 @@ export class OpenAiService {
     const baseURL = config.get('OPENAI_BASE_URL', { infer: true }) || 'https://api.openai.com/v1';
     
     // Se o baseURL contiver x.ai, usamos o modelo do Grok, senão gpt-4o
-    this.model = baseURL.includes('x.ai') ? 'grok-beta' : 'gpt-4o';
+    this.model = baseURL.includes('x.ai') ? 'grok-latest' : 'gpt-4o';
 
     this.client = new OpenAI({
       apiKey: apiKey,

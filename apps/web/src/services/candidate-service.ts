@@ -12,7 +12,7 @@ export interface Candidate {
 
 export const candidateService = {
   async list() {
-    const { data } = await api.get<Candidate[]>('/candidates');
+    const { data } = await api.get<{ items: Candidate[] }>('/candidates');
     return data;
   },
 

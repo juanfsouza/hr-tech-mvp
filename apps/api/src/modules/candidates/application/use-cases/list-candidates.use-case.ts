@@ -19,6 +19,19 @@ export class ListCandidatesByJobUseCase {
 }
 
 @Injectable()
+export class ListCandidatesByCompanyUseCase {
+    constructor(@Inject(CANDIDATE_REPOSITORY) private readonly repo: ICandidateRepository) { }
+
+    async execute(input: { companyId: string, cursor?: string, take?: number }): Promise<Either<never, object>> {
+        const result = await this.repo.findByCompany(input.companyId, {
+            cursor: input.cursor,
+            take: input.take,
+        });
+        return right(result);
+    }
+}
+
+@Injectable()
 export class GetCandidateByIdUseCase {
     constructor(@Inject(CANDIDATE_REPOSITORY) private readonly repo: ICandidateRepository) { }
 

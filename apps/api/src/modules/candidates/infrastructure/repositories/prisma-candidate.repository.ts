@@ -35,6 +35,23 @@ export class PrismaCandidateRepository implements ICandidateRepository {
     };
   }
 
+  async findByCompany(companyId: string, params: PaginationParams): Promise<PaginatedResult<Candidate>> {
+    const { cursor, take } = normalizePaginationParams(params);
+    const records = await this.prisma.candidate.findMany({
+      where: { companyId, deletedAt: null },
+      take: take + 1,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      orderBy: { createdAt: 'desc' },
+    });
+    const hasNextPage = records.length > take;
+    const items = hasNextPage ? records.slice(0, take) : records;
+    return {
+      items: items.map((r: PrismaCandidateRecord) => this.toDomain(r)),
+      nextCursor: hasNextPage ? items[items.length - 1]!.id : null,
+      hasNextPage,
+    };
+  }
+
   async findByEmail(email: string, companyId: string): Promise<Candidate | null> {
     const r = await this.prisma.candidate.findFirst({ where: { email, companyId, deletedAt: null } });
     return r ? this.toDomain(r) : null;

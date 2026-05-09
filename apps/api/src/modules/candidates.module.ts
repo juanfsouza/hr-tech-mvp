@@ -4,7 +4,7 @@ import { PrismaCandidateRepository } from './candidates/infrastructure/repositor
 import { CandidatesController } from './candidates/controllers/candidates.controller';
 import { AnonymizeCandidateUseCase } from './candidates/application/use-cases/anonymize-candidate.use-case';
 import { CreateCandidateUseCase } from './candidates/application/use-cases/create-candidates.use-case';
-import { ListCandidatesByJobUseCase, GetCandidateByIdUseCase } from './candidates/application/use-cases/list-candidates.use-case';
+import { ListCandidatesByJobUseCase, GetCandidateByIdUseCase, ListCandidatesByCompanyUseCase } from './candidates/application/use-cases/list-candidates.use-case';
 import { UpdateCandidateStatusUseCase } from './candidates/application/use-cases/update-candidates.use.case';
 
 
@@ -14,6 +14,7 @@ import { UpdateCandidateStatusUseCase } from './candidates/application/use-cases
     { provide: CANDIDATE_REPOSITORY, useClass: PrismaCandidateRepository },
     CreateCandidateUseCase,
     ListCandidatesByJobUseCase,
+    ListCandidatesByCompanyUseCase,
     GetCandidateByIdUseCase,
     UpdateCandidateStatusUseCase,
     AnonymizeCandidateUseCase,

@@ -49,7 +49,8 @@ Seja direto, profissional e engajante. Máximo 600 palavras.
           maxTokens: 1500,
         });
         return response.content;
-      } catch (grokError) {
+      } catch (grokError: any) {
+        console.error('[AiOrchestration] Erro no Grok (xAI):', grokError.message || grokError);
         console.error('[AiOrchestration] Ambas as IAs falharam. Usando Modo Simulado.');
         return `### Descrição da Vaga (MODO SIMULADO)
 
@@ -140,7 +141,8 @@ Avalie com rigor mas construtividade. Considere compatibilidade de personalidade
           { systemPrompt: 'Você é um psicólogo organizacional especializado em assessment de pessoas.', maxTokens: 2048 },
         );
         return result;
-      } catch (grokError) {
+      } catch (grokError: any) {
+        console.error('[AiOrchestration] Erro no Grok (Análise):', grokError.message || grokError);
         console.error('[AiOrchestration] Falha total na análise. Usando Mock.');
         return {
           overallScore: 75,

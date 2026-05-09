@@ -121,3 +121,17 @@ export class CloseJobUseCase {
     return right({ status: job.status });
   }
 }
+@Injectable()
+export class UpdateJobUseCase {
+  constructor(@Inject(JOB_REPOSITORY) private readonly repo: IJobRepository) { }
+
+  async execute(id: string, companyId: string, data: Partial<CreateJobInput>): Promise<Either<EntityNotFoundError, { id: string }>> {
+    const job = await this.repo.findById(id, companyId);
+    if (!job) return left(new EntityNotFoundError('Job', id));
+
+    job.update(data);
+
+    await this.repo.update(job);
+    return right({ id: job.id.value });
+  }
+}

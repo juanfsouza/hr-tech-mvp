@@ -13,6 +13,7 @@ import {
   GenerateJobDescriptionUseCase,
   PublishJobUseCase,
   CloseJobUseCase,
+  UpdateJobUseCase,
 } from '@modules/jobs/application/use-cases/jobs.use-cases';
 import { CreateJobDto } from '../application/dtos/create-job.dto';
 
@@ -29,6 +30,7 @@ export class JobsController {
     private readonly generateJdUseCase: GenerateJobDescriptionUseCase,
     private readonly publishJobUseCase: PublishJobUseCase,
     private readonly closeJobUseCase: CloseJobUseCase,
+    private readonly updateJobUseCase: UpdateJobUseCase,
   ) { }
 
   @Post()
@@ -80,6 +82,18 @@ export class JobsController {
       if (result.value.code === 'ENTITY_NOT_FOUND') throw new NotFoundException(result.value.message);
       throw new BadRequestException(result.value.message);
     }
+    return result.value;
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Atualizar dados da vaga' })
+  async update(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateJobDto>,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<{ id: string }> {
+    const result = await this.updateJobUseCase.execute(id, user.companyId!, dto);
+    if (result.isLeft()) throw new NotFoundException(result.value.message);
     return result.value;
   }
 
