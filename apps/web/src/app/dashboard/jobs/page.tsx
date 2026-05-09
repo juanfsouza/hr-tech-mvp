@@ -7,6 +7,7 @@ import { Button } from "@/components/atoms/button";
 import { Plus, Briefcase, Users, BrainCircuit, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { DashboardLayout } from "@/components/templates/DashboardLayout";
 
 export default function JobsPage() {
   const { data: jobs, isLoading } = useQuery({
@@ -15,7 +16,8 @@ export default function JobsPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <DashboardLayout>
+      <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold font-outfit tracking-tight">Gestão de Vagas</h1>
@@ -32,9 +34,9 @@ export default function JobsPage() {
         <div className="flex justify-center py-20">
           <Loader2 className="w-12 h-12 animate-spin text-forest dark:text-neon" />
         </div>
-      ) : jobs && jobs.length > 0 ? (
+      ) : jobs?.items && jobs.items.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {jobs.map((job: any) => (
+          {jobs.items.map((job: any) => (
             <motion.div key={job.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Card className="hover:border-forest/50 dark:hover:border-neon/50 transition-all cursor-pointer bg-card/50 backdrop-blur-sm border-border/50">
                 <CardHeader>
@@ -60,7 +62,9 @@ export default function JobsPage() {
                       <BrainCircuit className="w-4 h-4" /> IA Pronta
                     </div>
                   </div>
-                  <Button variant="outline" className="w-full">Ver Detalhes</Button>
+                  <Link href={`/dashboard/jobs/${job.id}`}>
+                    <Button variant="outline" className="w-full">Ver Detalhes</Button>
+                  </Link>
                 </CardContent>
               </Card>
             </motion.div>
@@ -82,7 +86,8 @@ export default function JobsPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
 

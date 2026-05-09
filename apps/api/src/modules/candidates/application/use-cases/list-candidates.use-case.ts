@@ -27,7 +27,20 @@ export class ListCandidatesByCompanyUseCase {
             cursor: input.cursor,
             take: input.take,
         });
-        return right(result);
+        
+        return right({
+            items: result.items.map(candidate => ({
+                id: candidate.id.value,
+                name: candidate.name,
+                email: candidate.email,
+                status: candidate.status,
+                matchScore: candidate.matchScore,
+                matchId: candidate.matchId,
+                createdAt: candidate.createdAt,
+            })),
+            nextCursor: result.nextCursor,
+            hasNextPage: result.hasNextPage,
+        });
     }
 }
 

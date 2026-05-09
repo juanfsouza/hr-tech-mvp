@@ -41,7 +41,18 @@ export class ListJobsUseCase {
       cursor: input.cursor,
       take: input.take,
     });
-    return right(result);
+
+    return right({
+      items: result.items.map(job => ({
+        id: job.id.value,
+        title: job.title,
+        description: job.description,
+        status: job.status,
+        createdAt: job.createdAt,
+      })),
+      nextCursor: result.nextCursor,
+      hasNextPage: result.hasNextPage,
+    });
   }
 }
 

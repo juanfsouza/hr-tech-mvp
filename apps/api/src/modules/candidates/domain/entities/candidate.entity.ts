@@ -7,6 +7,8 @@ export type CandidateStatus =
   | 'TEST_COMPLETED' | 'ANALYZING' | 'APPROVED' | 'REJECTED';
 
 export class Candidate extends Entity<CandidateProps> {
+  matchId?: string;
+  matchScore?: number;
   private constructor(props: CandidateProps, id?: UniqueEntityID) {
     super(props, id);
   }
