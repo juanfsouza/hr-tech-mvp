@@ -24,14 +24,14 @@ export default function WelcomePage() {
           >
             <Zap className="w-12 h-12 text-neon" />
           </motion.div>
-          
+
           <h1 className="text-6xl font-bold font-outfit tracking-tight mb-6 leading-tight">
             SaaS de RH com <br />
             <span className="text-neon drop-shadow-[0_0_15px_rgba(196,255,87,0.3)]">Psicometria & IA</span>
           </h1>
-          
+
           <p className="text-xl text-chumbo/80 dark:text-offwhite/70 max-w-2xl mx-auto font-light">
-            Recrutamento inteligente com motor próprio de testes <span className="font-semibold text-forest dark:text-azure">DISC, Eneagrama e 16P</span>. 
+            Recrutamento inteligente com motor próprio de testes <span className="font-semibold text-forest dark:text-azure">DISC, Eneagrama e 16P</span>.
             Sem custos por aplicação, 100% data-driven.
           </p>
         </div>
@@ -87,7 +87,7 @@ export default function WelcomePage() {
           </motion.div>
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
@@ -97,7 +97,7 @@ export default function WelcomePage() {
             <span>Stack: Bun + Next.js 14</span>
             <span>IA: Claude 3.5 Sonnet</span>
           </div>
-          <p>© 2026 SaaS RH Intelligence.</p>
+          <p>© 2026 RH TECH Intelligence.</p>
         </motion.div>
       </motion.div>
     </div>

@@ -1,5 +1,5 @@
 #!/bin/bash
-# ─── SaaS RH — Script de Inicialização Docker ─────────────────────────────────
+# ─── RH TECH — Script de Inicialização Docker ─────────────────────────────────
 set -e
 
 COMPOSE_FILE="$(dirname "$0")/docker-compose.yml"

@@ -105,7 +105,7 @@ export default function CandidatePortal() {
               Você pode fechar esta janela agora. Obrigado por participar do nosso processo seletivo!
             </p>
             <div className="text-sm font-bold text-forest dark:text-neon uppercase tracking-widest">
-              SaaS RH Intelligence
+              RH TECH Intelligence
             </div>
           </Card>
         </motion.div>
@@ -121,7 +121,7 @@ export default function CandidatePortal() {
             <div className="w-10 h-10 rounded-xl bg-forest dark:bg-neon flex items-center justify-center">
               <Brain className="w-6 h-6 text-offwhite dark:text-chumbo" />
             </div>
-            <span className="font-outfit font-bold text-xl">SaaS RH <span className="text-forest dark:text-neon">Portal</span></span>
+            <span className="font-outfit font-bold text-xl">RH TECH <span className="text-forest dark:text-neon">Portal</span></span>
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5">

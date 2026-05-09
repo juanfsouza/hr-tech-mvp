@@ -1,7 +1,7 @@
 {
   "name": "@saas-rh/api",
   "version": "1.0.0",
-  "description": "SaaS RH - Backend NestJS (Clean Architecture + DDD)",
+  "description": "RH TECH - Backend NestJS (Clean Architecture + DDD)",
   "private": true,
   "scripts": {
     "build": "nest build",

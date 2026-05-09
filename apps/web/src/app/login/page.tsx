@@ -40,7 +40,7 @@ export default function LoginPage() {
     try {
       const response = await authService.login(data.email, data.password);
       console.log("[Login] Sucesso! Resposta recebida:", response);
-      
+
       if (response.accessToken) {
         toast.success("Login realizado com sucesso!");
         router.push("/dashboard");
@@ -71,7 +71,7 @@ export default function LoginPage() {
             <Sparkles className="w-8 h-8 text-forest dark:text-neon" />
           </div>
           <h1 className="text-3xl font-bold font-outfit">Acesse sua conta</h1>
-          <p className="text-muted-foreground mt-2">Bem-vindo de volta ao SaaS RH</p>
+          <p className="text-muted-foreground mt-2">Bem-vindo de volta ao RH TECH</p>
         </div>
 
         <Card className="border-border/50 bg-card/50 backdrop-blur-xl shadow-2xl">

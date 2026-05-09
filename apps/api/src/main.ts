@@ -67,7 +67,7 @@ async function bootstrap(): Promise<void> {
   // ─── Swagger (apenas em desenvolvimento) ──────────────────────────────────
   if (process.env['NODE_ENV'] !== 'production') {
     const config = new DocumentBuilder()
-      .setTitle('SaaS RH API')
+      .setTitle('RH TECH API')
       .setDescription('API do SaaS de RH com Psicometria e IA')
       .setVersion('1.0')
       .addBearerAuth()

@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { 
-  LayoutDashboard, 
-  Briefcase, 
-  Users, 
-  BrainCircuit, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Briefcase,
+  Users,
+  BrainCircuit,
+  Settings,
   LogOut,
   Sparkles,
   MessageSquare
@@ -34,7 +34,7 @@ export function DashboardSidebar() {
           <div className="w-8 h-8 rounded-lg bg-neon flex items-center justify-center shadow-lg shadow-neon/20">
             <Sparkles className="w-5 h-5 text-chumbo" />
           </div>
-          <span className="font-outfit font-bold text-xl tracking-tight">SaaS RH</span>
+          <span className="font-outfit font-bold text-xl tracking-tight">RH TECH</span>
         </Link>
       </div>
 
@@ -47,8 +47,8 @@ export function DashboardSidebar() {
               href={item.href}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group",
-                isActive 
-                  ? "bg-forest/10 dark:bg-neon/10 text-forest dark:text-neon shadow-sm" 
+                isActive
+                  ? "bg-forest/10 dark:bg-neon/10 text-forest dark:text-neon shadow-sm"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               )}
             >

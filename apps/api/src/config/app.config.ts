@@ -28,7 +28,7 @@ const configSchema = z.object({
   S3_PUBLIC_URL: z.string().url(),
   RESEND_API_KEY: z.string().startsWith('re_'),
   EMAIL_FROM: z.string().email().default('noreply@saasrh.app'),
-  EMAIL_FROM_NAME: z.string().default('SaaS RH'),
+  EMAIL_FROM_NAME: z.string().default('RH TECH'),
   THROTTLE_TTL: z.coerce.number().default(60),
   THROTTLE_LIMIT: z.coerce.number().default(100),
   TEST_LINK_EXPIRY_HOURS: z.coerce.number().default(72),

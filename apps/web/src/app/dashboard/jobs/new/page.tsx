@@ -3,7 +3,7 @@ import { JobCreationWizard } from "@/components/organisms/jobs/JobCreationWizard
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Nova Vaga | SaaS RH",
+  title: "Nova Vaga | RH TECH",
   description: "Crie novas oportunidades usando inteligência artificial.",
 };
 

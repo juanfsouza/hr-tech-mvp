@@ -184,16 +184,18 @@ export default function JobDetailsPage() {
                   </DialogTrigger>
                   <DialogContent className="bg-background/95 backdrop-blur-xl border-border/50">
                     <DialogHeader>
-                      <DialogTitle className="text-2xl font-outfit">Excluir Vaga?</DialogTitle>
-                      <DialogDescription className="text-lg text-muted-foreground">
-                        Esta ação não pode ser desfeita. Isso excluirá permanentemente a vaga 
+                      <div className="flex items-center border-b border-border/50">
+                        <DialogTitle className="text-2xl font-outfit mb-1">Excluir Vaga?</DialogTitle>
+                      </div>
+                      <DialogDescription className="text-md text-muted-foreground">
+                        Esta ação não pode ser desfeita. Isso excluirá permanentemente a vaga
                         <strong className="text-foreground ml-1">"{job.title}"</strong> e removerá todos os dados associados.
                       </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="gap-2 sm:gap-0 mt-6">
-                      <Button variant="outline" onClick={() => {}} className="flex-1">Cancelar</Button>
-                      <Button 
-                        variant="destructive" 
+                      <Button variant="outline" onClick={() => setIsEditing(false)} className="flex-1 mr-2">Cancelar</Button>
+                      <Button
+                        variant="destructive"
                         onClick={handleDelete}
                         disabled={deleteMutation.isPending}
                         className="flex-1 bg-red-600 hover:bg-red-700"
@@ -219,18 +221,18 @@ export default function JobDetailsPage() {
             )}
             {job.status === "ACTIVE" && !isEditing && (
               <>
-                <Button 
-                  variant="outline" 
-                  onClick={handlePause} 
+                <Button
+                  variant="outline"
+                  onClick={handlePause}
                   disabled={pauseMutation.isPending}
                   className="flex-1 md:flex-none border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10 gap-2"
                 >
                   {pauseMutation.isPending ? <Loader2 className="animate-spin w-4 h-4" /> : <Pause className="w-4 h-4" />}
                   Pausar
                 </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={handleClose} 
+                <Button
+                  variant="outline"
+                  onClick={handleClose}
                   disabled={closeMutation.isPending}
                   className="flex-1 md:flex-none border-red-500/50 text-red-500 hover:bg-red-500/10 gap-2"
                 >
@@ -240,7 +242,7 @@ export default function JobDetailsPage() {
               </>
             )}
 
-            <Button 
+            <Button
               onClick={handlePublish}
               disabled={isEditing || publishMutation.isPending || job.status === "ACTIVE"}
               className="flex-1 md:flex-none bg-forest dark:bg-neon dark:text-chumbo font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-all"
