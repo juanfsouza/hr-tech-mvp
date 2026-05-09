@@ -5,32 +5,70 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
 import Link from "next/link";
-import { 
-  Plus, 
-  TrendingUp, 
-  Users, 
-  Briefcase, 
-  Clock, 
+import {
+  Plus,
+  TrendingUp,
+  Users,
+  Briefcase,
+  Clock,
   ArrowUpRight,
   MoreVertical,
   CheckCircle2,
   Brain,
-  Sparkles
+  Sparkles,
+  Pencil,
+  Eye,
+  MapPin,
+  X,
+  Loader2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { jobService } from "@/services/job-service";
 import { candidateService } from "@/services/candidate-service";
 import { authService } from "@/services/auth-service";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/atoms/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/atoms/dialog";
 
 export default function DashboardPage() {
   const user = authService.getUser();
+  const queryClient = useQueryClient();
+
   // Buscar vagas reais
   const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
     queryKey: ["jobs"],
     queryFn: () => jobService.list(undefined, 5),
   });
+
+  // Mutação para encerrar vaga
+  const closeMutation = useMutation({
+    mutationFn: (id: string) => jobService.close(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      toast.success("Vaga encerrada com sucesso!");
+    },
+    onError: () => {
+      toast.error("Erro ao encerrar vaga.");
+    }
+  });
+
+  const handleCloseJob = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    closeMutation.mutate(id);
+  };
 
   // Buscar candidatos para estatísticas
   const { data: candidates, isLoading: isLoadingCandidates } = useQuery({
@@ -58,8 +96,8 @@ export default function DashboardPage() {
             <p className="text-muted-foreground text-lg">Olá {user?.name || "Usuário"}, veja como estão seus processos seletivos hoje.</p>
           </div>
           {!user?.companyId && (
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }} 
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="bg-coral/10 border border-coral/20 p-4 rounded-2xl flex items-center gap-4 max-w-md"
             >
@@ -125,44 +163,148 @@ export default function DashboardPage() {
                 [1, 2, 3].map((i) => <div key={i} className="h-20 bg-muted animate-pulse rounded-2xl" />)
               ) : (
                 jobs.map((job: any) => (
-                  <Card key={job.id} className="border-border/50 bg-card/30 hover:bg-card/50 transition-colors group">
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
-                          <Briefcase className="w-6 h-6 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-lg leading-none mb-1 group-hover:text-forest dark:group-hover:text-neon transition-colors">
-                            {job.title}
-                          </h4>
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {job.candidatesCount || 0} candidatos</span>
-                            <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(job.createdAt).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-6">
-                        <div className="text-right">
-                          <p className="text-xs text-muted-foreground mb-1 uppercase font-bold tracking-wider">Avg. Match</p>
-                          <div className="flex items-center gap-2">
-                            <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
-                              <div className="h-full bg-neon" style={{ width: `85%` }} />
+                  <Dialog key={job.id}>
+                    <DialogTrigger asChild>
+                      <Card className="border-border/50 bg-card/30 hover:bg-card/50 transition-all group cursor-pointer hover:shadow-lg hover:shadow-forest/5 dark:hover:shadow-neon/5 active:scale-[0.98]">
+                        <CardContent className="p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-forest/10 dark:group-hover:bg-neon/10 transition-colors">
+                              <Briefcase className="w-6 h-6 text-muted-foreground group-hover:text-forest dark:group-hover:text-neon" />
                             </div>
-                            <span className="text-sm font-bold">85%</span>
+                            <div className="">
+                              <h4 className="font-bold text-start text-lg leading-none mb-1 group-hover:text-forest dark:group-hover:text-neon transition-colors">
+                                {job.title}
+                              </h4>
+                              <div className="flex items-center gap-3 ml-1 text-sm text-muted-foreground">
+                                <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {job.candidatesCount || 0} candidatos</span>
+                                <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(job.createdAt).toLocaleDateString()}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-6" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                            <div className="text-right hidden md:block">
+                              <p className="text-xs text-start text-muted-foreground mb-1 uppercase font-bold tracking-wider">Avg. Match</p>
+                              <div className="flex items-center gap-2">
+                                <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
+                                  <div className="h-full bg-neon" style={{ width: `85%` }} />
+                                </div>
+                                <span className="text-sm font-bold">85%</span>
+                              </div>
+                            </div>
+
+                            <Badge variant={job.status === "ACTIVE" ? "default" : "secondary"} className={cn(
+                              "relative overflow-hidden rounded-lg px-3 py-1 font-bold",
+                              job.status === "ACTIVE" ? "bg-forest/10 text-forest dark:bg-neon/10 dark:text-neon border-transparent shadow-[0_0_15px_rgba(34,197,94,0.1)]" : ""
+                            )}>
+                              {/* Framer Motion Shine Effect */}
+                              <motion.div
+                                className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                                initial={{ x: "-100%" }}
+                                animate={{ x: "100%" }}
+                                transition={{
+                                  repeat: Infinity,
+                                  duration: 2,
+                                  ease: "linear",
+                                }}
+                              />
+                              <span className="relative z-10">{job.status}</span>
+                            </Badge>
+
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="rounded-xl hover:bg-muted">
+                                  <MoreVertical className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-48 bg-card/95 backdrop-blur-xl">
+                                <Link href={`/dashboard/jobs/${job.id}`}>
+                                  <DropdownMenuItem className="gap-2 cursor-pointer">
+                                    <Pencil className="w-4 h-4" /> Editar Vaga
+                                  </DropdownMenuItem>
+                                </Link>
+                                <DropdownMenuItem className="gap-2 cursor-pointer">
+                                  <Users className="w-4 h-4" /> Ver Candidatos
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+                                  onClick={(e) => handleCloseJob(e, job.id)}
+                                >
+                                  {closeMutation.isPending ? <Loader2 className="animate-spin w-4 h-4" /> : <X className="w-4 h-4" />}
+                                  Encerrar Vaga
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </DialogTrigger>
+
+                    <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl scrollbar-hide">
+                      <DialogHeader className="flex flex-col md:flex-row items-start justify-between border-b border-border/50 pb-6 mb-6 gap-4">
+                        <div className="space-y-1">
+                          <DialogTitle className="text-2xl md:text-3xl font-outfit font-bold">{job.title}</DialogTitle>
+                          <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
+                            <span className="flex items-center gap-1.5 text-sm md:text-base"><MapPin className="w-4 h-4" /> {job.location || "Remoto"}</span>
+                            <span className="flex items-center gap-1.5 text-sm md:text-base"><Clock className="w-4 h-4" /> Criada em {new Date(job.createdAt).toLocaleDateString()}</span>
                           </div>
                         </div>
-                        <Badge variant={job.status === "ACTIVE" ? "default" : "secondary"} className={cn(
-                          "rounded-lg px-3 py-1 font-bold",
-                          job.status === "ACTIVE" ? "bg-forest/10 text-forest dark:bg-neon/10 dark:text-neon border-transparent" : ""
+                        <Badge className={cn(
+                          "relative overflow-hidden text-sm px-4 py-1.5 rounded-full font-bold",
+                          job.status === "ACTIVE" ? "bg-green-500/10 text-green-500 border-green-500/20" : "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
                         )}>
-                          {job.status}
+                          <motion.div
+                            className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                            initial={{ x: "-100%" }}
+                            animate={{ x: "100%" }}
+                            transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                          />
+                          <span className="relative z-10">{job.status}</span>
                         </Badge>
-                        <Button variant="ghost" size="icon" className="rounded-xl">
-                          <MoreVertical className="w-4 h-4" />
-                        </Button>
+                      </DialogHeader>
+
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <Card className="bg-muted/30 border-none p-4 text-center">
+                            <Users className="w-6 h-6 mx-auto mb-2 text-forest dark:text-neon" />
+                            <p className="text-sm text-muted-foreground">Candidatos</p>
+                            <p className="text-xl font-bold">{job.candidatesCount || 0}</p>
+                          </Card>
+                          <Card className="bg-muted/30 border-none p-4 text-center">
+                            <TrendingUp className="w-6 h-6 mx-auto mb-2 text-azure" />
+                            <p className="text-sm text-muted-foreground">Match Médio</p>
+                            <p className="text-xl font-bold">85%</p>
+                          </Card>
+                          <Card className="bg-muted/30 border-none p-4 text-center">
+                            <Brain className="w-6 h-6 mx-auto mb-2 text-coral" />
+                            <p className="text-sm text-muted-foreground">Análise IA</p>
+                            <p className="text-xl font-bold">Pronta</p>
+                          </Card>
+                        </div>
+
+                        <div className="space-y-3">
+                          <h4 className="font-bold flex items-center gap-2">
+                            <Briefcase className="w-4 h-4 text-forest dark:text-neon" />
+                            Resumo da Descrição
+                          </h4>
+                          <p className="text-muted-foreground leading-relaxed line-clamp-4">
+                            {job.description || "Nenhuma descrição detalhada disponível para esta vaga."}
+                          </p>
+                        </div>
+
+                        <div className="flex gap-4 pt-4 border-t border-border/50">
+                          <Link href={`/dashboard/jobs/${job.id}`} className="flex-1">
+                            <Button className="w-full bg-forest dark:bg-neon dark:text-chumbo font-bold gap-2">
+                              <Eye className="w-4 h-4" /> Ver Detalhes Completo
+                            </Button>
+                          </Link>
+                          <Button variant="outline" className="flex-1 gap-2">
+                            <Pencil className="w-4 h-4" /> Editar Vaga
+                          </Button>
+                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </DialogContent>
+                  </Dialog>
                 ))
               )}
             </div>
@@ -173,7 +315,7 @@ export default function DashboardPage() {
             <Card className="border-none bg-forest/5 dark:bg-neon/5">
               <CardContent className="p-6 space-y-6">
                 {isLoadingCandidates ? (
-                   [1, 2, 3].map((i) => <div key={i} className="h-12 bg-muted/50 animate-pulse rounded-xl" />)
+                  [1, 2, 3].map((i) => <div key={i} className="h-12 bg-muted/50 animate-pulse rounded-xl" />)
                 ) : candidatesItems.length > 0 ? (
                   candidatesItems.slice(0, 3).map((candidate: any, i: number) => (
                     <div key={candidate.id} className="flex gap-4 relative">
@@ -196,7 +338,7 @@ export default function DashboardPage() {
                 )}
               </CardContent>
             </Card>
-            
+
             <Card className="border-none bg-azure/10 overflow-hidden relative group">
               <div className="absolute top-0 right-0 p-2">
                 <Sparkles className="w-4 h-4 text-azure opacity-50" />
