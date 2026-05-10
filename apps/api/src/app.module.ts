@@ -18,6 +18,7 @@ import { JobsModule } from './modules/jobs.module';
 import { MatchModule } from './modules/match.module';
 import { NotificationsModule } from './modules/notifications.module';
 import { TestsModule } from './modules/tests.module';
+import { QueuesDashboardModule } from './modules/queues-dashboard.module';
 import { HealthController } from './modules/health/controllers/health.controller';
 
 @Module({
@@ -76,6 +77,7 @@ import { HealthController } from './modules/health/controllers/health.controller
     CandidatesModule,
     MatchModule,
     AiModule,
+    QueuesDashboardModule,
   ],
   controllers: [HealthController],
   providers: [

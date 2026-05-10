@@ -45,7 +45,7 @@ async function bootstrap(): Promise<void> {
 
   // ─── Global Prefix ────────────────────────────────────────────────────────
   app.setGlobalPrefix('api/v1', {
-    exclude: ['/health'],
+    exclude: ['/health', '/admin/queues', '/admin/queues/(.*)'],
   });
 
   // ─── Validação Global ─────────────────────────────────────────────────────

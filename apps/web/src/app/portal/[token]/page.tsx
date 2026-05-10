@@ -7,18 +7,20 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/atoms/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
-import { Loader2, Brain, CheckCircle2, ShieldCheck, Clock, ArrowRight } from "lucide-react";
+import { Loader2, Brain, CheckCircle2, ShieldCheck, Clock, ArrowRight, Timer, House, LockKeyhole } from "lucide-react";
 import { toast } from "sonner";
+import { AnimatedThemeToggler } from "@/components/atoms/AnimatedThemeToggler";
 
 import { DiscTest } from "@/components/organisms/tests/DiscTest";
-import error from "next/error";
+import { EnneagramTest } from "@/components/organisms/tests/EnneagramTest";
+import { SixteenPersonalitiesTest } from "@/components/organisms/tests/SixteenPersonalitiesTest";
 
 export default function CandidatePortal() {
   const { token } = useParams<{ token: string }>();
   const router = useRouter();
   const [view, setView] = useState<"INTRO" | "TESTING" | "COMPLETED">("INTRO");
 
-  const { data: session, isLoading, refetch } = useQuery({
+  const { data: session, isLoading, isError, refetch } = useQuery({
     queryKey: ["test-session", token],
     queryFn: () => testService.getSession(token),
     retry: false,
@@ -51,7 +53,7 @@ export default function CandidatePortal() {
         setView("COMPLETED");
       } else {
         toast.success("Teste concluído! Vamos para o próximo.");
-        refetch(); // Atualiza a sessão para pegar o próximo teste
+        refetch();
       }
     } catch (error) {
       toast.error("Erro ao finalizar teste. Tente novamente.");
@@ -62,14 +64,14 @@ export default function CandidatePortal() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
-          <Loader2 className="w-12 h-12 animate-spin text-forest dark:text-neon mx-auto" />
-          <p className="text-muted-foreground animate-pulse font-outfit">Carregando sua sessão de teste...</p>
+          <Loader2 className="w-12 h-12 animate-spin text-neon mx-auto" />
+          <p className="text-muted-foreground animate-pulse font-outfit text-neon/80">Carregando sua sessão de teste...</p>
         </div>
       </div>
     );
   }
 
-  if (error || !session) {
+  if (isError || !session) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-6">
         <Card className="max-w-md w-full border-destructive/20 bg-destructive/5">
@@ -92,8 +94,8 @@ export default function CandidatePortal() {
       <div className="min-h-screen flex items-center justify-center bg-background p-6">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
           <Card className="max-w-xl w-full text-center p-8 border-forest dark:border-neon shadow-2xl">
-            <div className="w-20 h-20 bg-forest/10 dark:bg-neon/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="w-10 h-10 text-forest dark:text-neon" />
+            <div className="w-20 h-20 bg-neon/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="w-10 h-10 text-neon" />
             </div>
             <CardHeader className="p-0 mb-6">
               <CardTitle className="text-3xl font-outfit">Testes Concluídos!</CardTitle>
@@ -104,7 +106,7 @@ export default function CandidatePortal() {
             <p className="text-muted-foreground mb-8">
               Você pode fechar esta janela agora. Obrigado por participar do nosso processo seletivo!
             </p>
-            <div className="text-sm font-bold text-forest dark:text-neon uppercase tracking-widest">
+            <div className="text-sm font-bold text-neon uppercase tracking-widest">
               RH TECH Intelligence
             </div>
           </Card>
@@ -118,10 +120,10 @@ export default function CandidatePortal() {
       <div className="w-full max-w-4xl">
         <header className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-forest dark:bg-neon flex items-center justify-center">
-              <Brain className="w-6 h-6 text-offwhite dark:text-chumbo" />
+            <div className="w-10 h-10 rounded-xl bg-neon flex items-center justify-center">
+              <Brain className="w-6 h-6 text-chumbo" />
             </div>
-            <span className="font-outfit font-bold text-xl">RH TECH <span className="text-forest dark:text-neon">Portal</span></span>
+            <span className="font-outfit font-bold text-xl uppercase tracking-tighter">RH TECH <span className="text-forest dark:text-neon">PORTAL</span></span>
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5">
@@ -130,7 +132,10 @@ export default function CandidatePortal() {
             </div>
             <div className="flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-green-500" />
-              <span>Conexão Segura</span>
+              <span>Privacidade protegida</span>
+            </div>
+            <div className="pl-2 ml-2 border-l border-border">
+              <AnimatedThemeToggler />
             </div>
           </div>
         </header>
@@ -155,18 +160,21 @@ export default function CandidatePortal() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
                   <Card className="bg-card/50 border-none shadow-sm">
                     <CardContent className="p-6 text-center space-y-2">
+                      <Timer className="flex items-center justify-center mx-auto mb-2 w-4 h-4 text-forest dark:text-neon" />
                       <h3 className="font-bold">Tempo Estimado</h3>
                       <p className="text-sm text-muted-foreground">15 - 20 minutos</p>
                     </CardContent>
                   </Card>
                   <Card className="bg-card/50 border-none shadow-sm">
                     <CardContent className="p-6 text-center space-y-2">
+                      <House className="flex items-center justify-center mx-auto mb-2 w-4 h-4 text-forest dark:text-neon" />
                       <h3 className="font-bold">Ambiente</h3>
                       <p className="text-sm text-muted-foreground">Busque um local calmo e sem distrações</p>
                     </CardContent>
                   </Card>
                   <Card className="bg-card/50 border-none shadow-sm">
                     <CardContent className="p-6 text-center space-y-2">
+                      <LockKeyhole className="flex items-center justify-center mx-auto mb-2 w-4 h-4 text-forest dark:text-neon" />
                       <h3 className="font-bold">Sua Privacidade</h3>
                       <p className="text-sm text-muted-foreground">Seus dados são protegidos por LGPD</p>
                     </CardContent>
@@ -177,7 +185,7 @@ export default function CandidatePortal() {
                   <Button
                     size="lg"
                     onClick={() => setView("TESTING")}
-                    className="h-16 px-12 text-xl font-bold bg-forest dark:bg-neon dark:text-chumbo shadow-2xl shadow-forest/20 dark:shadow-neon/20 rounded-2xl group"
+                    className="h-16 px-12 text-xl font-bold bg-neon text-chumbo shadow-2xl shadow-neon/20 rounded-2xl group border-none"
                   >
                     Iniciar Avaliação
                     <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
@@ -195,7 +203,7 @@ export default function CandidatePortal() {
               >
                 {isLoadingQuestions ? (
                   <div className="py-20 text-center space-y-4">
-                    <Loader2 className="w-10 h-10 animate-spin mx-auto text-forest dark:text-neon" />
+                    <Loader2 className="w-10 h-10 animate-spin mx-auto text-neon" />
                     <p className="text-muted-foreground">Carregando questões...</p>
                   </div>
                 ) : (
@@ -208,11 +216,20 @@ export default function CandidatePortal() {
                       />
                     )}
 
-                    {session?.currentTest !== "DISC" && (
-                      <Card className="p-12 text-center border-dashed border-2">
-                        <h2 className="text-2xl font-bold mb-4">{session?.currentTest}</h2>
-                        <p className="text-muted-foreground">Este tipo de teste ainda está sendo preparado.</p>
-                      </Card>
+                    {session?.currentTest === "ENNEAGRAM" && questionsData && (
+                      <EnneagramTest
+                        questions={questionsData.questions}
+                        onSaveProgress={handleSaveProgress}
+                        onComplete={handleCompleteTest}
+                      />
+                    )}
+
+                    {session?.currentTest === "SIXTEEN_PERSONALITIES" && questionsData && (
+                      <SixteenPersonalitiesTest
+                        questions={questionsData.questions}
+                        onSaveProgress={handleSaveProgress}
+                        onComplete={handleCompleteTest}
+                      />
                     )}
                   </>
                 )}

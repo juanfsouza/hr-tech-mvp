@@ -36,7 +36,7 @@ export function DiscTest({ questions, onComplete, onSaveProgress }: DiscTestProp
 
   const handleSelect = async (itemId: string, type: 'most' | 'least') => {
     const currentSelection = selections[currentBlock.id] || { most: null, least: null };
-    
+
     // Evitar selecionar o mesmo item para most e least
     if (type === 'most' && currentSelection.least === itemId) return;
     if (type === 'least' && currentSelection.most === itemId) return;
@@ -51,7 +51,6 @@ export function DiscTest({ questions, onComplete, onSaveProgress }: DiscTestProp
       [currentBlock.id]: newSelection
     });
 
-    // Se ambos forem selecionados, salvar progresso
     if (newSelection.most && newSelection.least) {
       setIsSaving(true);
       await onSaveProgress(currentBlock.id, JSON.stringify(newSelection));
@@ -89,7 +88,7 @@ export function DiscTest({ questions, onComplete, onSaveProgress }: DiscTestProp
           transition={{ duration: 0.3 }}
         >
           <div className="bg-forest/5 dark:bg-neon/5 p-4 rounded-xl border border-forest/10 dark:border-neon/10 mb-8 flex items-start gap-3">
-            <Info className="w-5 h-5 text-forest dark:text-neon shrink-0 mt-0.5" />
+            <Info className="w-5 h-5 text-forest shrink-0 mt-0.5" />
             <p className="text-sm text-muted-foreground italic">
               Selecione o item que <strong>MAIS</strong> combina com você e o que <strong>MENOS</strong> combina neste bloco.
             </p>
@@ -97,23 +96,23 @@ export function DiscTest({ questions, onComplete, onSaveProgress }: DiscTestProp
 
           <div className="space-y-4">
             {currentBlock.items.map((item) => (
-              <Card 
-                key={item.id} 
+              <Card
+                key={item.id}
                 className={cn(
                   "transition-all border-2",
-                  currentBlockSelection.most === item.id ? "border-forest dark:border-neon bg-forest/5 dark:bg-neon/5 shadow-md" : 
-                  currentBlockSelection.least === item.id ? "border-destructive/30 bg-destructive/5" : "border-border"
+                  currentBlockSelection.most === item.id ? "border-neon bg-neon/5 shadow-md" :
+                    currentBlockSelection.least === item.id ? "border-destructive/30 bg-destructive/5" : "border-border"
                 )}
               >
                 <CardContent className="p-0 flex items-center justify-between">
                   <p className="p-6 flex-1 font-medium text-lg leading-tight">{item.text}</p>
-                  
+
                   <div className="flex border-l border-border h-full">
                     <button
                       onClick={() => handleSelect(item.id, 'most')}
                       className={cn(
-                        "w-16 h-full flex flex-col items-center justify-center gap-1 border-r border-border hover:bg-forest/10 transition-colors py-4",
-                        currentBlockSelection.most === item.id ? "bg-forest text-offwhite dark:bg-neon dark:text-chumbo" : "text-muted-foreground"
+                        "w-16 h-full flex flex-col items-center justify-center gap-1 border-r border-border hover:bg-neon/10 transition-colors py-4",
+                        currentBlockSelection.most === item.id ? "bg-neon text-chumbo" : "text-muted-foreground"
                       )}
                     >
                       <Plus className="w-5 h-5" />
@@ -138,11 +137,11 @@ export function DiscTest({ questions, onComplete, onSaveProgress }: DiscTestProp
       </AnimatePresence>
 
       <div className="flex justify-end pt-4">
-        <Button 
+        <Button
           disabled={!canContinue || isSaving}
           onClick={nextBlock}
           size="lg"
-          className="h-14 px-10 text-lg font-bold bg-forest dark:bg-neon dark:text-chumbo group"
+          className="h-14 px-10 text-lg font-bold bg-neon text-chumbo group"
         >
           {isSaving ? <Loader2 className="w-6 h-6 animate-spin" /> : (
             <>
