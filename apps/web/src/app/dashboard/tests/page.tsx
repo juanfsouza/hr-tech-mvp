@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
+import { TestLinkModal } from "@/components/organisms/tests/TestLinkModal";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
@@ -215,105 +216,14 @@ export default function TestsPortalPage() {
               </CardContent>
             </Card>
           </div>
+          <TestLinkModal
+            isOpen={!!generatedLink}
+            onClose={() => setGeneratedLink(null)}
+            candidateName={selectedCandidate?.name || ""}
+            portalUrl={generatedLink?.portalUrl || ""}
+            expiresAt={generatedLink?.expiresAt || ""}
+          />
         </div>
-
-        {/* MODAL DE LINK GERADO */}
-        <AnimatePresence>
-          {generatedLink && (
-            <Dialog open={!!generatedLink} onOpenChange={(open) => !open && setGeneratedLink(null)}>
-              <DialogContent className="max-w-md bg-white dark:bg-slate-900 border-none rounded-[32px] p-0 overflow-hidden shadow-2xl">
-                <div className="relative p-8 pt-12 text-center">
-                  {/* Background Decoration */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-32 bg-gradient-to-b from-neon/10 to-transparent" />
-                  
-                  <motion.div 
-                    initial={{ scale: 0.5, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="relative w-24 h-24 bg-neon/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(196,255,87,0.2)]"
-                  >
-                    <motion.div
-                      animate={{ 
-                        scale: [1, 1.1, 1],
-                        rotate: [0, 5, -5, 0]
-                      }}
-                      transition={{ 
-                        duration: 4, 
-                        repeat: Infinity,
-                        ease: "easeInOut" 
-                      }}
-                    >
-                      <LinkIcon className="w-12 h-12 text-forest dark:text-neon" />
-                    </motion.div>
-                  </motion.div>
-
-                  <DialogHeader className="relative space-y-2">
-                    <DialogTitle className="text-3xl font-outfit font-black text-slate-900 dark:text-white tracking-tight">
-                      Link Pronto!
-                    </DialogTitle>
-                    <DialogDescription className="text-slate-500 dark:text-slate-400 text-base px-4">
-                      O teste para <span className="text-forest dark:text-neon font-bold">{selectedCandidate?.name}</span> foi gerado e já pode ser enviado.
-                    </DialogDescription>
-                  </DialogHeader>
-
-                  <div className="mt-10 space-y-6 text-left">
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 ml-1">
-                        Link de Acesso
-                      </label>
-                      <div className="flex items-center gap-2 p-2 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 group focus-within:border-neon/50 transition-all">
-                        <div className="flex-1 px-3 py-2 text-sm font-mono truncate text-slate-600 dark:text-slate-300">
-                          {generatedLink.portalUrl}
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-10 w-10 rounded-xl bg-white dark:bg-slate-700 shadow-sm text-forest dark:text-neon hover:bg-neon hover:text-chumbo transition-all shrink-0"
-                          onClick={() => copyToClipboard(generatedLink.portalUrl)}
-                        >
-                          <Copy className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4 p-5 bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/10 rounded-[24px]">
-                      <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center shrink-0">
-                        <Clock className="w-5 h-5 text-amber-600 dark:text-amber-500" />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-bold text-amber-900 dark:text-amber-100">Expira em 72 horas</p>
-                        <p className="text-xs text-amber-700/70 dark:text-amber-400/70">
-                          Válido até: {new Date(generatedLink.expiresAt).toLocaleString('pt-BR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                      <Button
-                        className="h-14 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-base gap-2 hover:opacity-90 transition-opacity"
-                        onClick={() => window.open(generatedLink.portalUrl, "_blank")}
-                      >
-                        <ExternalLink className="w-4 h-4" /> Abrir Portal
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="h-14 rounded-2xl border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-800"
-                        onClick={() => setGeneratedLink(null)}
-                      >
-                        Fechar
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
-        </AnimatePresence>
       </div>
     </DashboardLayout>
   );

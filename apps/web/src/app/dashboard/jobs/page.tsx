@@ -26,7 +26,7 @@ export default function JobsPage() {
             <p className="text-slate-500 dark:text-muted-foreground mt-2 text-lg">Crie e gerencie os processos seletivos da sua empresa.</p>
           </div>
           <Link href="/dashboard/jobs/new">
-            <Button className="bg-neon text-slate-900 dark:text-chumbo font-bold h-12 px-6 shadow-lg shadow-neon/20 hover:bg-neon/90 transition-all">
+            <Button className="bg-neon shadow-neon/50 hover:shadow-neon/70 border-none text-slate-900 dark:text-chumbo font-bold h-12 px-6 shadow-lg transition-all">
               <Plus className="mr-2 w-5 h-5" /> Nova Vaga
             </Button>
           </Link>
@@ -37,7 +37,7 @@ export default function JobsPage() {
             <Loader2 className="w-12 h-12 animate-spin text-forest dark:text-neon" />
           </div>
         ) : jobs?.items && jobs.items.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 drop-shadow-xl">
             {jobs.items.map((job: any) => (
               <motion.div key={job.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                 <Card className="hover:border-slate-300 dark:hover:border-neon/50 transition-all cursor-pointer bg-white dark:bg-card/50 border-slate-200 dark:border-border/50 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-neon/5 group">
@@ -48,8 +48,8 @@ export default function JobsPage() {
                       </div>
                       <Badge variant={job.status === "ACTIVE" ? "default" : "secondary"} className={cn(
                         "relative overflow-hidden rounded-lg px-3 py-1 font-bold border-none",
-                        job.status === "ACTIVE" 
-                          ? "bg-forest/20 text-forest dark:bg-neon/10 dark:text-neon shadow-[0_0_15px_rgba(34,197,94,0.1)]" 
+                        job.status === "ACTIVE"
+                          ? "bg-forest/20 text-forest dark:bg-neon/10 dark:text-neon shadow-[0_0_15px_rgba(34,197,94,0.1)]"
                           : "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
                       )}>
                         {/* Framer Motion Shine Effect */}

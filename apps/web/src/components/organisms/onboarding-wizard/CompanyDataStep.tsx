@@ -13,7 +13,7 @@ import { companyService } from "@/services/company-service";
 import { authService } from "@/services/auth-service";
 import { useMutation } from "@tanstack/react-query";
 import { Building2, MapPin, Globe, Loader2, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +37,16 @@ export function CompanyDataStep() {
   const mutation = useMutation({
     mutationFn: (data: CompanyFormData) => {
       const user = authService.getUser();
+      const companyId = user.companyId;
+
+      if (companyId) {
+        return companyService.update(companyId, {
+          razaoSocial: data.name,
+          cnpj: data.cnpj,
+          websiteUrl: data.website || undefined,
+        });
+      }
+
       return companyService.create({
         razaoSocial: data.name,
         cnpj: data.cnpj,
@@ -44,18 +54,18 @@ export function CompanyDataStep() {
         userId: user.id,
       });
     },
-    onSuccess: (data) => {
-      toast.success("Empresa cadastrada com sucesso!");
+    onSuccess: (data: any) => {
+      toast.success(user?.companyId ? "Dados atualizados!" : "Empresa cadastrada!");
       
-      // Atualizar o usuário no localStorage para refletir a nova empresa imediatamente
       const currentUser = authService.getUser();
-      if (currentUser) {
+      if (currentUser && !currentUser.companyId) {
         const updatedUser = { ...currentUser, companyId: data.companyId };
         localStorage.setItem('@SaaS:user', JSON.stringify(updatedUser));
       }
       
       updateCompanyData({
         name: data.razaoSocial,
+        cnpj: data.cnpj
       });
       nextStep();
     },
@@ -70,6 +80,7 @@ export function CompanyDataStep() {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors, isValid },
   } = useForm<CompanyFormData>({
     resolver: zodResolver(companySchema),
@@ -84,6 +95,21 @@ export function CompanyDataStep() {
     },
     mode: "onChange",
   });
+
+  // Atualizar formulário quando o store mudar (ex: após fetch no page.tsx)
+  useEffect(() => {
+    if (companyData.name || companyData.cnpj) {
+      reset({
+        name: companyData.name,
+        cnpj: companyData.cnpj,
+        zipCode: companyData.address?.zipCode,
+        street: companyData.address?.street,
+        number: companyData.address?.number,
+        city: companyData.address?.city,
+        state: companyData.address?.state,
+      });
+    }
+  }, [companyData, reset]);
 
   const handleCepBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
     const cep = e.target.value.replace(/\D/g, "");

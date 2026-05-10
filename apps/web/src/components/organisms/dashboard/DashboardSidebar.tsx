@@ -11,7 +11,8 @@ import {
   Settings,
   Sparkles,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Rocket
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUIStore } from "@/store/ui-store";
@@ -19,6 +20,7 @@ import { useState, useEffect } from "react";
 
 const MENU_ITEMS = [
   { icon: LayoutDashboard, label: "Visão Geral", href: "/dashboard" },
+  { icon: Rocket, label: "Onboarding", href: "/onboarding" },
   { icon: Briefcase, label: "Gestão de Vagas", href: "/dashboard/jobs" },
   { icon: Users, label: "Candidatos", href: "/dashboard/candidates" },
   { icon: BrainCircuit, label: "Portal de Testes", href: "/dashboard/tests" },

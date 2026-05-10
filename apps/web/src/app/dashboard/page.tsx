@@ -140,7 +140,7 @@ export default function DashboardPage() {
           )}
           {user?.companyId && (
             <Link href="/dashboard/jobs/new">
-              <Button className="bg-neon text-slate-900 dark:text-chumbo h-12 px-6 font-bold text-lg gap-2 shadow-lg shadow-neon/20 hover:bg-neon/90 transition-all">
+              <Button className="bg-neon shadow-neon/50 hover:shadow-neon/70 shadow-lg border-none text-slate-900 dark:text-chumbo h-12 px-6 font-bold text-lg gap-2 transition-all">
                 <Plus className="w-5 h-5" />
                 Nova Vaga
               </Button>

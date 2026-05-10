@@ -26,6 +26,11 @@ export const companyService = {
     return data;
   },
 
+  async update(id: string, input: Partial<CreateCompanyInput>) {
+    const { data } = await api.patch(`/companies/${id}`, input);
+    return data;
+  },
+
   async getById(id: string) {
     const { data } = await api.get(`/companies/${id}`);
     return data;
