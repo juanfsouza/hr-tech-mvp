@@ -8,7 +8,7 @@ import { ClaudeResponse } from '../interfaces/claude-response.interface';
 
 @Injectable()
 export class OpenAiService {
-  private readonly client: OpenAI;
+  private readonly client?: OpenAI;
   private readonly model: string;
 
   constructor(config: ConfigService<AppConfig>) {
@@ -18,13 +18,18 @@ export class OpenAiService {
     // Se o baseURL contiver x.ai, usamos o modelo do Grok, senão gpt-4o
     this.model = baseURL.includes('x.ai') ? 'grok-latest' : 'gpt-4o';
 
-    this.client = new OpenAI({
-      apiKey: apiKey,
-      baseURL: baseURL,
-    });
+    if (apiKey) {
+      this.client = new OpenAI({
+        apiKey: apiKey,
+        baseURL: baseURL,
+      });
+    }
   }
 
   async chat(messages: ClaudeMessage[], options: ClaudeOptions = {}): Promise<ClaudeResponse> {
+    if (!this.client) {
+      throw new Error('OPENAI_KEY_MISSING');
+    }
     const response = await this.client.chat.completions.create({
       model: this.model,
       messages: [
@@ -52,6 +57,9 @@ export class OpenAiService {
     toolSchema: Record<string, unknown>,
     options: ClaudeOptions = {},
   ): Promise<{ result: T; inputTokens: number; outputTokens: number }> {
+    if (!this.client) {
+      throw new Error('OPENAI_KEY_MISSING');
+    }
     // Para simplificar a compatibilidade entre Grok e OpenAI, usamos response_format ou function calling básico
     // Aqui usaremos o modo JSON se o modelo suportar
     const response = await this.client.chat.completions.create({

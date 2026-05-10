@@ -18,13 +18,34 @@ interface EnneagramQuestion {
 
 interface EnneagramTestProps {
   questions: EnneagramQuestion[];
+  initialResponses?: Record<string, string>;
   onComplete: (responses: any) => void;
   onSaveProgress: (questionId: string, answer: string) => Promise<void>;
 }
 
-export function EnneagramTest({ questions, onComplete, onSaveProgress }: EnneagramTestProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [responses, setResponses] = useState<{ [id: string]: 'A' | 'B' }>({});
+export function EnneagramTest({ 
+  questions, 
+  initialResponses = {}, 
+  onComplete, 
+  onSaveProgress 
+}: EnneagramTestProps) {
+  const [responses, setResponses] = useState<{ [id: string]: 'A' | 'B' }>(() => {
+    const parsed: Record<string, 'A' | 'B'> = {};
+    Object.entries(initialResponses).forEach(([id, val]) => {
+      try {
+        const obj = JSON.parse(val);
+        parsed[id] = obj.choice;
+      } catch {
+        parsed[id] = val as 'A' | 'B';
+      }
+    });
+    return parsed;
+  });
+
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const answeredCount = Object.keys(initialResponses).length;
+    return Math.min(answeredCount, questions.length - 1);
+  });
   const [isSaving, setIsSaving] = useState(false);
 
   const currentQuestion = questions[currentIndex];
@@ -93,7 +114,7 @@ export function EnneagramTest({ questions, onComplete, onSaveProgress }: Enneagr
                 "cursor-pointer transition-all border-2 h-full flex flex-col hover:scale-[1.02] active:scale-[0.98]",
                 responses[currentQuestion.id] === 'A'
                   ? "border-neon bg-neon/5 shadow-lg"
-                  : "border-border hover:border-neon/40"
+                  : "border-border hover:border-neon/40 hover:bg-neon/5"
               )}
             >
               <CardContent className="p-8 flex flex-col items-center text-center justify-center min-h-[180px] gap-4">
@@ -119,7 +140,7 @@ export function EnneagramTest({ questions, onComplete, onSaveProgress }: Enneagr
                 "cursor-pointer transition-all border-2 h-full flex flex-col hover:scale-[1.02] active:scale-[0.98]",
                 responses[currentQuestion.id] === 'B'
                   ? "border-neon bg-neon/5 shadow-lg"
-                  : "border-border hover:border-neon/40"
+                  : "border-border hover:border-neon/40 hover:bg-neon/5"
               )}
             >
               <CardContent className="p-8 flex flex-col items-center text-center justify-center min-h-[180px] gap-4">

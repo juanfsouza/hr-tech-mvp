@@ -211,6 +211,7 @@ export default function CandidatePortal() {
                     {session?.currentTest === "DISC" && questionsData && (
                       <DiscTest
                         questions={questionsData.questions}
+                        initialResponses={session.responses}
                         onSaveProgress={handleSaveProgress}
                         onComplete={handleCompleteTest}
                       />
@@ -219,6 +220,7 @@ export default function CandidatePortal() {
                     {session?.currentTest === "ENNEAGRAM" && questionsData && (
                       <EnneagramTest
                         questions={questionsData.questions}
+                        initialResponses={session.responses}
                         onSaveProgress={handleSaveProgress}
                         onComplete={handleCompleteTest}
                       />
@@ -227,6 +229,7 @@ export default function CandidatePortal() {
                     {session?.currentTest === "SIXTEEN_PERSONALITIES" && questionsData && (
                       <SixteenPersonalitiesTest
                         questions={questionsData.questions}
+                        initialResponses={session.responses}
                         onSaveProgress={handleSaveProgress}
                         onComplete={handleCompleteTest}
                       />

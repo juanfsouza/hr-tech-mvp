@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/atoms/button";
-import { Card, CardContent } from "@/components/atoms/card";
 import { Progress } from "@/components/atoms/progress";
 import { Loader2, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,21 +16,30 @@ interface Question {
 
 interface SixteenPersonalitiesTestProps {
   questions: Question[];
+  initialResponses?: Record<string, string>;
   onComplete: (responses: any) => void;
   onSaveProgress: (questionId: string, answer: string) => Promise<void>;
 }
 
 const LIKERT_OPTIONS = [
   { value: "1", label: "Discordo Totalmente", color: "bg-red-600", size: "w-12 h-12" },
-  { value: "2", label: "Discordo", color: "bg-red-400", size: "w-10 h-10" },
-  { value: "3", label: "Neutro", color: "bg-gray-400 dark:bg-gray-500", size: "w-8 h-8" },
-  { value: "4", label: "Concordo", color: "bg-neon/50", size: "w-10 h-10" },
-  { value: "5", label: "Concordo Totalmente", color: "bg-neon", size: "w-12 h-12" },
+  { value: "2", label: "Discordo", color: "bg-red-300/50", size: "w-10 h-10" },
+  { value: "3", label: "Neutro", color: "bg-gray-300", size: "w-8 h-8" },
+  { value: "4", label: "Concordo", color: "bg-green-300/50", size: "w-10 h-10" },
+  { value: "5", label: "Concordo Totalmente", color: "bg-green-500", size: "w-12 h-12" },
 ];
 
-export function SixteenPersonalitiesTest({ questions, onComplete, onSaveProgress }: SixteenPersonalitiesTestProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [responses, setResponses] = useState<{ [id: string]: string }>({});
+export function SixteenPersonalitiesTest({
+  questions,
+  initialResponses = {},
+  onComplete,
+  onSaveProgress
+}: SixteenPersonalitiesTestProps) {
+  const [responses, setResponses] = useState<{ [id: string]: string }>(initialResponses);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const answeredCount = Object.keys(initialResponses).length;
+    return Math.min(answeredCount, questions.length - 1);
+  });
   const [isSaving, setIsSaving] = useState(false);
 
   const currentQuestion = questions[currentIndex];
@@ -60,6 +68,29 @@ export function SixteenPersonalitiesTest({ questions, onComplete, onSaveProgress
     } else {
       setIsSaving(true);
       onComplete({ ...responses, [currentQuestion.id]: JSON.stringify(answerObj) });
+    }
+  };
+
+  const getOptionColor = (option: typeof LIKERT_OPTIONS[0], isSelected: boolean) => {
+    if (isSelected) {
+      switch (option.value) {
+        case "1": return "bg-red-600";
+        case "2": return "bg-red-300/50";
+        case "3": return "bg-gray-300";
+        case "4": return "bg-green-300/50";
+        case "5": return "bg-green-500";
+        default: return "";
+      }
+    }
+
+    // Classes de hover literais para o Tailwind
+    switch (option.value) {
+      case "1": return "hover:bg-red-600/10";
+      case "2": return "hover:bg-red-300/20";
+      case "3": return "hover:bg-gray-300/20";
+      case "4": return "hover:bg-green-300/20";
+      case "5": return "hover:bg-green-500/10";
+      default: return "hover:bg-neon/5";
     }
   };
 
@@ -98,18 +129,19 @@ export function SixteenPersonalitiesTest({ questions, onComplete, onSaveProgress
                   <button
                     onClick={() => handleSelect(option.value)}
                     className={cn(
-                      "rounded-full transition-all duration-200 border-4",
+                      "rounded-full transition-all duration-200 border-4 bg-transparent",
                       option.size,
+                      getOptionColor(option, responses[currentQuestion.id] === option.value),
                       responses[currentQuestion.id] === option.value
-                        ? `${option.color} border-white dark:border-chumbo scale-125 shadow-lg`
-                        : "bg-background border-muted-foreground/40 hover:border-neon"
+                        ? "border-white scale-125 shadow-lg"
+                        : "border-muted-foreground/40 hover:border-neon"
                     )}
                     aria-label={option.label}
                   />
                   <span className={cn(
                     "text-[9px] font-bold uppercase tracking-tight absolute -bottom-12 w-24 text-center leading-tight transition-all",
-                    responses[currentQuestion.id] === option.value 
-                      ? "text-neon opacity-100 scale-110" 
+                    responses[currentQuestion.id] === option.value
+                      ? "text-neon opacity-100 scale-110"
                       : "text-muted-foreground/60 opacity-100"
                   )}>
                     {option.label}

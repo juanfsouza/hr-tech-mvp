@@ -25,7 +25,7 @@ import {
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { jobService } from "@/services/job-service";
+import { Job, jobService } from "@/services/job-service";
 import { candidateService } from "@/services/candidate-service";
 import { authService } from "@/services/auth-service";
 import { toast } from "sonner";
@@ -42,16 +42,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/atoms/dialog";
+import { dashboardService } from "@/services/dashboard-service";
 
 export default function DashboardPage() {
   const user = authService.getUser();
   const queryClient = useQueryClient();
+
+  // Buscar estatísticas reais do dashboard
+  const { data: stats, isLoading: isLoadingStats } = useQuery({
+    queryKey: ["dashboard-stats"],
+    queryFn: () => dashboardService.getStats(),
+  });
 
   // Buscar vagas reais
   const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
     queryKey: ["jobs"],
     queryFn: () => jobService.list(undefined, 5),
   });
+
+  const jobs = (jobsData as any)?.items || [];
 
   // Mutação para encerrar vaga
   const closeMutation = useMutation({
@@ -70,63 +79,38 @@ export default function DashboardPage() {
     closeMutation.mutate(id);
   };
 
-  // Buscar candidatos para estatísticas
-  const { data: candidates, isLoading: isLoadingCandidates } = useQuery({
-    queryKey: ["candidates"],
-    queryFn: () => candidateService.list(),
-  });
-
-  const jobs = (jobsData as any)?.items || [];
-  const activeJobsCount = jobs.filter((j: any) => (j.status === "ACTIVE" || j.status === "Aberto")).length;
-  const candidatesItems = (candidates as any)?.items || [];
-  const candidatesCount = candidatesItems.length;
-
-  // Cálculos Reais
-  const candidatesWithMatch = candidatesItems.filter((c: any) => c.matchScore !== undefined && c.matchScore !== null);
-  const avgMatchIA = candidatesWithMatch.length > 0 
-    ? Math.round(candidatesWithMatch.reduce((acc: number, c: any) => acc + (c.matchScore || 0), 0) / candidatesWithMatch.length)
-    : 85;
-
-  const testsCompleted = candidatesWithMatch.length > 0 ? candidatesWithMatch.length : 0;
-
-  // Função para gerar crescimentos dinâmicos (mockados mas consistentes)
-  const getGrowth = (val: number) => {
-    const seed = (val % 10) + 5;
-    return `+${seed}%`;
-  };
-
   const STATS = [
-    { 
-      label: "Vagas Ativas", 
-      value: activeJobsCount.toString(), 
-      growth: getGrowth(activeJobsCount),
-      icon: Briefcase, 
-      color: "text-forest dark:text-neon", 
-      bg: "bg-forest/10 dark:bg-neon/10" 
+    {
+      label: "Vagas Ativas",
+      value: stats?.activeJobs.toString() || "0",
+      growth: "+12%",
+      icon: Briefcase,
+      color: "text-forest dark:text-neon",
+      bg: "bg-forest/10 dark:bg-neon/10"
     },
-    { 
-      label: "Candidatos em Processo", 
-      value: candidatesCount.toString(), 
-      growth: getGrowth(candidatesCount),
-      icon: Users, 
-      color: "text-azure", 
-      bg: "bg-azure/10" 
+    {
+      label: "Total de Candidatos",
+      value: stats?.totalCandidates.toString() || "0",
+      growth: "+8%",
+      icon: Users,
+      color: "text-azure",
+      bg: "bg-azure/10"
     },
-    { 
-      label: "Média de Match IA", 
-      value: `${avgMatchIA}%`, 
+    {
+      label: "Média de Match IA",
+      value: `${stats?.avgMatch || 0}%`,
       growth: "+5%",
-      icon: TrendingUp, 
-      color: "text-coral", 
-      bg: "bg-coral/10" 
+      icon: TrendingUp,
+      color: "text-coral",
+      bg: "bg-coral/10"
     },
-    { 
-      label: "Testes Concluídos", 
-      value: testsCompleted.toString(), 
-      growth: getGrowth(testsCompleted),
-      icon: Brain, 
-      color: "text-primary", 
-      bg: "bg-primary/10" 
+    {
+      label: "Testes Concluídos",
+      value: stats?.testsCompleted.toString() || "0",
+      growth: "+15%",
+      icon: Brain,
+      color: "text-primary",
+      bg: "bg-primary/10"
     },
   ];
   return (
@@ -204,7 +188,7 @@ export default function DashboardPage() {
               {isLoadingJobs ? (
                 [1, 2, 3].map((i) => <div key={i} className="h-20 bg-slate-100 dark:bg-muted animate-pulse rounded-2xl" />)
               ) : (
-                jobs.map((job: any) => (
+                jobs.map((job: Job) => (
                   <Dialog key={job.id}>
                     <DialogTrigger asChild>
                       <Card className="border border-slate-200 dark:border-border/50 bg-white dark:bg-card/30 hover:bg-slate-50/50 dark:hover:bg-card/50 transition-all group cursor-pointer hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-neon/5 active:scale-[0.98]">
@@ -229,16 +213,16 @@ export default function DashboardPage() {
                               <p className="text-xs text-start text-slate-400 dark:text-muted-foreground mb-1 uppercase font-bold tracking-wider">Avg. Match</p>
                               <div className="flex items-center gap-2">
                                 <div className="w-20 h-2 bg-slate-100 dark:bg-muted rounded-full overflow-hidden">
-                                  <div className="h-full bg-forest dark:bg-neon" style={{ width: `${job.candidatesCount > 0 ? 85 : 0}%` }} />
+                                  <div className="h-full bg-forest dark:bg-neon" style={{ width: `${job.candidatesCount! > 0 ? 85 : 0}%` }} />
                                 </div>
-                                <span className="text-sm font-bold text-slate-900 dark:text-white">{job.candidatesCount > 0 ? '85%' : '0%'}</span>
+                                <span className="text-sm font-bold text-slate-900 dark:text-white">{job.candidatesCount! > 0 ? '85%' : '0%'}</span>
                               </div>
                             </div>
 
                             <Badge variant={job.status === "ACTIVE" ? "default" : "secondary"} className={cn(
                               "relative overflow-hidden rounded-lg px-3 py-1 font-bold border-none",
-                              job.status === "ACTIVE" 
-                                ? "bg-forest/20 text-forest dark:bg-neon/10 dark:text-neon shadow-[0_0_15px_rgba(34,197,94,0.1)]" 
+                              job.status === "ACTIVE"
+                                ? "bg-forest/20 text-forest dark:bg-neon/10 dark:text-neon shadow-[0_0_15px_rgba(34,197,94,0.1)]"
                                 : "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
                             )}>
                               {/* Framer Motion Shine Effect */}
@@ -295,8 +279,8 @@ export default function DashboardPage() {
                         </div>
                         <Badge className={cn(
                           "relative overflow-hidden text-sm px-4 py-1.5 rounded-full font-bold border-none",
-                          job.status === "ACTIVE" 
-                            ? "bg-forest/20 text-forest dark:bg-neon/20 dark:text-neon" 
+                          job.status === "ACTIVE"
+                            ? "bg-forest/20 text-forest dark:bg-neon/20 dark:text-neon"
                             : "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
                         )}>
                           <motion.div
@@ -319,7 +303,7 @@ export default function DashboardPage() {
                           <Card className="bg-slate-50 dark:bg-muted/30 border-none p-4 text-center">
                             <TrendingUp className="w-6 h-6 mx-auto mb-2 text-azure" />
                             <p className="text-sm text-slate-500 dark:text-muted-foreground">Match Médio</p>
-                            <p className="text-xl font-bold">{job.candidatesCount > 0 ? '85%' : '0%'}</p>
+                            <p className="text-xl font-bold">{job.candidatesCount! > 0 ? '85%' : '0%'}</p>
                           </Card>
                           <Card className="bg-slate-50 dark:bg-muted/30 border-none p-4 text-center">
                             <Brain className="w-6 h-6 mx-auto mb-2 text-coral" />
@@ -360,21 +344,21 @@ export default function DashboardPage() {
             <h2 className="text-2xl font-bold font-outfit text-slate-900 dark:text-white">Atividade Recente</h2>
             <Card className="border border-slate-200 dark:border-none bg-white dark:bg-neon/5 shadow-sm">
               <CardContent className="p-6 space-y-6">
-                {isLoadingCandidates ? (
+                {isLoadingStats ? (
                   [1, 2, 3].map((i) => <div key={i} className="h-12 bg-slate-100 dark:bg-muted/50 animate-pulse rounded-xl" />)
-                ) : candidatesItems.length > 0 ? (
-                  candidatesItems.slice(0, 3).map((candidate: any, i: number) => (
-                    <div key={candidate.id} className="flex gap-4 relative">
-                      {i !== Math.min(candidatesItems.length, 3) - 1 && <div className="absolute left-5 top-10 bottom-0 w-px bg-slate-200 dark:bg-border/50" />}
+                ) : stats?.recentActivity && stats.recentActivity.length > 0 ? (
+                  stats.recentActivity.slice(0, 5).map((log: any, i: number) => (
+                    <div key={log.id} className="flex gap-4 relative">
+                      {i !== Math.min(stats.recentActivity.length, 5) - 1 && <div className="absolute left-5 top-10 bottom-0 w-px bg-slate-200 dark:bg-border/50" />}
                       <div className="w-10 h-10 rounded-full bg-white dark:bg-background border border-slate-200 dark:border-border flex items-center justify-center shrink-0 z-10 shadow-sm transition-transform hover:scale-110">
                         <Users className="w-5 h-5 text-forest dark:text-neon" />
                       </div>
                       <div>
                         <p className="text-sm text-slate-700 dark:text-white">
-                          <span className="font-bold">{candidate.name}</span> se inscreveu para uma vaga.
+                          <span className="font-bold">{log.details}</span>
                         </p>
                         <p className="text-xs text-slate-400 dark:text-muted-foreground mt-1">
-                          {new Date().toLocaleDateString() === new Date(candidate.createdAt || new Date()).toLocaleDateString() ? 'Hoje' : new Date(candidate.createdAt).toLocaleDateString()}
+                          {new Date(log.createdAt).toLocaleString()}
                         </p>
                       </div>
                     </div>

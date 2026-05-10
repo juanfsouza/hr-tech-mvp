@@ -30,6 +30,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { candidateService } from "@/services/candidate-service";
 import { matchService } from "@/services/match-service";
 
+
 export default function CandidatesPage() {
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
 
@@ -95,7 +96,7 @@ export default function CandidatesPage() {
                       <div className="flex items-center gap-2">
                         <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
                           <div
-                            className={cn("h-full", (candidate.matchScore || 0) > 80 ? "bg-neon" : "bg-azure")}
+                            className={cn("h-full", (candidate.matchScore || 0) > 80 ? "bg-neon" : "bg-neon")}
                             style={{ width: `${candidate.matchScore || 0}%` }}
                           />
                         </div>
@@ -109,7 +110,7 @@ export default function CandidatesPage() {
                       disabled={!candidate.matchId}
                       className={cn(
                         "rounded-xl gap-2",
-                        candidate.matchId ? "bg-forest dark:bg-neon dark:text-chumbo" : ""
+                        candidate.matchId ? "bg-neon text-chumbo dark:bg-neon dark:text-chumbo" : ""
                       )}
                     >
                       <BrainCircuit className="w-4 h-4" />

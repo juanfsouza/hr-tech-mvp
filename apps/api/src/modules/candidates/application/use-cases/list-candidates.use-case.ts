@@ -14,7 +14,20 @@ export class ListCandidatesByJobUseCase {
             cursor: input.cursor,
             take: input.take,
         });
-        return right(result);
+        
+        return right({
+            items: result.items.map(candidate => ({
+                id: candidate.id.value,
+                name: candidate.name,
+                email: candidate.email,
+                status: candidate.status,
+                matchScore: candidate.matchScore,
+                matchId: candidate.matchId,
+                createdAt: candidate.createdAt,
+            })),
+            nextCursor: result.nextCursor,
+            hasNextPage: result.hasNextPage,
+        });
     }
 }
 
@@ -55,7 +68,8 @@ export class GetCandidateByIdUseCase {
         return right({
             id: c.id.value, name: c.name, email: c.email, phone: c.phone,
             jobId: c.jobId, status: c.status, lgpdConsent: c.lgpdConsent,
-            resumeUrl: c.resumeUrl, createdAt: c.createdAt,
+            resumeUrl: c.resumeUrl, matchScore: c.matchScore, matchId: c.matchId,
+            createdAt: c.createdAt,
         });
     }
 }

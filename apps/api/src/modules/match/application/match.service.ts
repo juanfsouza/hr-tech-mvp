@@ -36,7 +36,7 @@ export class MatchService {
 
 
   async enqueueAnalysis(input: AnalyzeCandidateInput): Promise<string> {
-    const jobId = `match:${input.candidateId}:${input.jobId}`;
+    const jobId = `match-${input.candidateId}-${input.jobId}-${Date.now()}`;
     await this.matchQueue.add('analyze', input, {
       jobId,
       attempts: 3,

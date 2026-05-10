@@ -22,13 +22,33 @@ interface DiscBlock {
 
 interface DiscTestProps {
   questions: DiscBlock[];
+  initialResponses?: Record<string, string>;
   onComplete: (responses: any) => void;
   onSaveProgress: (questionId: string, answer: string) => Promise<void>;
 }
 
-export function DiscTest({ questions, onComplete, onSaveProgress }: DiscTestProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selections, setSelections] = useState<{ [blockId: string]: { most: string | null; least: string | null } }>({});
+export function DiscTest({ 
+  questions, 
+  initialResponses = {}, 
+  onComplete, 
+  onSaveProgress 
+}: DiscTestProps) {
+  const [selections, setSelections] = useState<{ [blockId: string]: { most: string | null; least: string | null } }>(() => {
+    const parsed: Record<string, { most: string | null; least: string | null }> = {};
+    Object.entries(initialResponses).forEach(([id, val]) => {
+      try {
+        parsed[id] = JSON.parse(val);
+      } catch {
+        // Fallback se não for JSON (não esperado para DISC)
+      }
+    });
+    return parsed;
+  });
+
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const answeredCount = Object.keys(initialResponses).length;
+    return Math.min(answeredCount, questions.length - 1);
+  });
   const [isSaving, setIsSaving] = useState(false);
 
   const currentBlock = questions[currentIndex];
@@ -102,7 +122,7 @@ export function DiscTest({ questions, onComplete, onSaveProgress }: DiscTestProp
                 className={cn(
                   "transition-all border-2",
                   currentBlockSelection.most === item.id ? "border-neon bg-neon/5 shadow-md" :
-                    currentBlockSelection.least === item.id ? "border-destructive/30 bg-destructive/5" : "border-border"
+                    currentBlockSelection.least === item.id ? "border-destructive/30 bg-destructive/5" : "border-border hover:bg-neon/5"
                 )}
               >
                 <CardContent className="p-0 flex items-center justify-between">

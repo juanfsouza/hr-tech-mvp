@@ -8,16 +8,20 @@ import { ClaudeOptions } from '../interfaces/claude-options.interface';
 
 @Injectable()
 export class ClaudeService {
-  private readonly client: Anthropic;
+  private readonly client?: Anthropic;
   private readonly model = 'claude-3-5-sonnet-20241022' as const;
 
   constructor(config: ConfigService<AppConfig>) {
-    this.client = new Anthropic({
-      apiKey: config.getOrThrow('ANTHROPIC_API_KEY'),
-    });
+    const apiKey = config.get<string>('ANTHROPIC_API_KEY');
+    if (apiKey) {
+      this.client = new Anthropic({ apiKey });
+    }
   }
 
   async chat(messages: ClaudeMessage[], options: ClaudeOptions = {}): Promise<ClaudeResponse> {
+    if (!this.client) {
+      throw new Error('ANTHROPIC_KEY_MISSING');
+    }
     try {
       const response = await this.client.messages.create({
         model: this.model,
@@ -52,6 +56,9 @@ export class ClaudeService {
     toolName: string,
     options: ClaudeOptions = {},
   ): Promise<{ result: T; inputTokens: number; outputTokens: number }> {
+    if (!this.client) {
+      throw new Error('ANTHROPIC_KEY_MISSING');
+    }
     try {
       const response = await this.client.messages.create({
         model: this.model,
@@ -91,6 +98,9 @@ export class ClaudeService {
   }
 
   async *stream(messages: ClaudeMessage[], options: ClaudeOptions = {}): AsyncGenerator<string> {
+    if (!this.client) {
+      throw new Error('ANTHROPIC_KEY_MISSING');
+    }
     const stream = this.client.messages.stream({
       model: this.model,
       max_tokens: options.maxTokens ?? 2048,

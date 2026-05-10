@@ -7,6 +7,7 @@ export interface TestSession {
   status: string;
   currentTest?: TestType;
   expiresAt: string;
+  responses?: Record<string, string>;
 }
 
 export interface SaveProgressInput {

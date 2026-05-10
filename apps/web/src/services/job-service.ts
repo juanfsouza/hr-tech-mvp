@@ -11,6 +11,7 @@ export interface CreateJobInput {
 }
 
 export interface Job {
+  candidatesCount?: number;
   id: string;
   title: string;
   status: string;

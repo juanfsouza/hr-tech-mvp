@@ -5,4 +5,5 @@ export interface GetSessionOutput {
     currentTest: string | undefined;
     expiresAt: Date;
     candidateId?: string;
+    responses?: Record<string, string>;
 }

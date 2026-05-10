@@ -21,8 +21,26 @@ export class GetTestSessionByTokenUseCase {
             return left(new BusinessRuleViolationError('This test link has expired.'));
         }
 
+        // Se estiver concluído, retornamos os dados mas sem as questões (o frontend tratará)
         if (session.status === 'COMPLETED') {
-            return left(new BusinessRuleViolationError('This test has already been completed.'));
+            return right({
+                sessionId: session.id.value,
+                companyId: session.companyId,
+                status: 'COMPLETED',
+                currentTest: session.currentTest,
+                expiresAt: session.expiresAt,
+                candidateId: session.candidateId,
+            });
+        }
+
+        // Buscar respostas já dadas para o teste atual para permitir retomar de onde parou
+        let responses: Record<string, string> = {};
+        if (session.currentTest) {
+            const rawResponses = await this.repo.findResponses(session.id.value, session.currentTest);
+            responses = rawResponses.reduce((acc, curr) => {
+                acc[curr.questionId] = curr.answer;
+                return acc;
+            }, {} as Record<string, string>);
         }
 
         return right({
@@ -32,6 +50,7 @@ export class GetTestSessionByTokenUseCase {
             currentTest: session.currentTest,
             expiresAt: session.expiresAt,
             candidateId: session.candidateId,
+            responses, // Novo campo
         });
     }
 }
