@@ -21,7 +21,7 @@ const MENU_ITEMS = [
   { icon: LayoutDashboard, label: "Visão Geral", href: "/dashboard" },
   { icon: Briefcase, label: "Gestão de Vagas", href: "/dashboard/jobs" },
   { icon: Users, label: "Candidatos", href: "/dashboard/candidates" },
-  { icon: BrainCircuit, label: "Motor de Testes", href: "/dashboard/tests" },
+  { icon: BrainCircuit, label: "Portal de Testes", href: "/dashboard/tests" },
   { icon: Sparkles, label: "Assistente IA", href: "/dashboard/chat" },
   { icon: Settings, label: "Configurações", href: "/dashboard/settings" },
 ];

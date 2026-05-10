@@ -104,7 +104,7 @@ export function DashboardNavbar() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80 bg-white/95 dark:bg-card/95 backdrop-blur-xl border-border/50 p-2 shadow-2xl">
-            <DropdownMenuGroup>
+            <DropdownMenuGroup className="hover:bg-transparent">
               <DropdownMenuLabel className="flex justify-between items-center p-2">
                 <span className="font-bold">Notificações</span>
                 {mounted && hasNotifications && <Badge variant="secondary" className="bg-coral/10 text-coral border-none">{notifications.length}</Badge>}
