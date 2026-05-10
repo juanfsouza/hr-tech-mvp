@@ -90,6 +90,7 @@ export class CompleteTestUseCase {
                 );
 
                 // 3. Acionar IA de Match se o candidato estiver vinculado a uma vaga
+                // 3. Acionar IA de Match se o candidato estiver vinculado a uma vaga
                 if (candidate.jobId) {
                     const jobIdStr = `match-${candidate.id}-${candidate.jobId}-${Date.now()}`;
                     await this.matchQueue.add('analyze', {
@@ -102,21 +103,21 @@ export class CompleteTestUseCase {
                         backoff: { type: 'exponential', delay: 5000 },
                     });
                     this.logger.log(`[Automação] Match IA enfileirado para candidato ${candidate.id}`);
-
-                    // 4. Registrar na AuditLog para notificações
-                    await this.prisma.auditLog.create({
-                        data: {
-                            companyId: session.companyId,
-                            userId: candidate.id,
-                            action: 'TEST_COMPLETED',
-                            entityType: 'Candidate',
-                            entityId: candidate.id,
-                            metadata: {
-                                details: `Candidato ${candidate.name} completou todos os testes psicométricos.`
-                            }
-                        }
-                    });
                 }
+
+                // 4. Registrar na AuditLog para notificações (Sempre, idependente de vaga)
+                await this.prisma.auditLog.create({
+                    data: {
+                        companyId: session.companyId,
+                        userId: candidate.id,
+                        action: 'TEST_COMPLETED',
+                        entityType: 'Candidate',
+                        entityId: candidate.id,
+                        metadata: {
+                            details: `O candidato ${candidate.name} completou os testes e o Perfil Psicometríco está pronto.`
+                        }
+                    }
+                });
             } catch (error) {
                 this.logger.error('Falha ao acionar automações pós-teste', error);
             }

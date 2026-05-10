@@ -136,14 +136,14 @@ export function JobCreationWizard() {
   if (mode === "IDLE") {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
+        <motion.div whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 300 }}>
           <Card
             className="cursor-pointer border-forest/20 hover:border-forest dark:border-neon/20 dark:hover:border-neon bg-card/50 transition-all h-full"
             onClick={() => setMode("IA_BRIEFING")}
           >
             <CardHeader>
               <div className="w-12 h-12 rounded-2xl bg-forest dark:bg-neon flex items-center justify-center mb-4">
-                <Sparkles className="w-6 h-6 text-offwhite dark:text-chumbo" />
+                <BrainCircuit className="w-6 h-6 text-offwhite dark:text-chumbo" />
               </div>
               <CardTitle className="text-2xl font-outfit">Preciso de ajuda (IA)</CardTitle>
               <CardDescription className="text-lg">
@@ -159,7 +159,7 @@ export function JobCreationWizard() {
           </Card>
         </motion.div>
 
-        <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
+        <motion.div whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 300 }}>
           <Card
             className="cursor-pointer border-border hover:border-azure transition-all h-full"
             onClick={() => setMode("MANUAL")}
@@ -174,7 +174,7 @@ export function JobCreationWizard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full border-azure m-10 text-azure hover:bg-azure/10 font-bold">
+              <Button variant="outline" className="w-full border-azure m-0 text-azure hover:bg-azure/10 font-bold">
                 Cadastro Manual
                 <ChevronRight className="ml-2 w-4 h-4" />
               </Button>
@@ -217,7 +217,7 @@ export function JobCreationWizard() {
               </Button>
               <Button
                 onClick={handleStartManual}
-                className="flex-[2] h-12 text-lg font-bold bg-azure text-white"
+                className="flex-[2] h-12 text-lg font-bold bg-forest dark:bg-neon dark:text-chumbo text-white"
                 disabled={!manualData.title || !manualData.description || createManualMutation.isPending}
               >
                 {createManualMutation.isPending ? <Loader2 className="animate-spin" /> : "Continuar"}

@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Either, left, right } from '@shared/domain/errors/either';
 import { BusinessRuleViolationError, EntityNotFoundError } from '@shared/domain/errors/domain-errors';
+import { PrismaService } from '@/shared/infrastructure/database/prisma.service';
 import { CreateJobInput } from '@/modules/jobs/application/interfaces/create-job-input.interface';
 import { ListJobsInput } from '@/modules/jobs/application/interfaces/list-jobs-input.interface';
 import { IJobRepository } from '@/modules/jobs/domain/repositories/ijob-repository.interface';
@@ -12,7 +13,10 @@ import { Job } from '../../domain/entities/job.entity';
 
 @Injectable()
 export class CreateJobUseCase {
-  constructor(@Inject(JOB_REPOSITORY) private readonly repo: IJobRepository) { }
+  constructor(
+    @Inject(JOB_REPOSITORY) private readonly repo: IJobRepository,
+    private readonly prisma: PrismaService
+  ) { }
 
   async execute(input: CreateJobInput): Promise<Either<never, { id: string; title: string; status: string }>> {
     const job = Job.create({
@@ -28,6 +32,21 @@ export class CreateJobUseCase {
     });
 
     await this.repo.save(job);
+    
+    // Log de auditoria para o dashboard
+    await this.prisma.auditLog.create({
+      data: {
+        companyId: input.companyId,
+        userId: input.responsibleId || null,
+        action: 'JOB_CREATED',
+        entityType: 'Job',
+        entityId: job.id.value,
+        metadata: {
+          details: `Nova vaga criada: ${job.title}`
+        }
+      }
+    });
+
     return right({ id: job.id.value, title: job.title, status: job.status });
   }
 }

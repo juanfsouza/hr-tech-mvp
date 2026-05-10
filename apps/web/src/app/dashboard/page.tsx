@@ -181,7 +181,9 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold font-outfit text-slate-900 dark:text-white">Vagas Recentes</h2>
-              <Button variant="link" className="text-forest dark:text-neon font-bold">Ver todas</Button>
+              <Link href="/dashboard/jobs">
+                <Button variant="link" className="text-forest dark:text-neon font-bold">Ver todas</Button>
+              </Link>
             </div>
             <div className="grid gap-4">
               {isLoadingJobs ? (
@@ -250,9 +252,11 @@ export default function DashboardPage() {
                                     <Pencil className="w-4 h-4" /> Editar Vaga
                                   </DropdownMenuItem>
                                 </Link>
-                                <DropdownMenuItem className="gap-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-muted">
-                                  <Users className="w-4 h-4" /> Ver Candidatos
-                                </DropdownMenuItem>
+                                <Link href="/dashboard/candidates">
+                                  <DropdownMenuItem className="gap-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-muted">
+                                    <Users className="w-4 h-4" /> Ver Candidatos
+                                  </DropdownMenuItem>
+                                </Link>
                                 <DropdownMenuItem
                                   className="gap-2 cursor-pointer text-destructive focus:text-destructive hover:bg-destructive/5"
                                   onClick={(e) => handleCloseJob(e, job.id)}

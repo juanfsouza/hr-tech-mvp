@@ -116,7 +116,8 @@ export function MatchReportView({ analysis }: MatchReportViewProps) {
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               {analysis.details.jobMatch.strengths.map((skill) => (
-                <Badge key={skill} variant="secondary" className="bg-forest/10 w-full text-forest dark:text-neon border-none font-bold">
+                <Badge key={skill} variant="secondary" className="bg-forest/10 w-full h-auto py-2.5 px-3 text-forest dark:text-neon border-none font-bold whitespace-normal text-left flex items-start leading-tight">
+                  <CheckCircle2 className="w-3.5 h-3.5 mr-2 mt-0.5 shrink-0" />
                   {skill}
                 </Badge>
               ))}

@@ -86,7 +86,7 @@ export default function JobsPage() {
                   <CardContent className="space-y-4">
                     <div className="flex gap-4 text-sm text-slate-400 dark:text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <Users className="w-4 h-4" /> 0 Candidatos
+                        <Users className="w-4 h-4" /> {job.candidatesCount || 0} Candidatos
                       </div>
                       <div className="flex items-center gap-1">
                         <BrainCircuit className="w-4 h-4" /> IA Pronta
