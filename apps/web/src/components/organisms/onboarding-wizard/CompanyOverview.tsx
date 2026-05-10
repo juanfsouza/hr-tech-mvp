@@ -26,6 +26,10 @@ export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <header className="flex flex-col md:flex-row md:justify-between md:items-end gap-6">
         <div className="space-y-2">
+          <h1 className="text-4xl md:text-5xl font-outfit font-black text-slate-900 dark:text-white tracking-tight">
+            {company.razaoSocial}
+          </h1>
+          <p className="text-muted-foreground text-lg">Visão geral das configurações e estrutura organizacional.</p>
           <div className="flex items-center gap-3">
             <Badge className="bg-neon/20 text-forest dark:text-neon border-none px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
               Empresa Cadastrada
@@ -35,10 +39,6 @@ export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
               <span className="text-xs font-bold">Onboarding Concluído</span>
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-outfit font-black text-slate-900 dark:text-white tracking-tight">
-            {company.razaoSocial}
-          </h1>
-          <p className="text-muted-foreground text-lg">Visão geral das configurações e estrutura organizacional.</p>
         </div>
         <Button
           onClick={onEdit}
