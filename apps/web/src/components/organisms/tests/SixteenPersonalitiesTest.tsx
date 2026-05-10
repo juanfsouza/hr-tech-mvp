@@ -122,14 +122,14 @@ export function SixteenPersonalitiesTest({
           <div className="flex flex-col items-center gap-10 pb-12">
             <div className="flex items-center justify-between w-full max-w-xl relative px-4">
               {/* Linha de fundo conectando os círculos */}
-              <div className="absolute top-1/2 left-0 w-full h-[2px] bg-muted-foreground/20 -translate-y-1/2 z-0" />
+              <div className="absolute inset-x-[65px] top-1/2 h-[2px] bg-muted-foreground/20 -translate-y-1/2 z-0" />
 
               {LIKERT_OPTIONS.map((option) => (
                 <div key={option.value} className="flex flex-col items-center gap-3 z-10 relative">
                   <button
                     onClick={() => handleSelect(option.value)}
                     className={cn(
-                      "rounded-full transition-all duration-200 border-4 bg-transparent",
+                      "rounded-full transition-all duration-200 border-4",
                       option.size,
                       getOptionColor(option, responses[currentQuestion.id] === option.value),
                       responses[currentQuestion.id] === option.value

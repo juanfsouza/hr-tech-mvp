@@ -82,7 +82,7 @@ export class MatchController {
       overallScore: match.overallScore,
       recommendation: match.recommendation,
       summary: match.summary,
-      details: JSON.parse(match.fullAnalysis as string),
+      details: match.fullAnalysis,
       createdAt: match.createdAt,
     };
   }

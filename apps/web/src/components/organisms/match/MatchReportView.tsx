@@ -4,14 +4,11 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
 import { Badge } from "@/components/atoms/badge";
 import { MatchAnalysis } from "@/services/match-service";
-import { 
-  CheckCircle2, 
-  AlertCircle, 
-  XCircle, 
-  BrainCircuit, 
-  Target, 
-  Sparkles,
-  ShieldCheck,
+import {
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+  Target,
   TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,7 +40,7 @@ export function MatchReportView({ analysis }: MatchReportViewProps) {
             <svg className="w-full h-full" viewBox="0 0 100 100">
               <circle className="text-muted stroke-current" strokeWidth="8" fill="transparent" r="40" cx="50" cy="50" />
               <motion.circle
-                className="text-forest dark:text-neon stroke-current"
+                className="text-neon dark:text-neon stroke-current"
                 strokeWidth="8"
                 strokeLinecap="round"
                 fill="transparent"
@@ -60,7 +57,7 @@ export function MatchReportView({ analysis }: MatchReportViewProps) {
               <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Match Score</span>
             </div>
           </div>
-          <Badge className={cn("mt-2 rounded-lg px-4 py-1 font-bold", rec.bg, rec.color)}>
+          <Badge className={cn("mt-2 rounded-lg px-4 py-3 font-bold", rec.bg, rec.color)}>
             <rec.icon className="w-3 h-3 mr-2" />
             {rec.label}
           </Badge>
@@ -69,13 +66,12 @@ export function MatchReportView({ analysis }: MatchReportViewProps) {
         {/* AI Summary */}
         <Card className="md:col-span-2 border-none bg-forest/5 dark:bg-neon/5 p-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-forest dark:text-neon">
-              <Sparkles className="w-5 h-5" />
+            <CardTitle className="flex mt-2 border-b-1 border-muted pb-2  items-center gap-2 text-forest dark:text-neon">
               Análise Qualitativa IA
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-lg leading-relaxed italic text-chumbo/80 dark:text-offwhite/80">
+            <p className="text-lg leading-relaxed italic text-chumbo dark:text-offwhite/80">
               "{analysis.summary}"
             </p>
           </CardContent>
@@ -91,23 +87,23 @@ export function MatchReportView({ analysis }: MatchReportViewProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <DimensionRow 
-              label="Alinhamento com Vaga" 
-              score={analysis.details.jobMatch.score} 
+            <DimensionRow
+              label="Alinhamento com Vaga"
+              score={analysis.details.jobMatch.score}
               rationale={analysis.details.jobMatch.rationale}
-              color="bg-azure" 
+              color="bg-azure"
             />
-            <DimensionRow 
-              label="Match Cultural" 
-              score={analysis.details.cultureMatch.score} 
+            <DimensionRow
+              label="Match Cultural"
+              score={analysis.details.cultureMatch.score}
               rationale={analysis.details.cultureMatch.rationale}
-              color="bg-forest dark:bg-neon" 
+              color="bg-forest dark:bg-neon"
             />
-            <DimensionRow 
-              label="Match com Liderança" 
-              score={analysis.details.leaderMatch.score} 
+            <DimensionRow
+              label="Match com Liderança"
+              score={analysis.details.leaderMatch.score}
               rationale={analysis.details.leaderMatch.rationale}
-              color="bg-coral" 
+              color="bg-coral"
             />
           </CardContent>
         </Card>
@@ -174,7 +170,7 @@ function DimensionRow({ label, score, rationale, color }: { label: string; score
         <span className="text-azure">{score}%</span>
       </div>
       <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-        <motion.div 
+        <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${score}%` }}
           transition={{ duration: 1, delay: 0.5 }}

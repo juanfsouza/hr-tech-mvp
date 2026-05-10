@@ -2,18 +2,17 @@
 
 import { useState, useRef, useEffect } from "react";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
-import { Card, CardContent } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
 import { chatService, ChatMessage } from "@/services/chat-service";
-import { 
-  Send, 
-  Sparkles, 
-  Bot, 
-  User, 
-  Loader2, 
-  BrainCircuit, 
-  TrendingUp, 
+import {
+  Send,
+  Sparkles,
+  Bot,
+  User,
+  Loader2,
+  BrainCircuit,
+  TrendingUp,
   Users,
   Search
 } from "lucide-react";
@@ -78,7 +77,7 @@ export default function ChatAssistantPage() {
 
         <div className="flex-1 overflow-hidden flex flex-col bg-card/30 backdrop-blur-xl rounded-3xl border border-border/50 shadow-2xl">
           {/* Mensagens */}
-          <div 
+          <div
             ref={scrollRef}
             className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-border"
           >
@@ -123,8 +122,8 @@ export default function ChatAssistantPage() {
                   </div>
                   <div className={cn(
                     "max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed",
-                    msg.role === "user" 
-                      ? "bg-azure text-white rounded-tr-none" 
+                    msg.role === "user"
+                      ? "bg-azure text-white rounded-tr-none"
                       : "bg-card border border-border/50 rounded-tl-none text-foreground shadow-sm"
                   )}>
                     {msg.content || <Loader2 className="w-4 h-4 animate-spin opacity-50" />}
@@ -136,7 +135,7 @@ export default function ChatAssistantPage() {
 
           {/* Input Area */}
           <div className="p-6 bg-background/50 border-t border-border/50">
-            <form 
+            <form
               onSubmit={(e) => { e.preventDefault(); handleSendMessage(input); }}
               className="flex gap-3"
             >
@@ -148,7 +147,7 @@ export default function ChatAssistantPage() {
                   className="h-14 pl-6 pr-12 text-lg rounded-2xl bg-background border-border/50 focus-visible:ring-forest dark:focus-visible:ring-neon"
                 />
               </div>
-              <Button 
+              <Button
                 type="submit"
                 disabled={!input.trim() || isLoading}
                 className="h-14 w-14 rounded-2xl bg-forest dark:bg-neon dark:text-chumbo shadow-lg shadow-forest/20 dark:shadow-neon/20"

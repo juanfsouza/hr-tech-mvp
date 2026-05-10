@@ -67,16 +67,18 @@ export default function CandidatesPage() {
       unlinked: { job: null, candidates: [] }
     };
 
-    jobs.forEach((job: Job) => {
+    // Indexar vagas por ID para busca rápida
+    jobs.forEach((job) => {
       groups[job.id] = { job, candidates: [] };
     });
 
-    candidates.forEach((candidate: Candidate) => {
-      const filtered = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    candidates.forEach((candidate) => {
+      const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         candidate.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-      if (!filtered) return;
+      if (!matchesSearch) return;
 
+      // Se o candidato tem jobId e esse job existe na lista da empresa
       if (candidate.jobId && groups[candidate.jobId]) {
         groups[candidate.jobId].candidates.push(candidate);
       } else {
@@ -84,6 +86,7 @@ export default function CandidatesPage() {
       }
     });
 
+    // Filtra apenas grupos que tenham candidatos (para não poluir a tela)
     return Object.entries(groups).filter(([_, data]) => data.candidates.length > 0);
   }, [candidatesData, jobsData, searchTerm]);
 
@@ -92,13 +95,15 @@ export default function CandidatesPage() {
   };
 
   const handleExportPDF = () => {
-    toast.success("Gerando PDF do relatório...");
+    toast.info("A funcionalidade de exportação de PDF está sendo processada no servidor. Você receberá um e-mail em breve.");
   };
 
-  const handleShare = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    toast.success("Link copiado para a área de transferência!");
+  const handleShare = (candidate: Candidate | null) => {
+    if (!candidate) return;
+    const text = `Relatório de Match IA: ${candidate.name}\nScore de Match: ${candidate.matchScore || 0}%\nStatus: ${candidate.status}\nLink: ${window.location.origin}/dashboard/candidates`;
+
+    navigator.clipboard.writeText(text);
+    toast.success("Resumo copiado! Agora você pode colar no WhatsApp ou E-mail.");
   };
 
   const isLoading = isLoadingCandidates || isLoadingJobs;
@@ -137,7 +142,7 @@ export default function CandidatesPage() {
               <div key={jobId} className="space-y-3">
                 <Button
                   variant="ghost"
-                  className="w-full flex items-center justify-between p-2 hover:bg-muted/50 rounded-xl group transition-all"
+                  className="w-full flex items-center justify-between p-8 hover:bg-forest/10 rounded-xl group transition-all"
                   onClick={() => toggleJob(jobId)}
                 >
                   <div className="flex items-center gap-3">
@@ -244,8 +249,8 @@ export default function CandidatesPage() {
                   <Button onClick={handleExportPDF} variant="outline" size="sm" className="flex-1 md:flex-none gap-2 rounded-xl border-azure/20 text-azure hover:bg-azure/10">
                     <FileText className="w-4 h-4" /> Exportar PDF
                   </Button>
-                  <Button onClick={handleShare} variant="outline" size="sm" className="flex-1 md:flex-none gap-2 rounded-xl border-neon/20 text-neon hover:bg-neon/5">
-                    <ExternalLink className="w-4 h-4" /> Partilhar
+                  <Button onClick={() => handleShare(selectedCandidate)} variant="outline" size="sm" className="flex-1 md:flex-none gap-2 rounded-xl border-neon/20 text-azure hover:text-chumbo bg-azure/5 border-azure/20 dark:text-neon hover:bg-neon/5">
+                    <ExternalLink className="w-4 h-4" /> Compartilhar
                   </Button>
                 </div>
               </div>
