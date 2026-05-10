@@ -58,10 +58,11 @@ export function DiscTest({ questions, onComplete, onSaveProgress }: DiscTestProp
     }
   };
 
-  const nextBlock = () => {
+  const nextBlock = async () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
+      setIsSaving(true);
       onComplete(selections);
     }
   };
@@ -107,11 +108,11 @@ export function DiscTest({ questions, onComplete, onSaveProgress }: DiscTestProp
                 <CardContent className="p-0 flex items-center justify-between">
                   <p className="p-6 flex-1 font-medium text-lg leading-tight">{item.text}</p>
 
-                  <div className="flex border-l border-border h-full">
+                  <div className="flex border-l border-border h-full m-2 rounded-md">
                     <button
                       onClick={() => handleSelect(item.id, 'most')}
                       className={cn(
-                        "w-16 h-full flex flex-col items-center justify-center gap-1 border-r border-border hover:bg-neon/10 transition-colors py-4",
+                        "w-16 h-full flex flex-col items-center justify-center rounded-l-md gap-1 border-r border-border hover:bg-neon/10 transition-colors py-4",
                         currentBlockSelection.most === item.id ? "bg-neon text-chumbo" : "text-muted-foreground"
                       )}
                     >
@@ -121,7 +122,7 @@ export function DiscTest({ questions, onComplete, onSaveProgress }: DiscTestProp
                     <button
                       onClick={() => handleSelect(item.id, 'least')}
                       className={cn(
-                        "w-16 h-full flex flex-col items-center justify-center gap-1 hover:bg-destructive/10 transition-colors py-4",
+                        "w-16 h-full flex flex-col items-center justify-center rounded-r-md border-border border-r gap-1 hover:bg-destructive/10 transition-colors py-4",
                         currentBlockSelection.least === item.id ? "bg-destructive text-white" : "text-muted-foreground"
                       )}
                     >

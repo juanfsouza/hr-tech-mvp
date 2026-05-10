@@ -106,12 +106,22 @@ export class SixteenPersonalitiesEngine {
     responses: Array<{ questionId: string; answer: string }>,
   ): IpipItemResponse[] {
     return responses.map((r) => {
-      const parsed = JSON.parse(r.answer) as {
-        score: 1 | 2 | 3 | 4 | 5;
-        dimension: BigFiveDimension;
-        keyed: '+' | '-';
-      };
-      return { itemId: r.questionId, ...parsed };
+      try {
+        const parsed = JSON.parse(r.answer);
+        return {
+          itemId: r.questionId,
+          score: Number(parsed.value || parsed.score || r.answer) as any,
+          dimension: parsed.dimension as BigFiveDimension,
+          keyed: parsed.isReversed === true || parsed.keyed === '-' ? '-' : '+',
+        };
+      } catch (e) {
+        return {
+          itemId: r.questionId,
+          score: Number(r.answer) as any,
+          dimension: 'N/A' as any,
+          keyed: '+',
+        };
+      }
     });
   }
 }

@@ -9,6 +9,8 @@ import { ChevronRight, Loader2, Info, ArrowRightLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface EnneagramQuestion {
+  typeA: number;
+  typeB: number;
   id: string;
   statementA: string;
   statementB: string;
@@ -33,21 +35,26 @@ export function EnneagramTest({ questions, onComplete, onSaveProgress }: Enneagr
       ...responses,
       [currentQuestion.id]: choice
     };
-    
-    setResponses(newResponses);
-    
-    setIsSaving(true);
-    await onSaveProgress(currentQuestion.id, choice);
-    setIsSaving(false);
 
-    // Avança automaticamente após selecionar
-    setTimeout(() => {
-      if (currentIndex < questions.length - 1) {
+    const answerObj = {
+      choice,
+      typeA: currentQuestion.typeA,
+      typeB: currentQuestion.typeB,
+    };
+
+    if (currentIndex < questions.length - 1) {
+      setIsSaving(true);
+      await onSaveProgress(currentQuestion.id, JSON.stringify(answerObj));
+      setIsSaving(false);
+
+      setTimeout(() => {
         setCurrentIndex(currentIndex + 1);
-      } else {
-        onComplete(newResponses);
-      }
-    }, 400);
+      }, 400);
+    } else {
+      setIsSaving(true);
+      const finalResponses = { ...responses, [currentQuestion.id]: JSON.stringify(answerObj) };
+      onComplete(finalResponses);
+    }
   };
 
   return (
@@ -79,13 +86,13 @@ export function EnneagramTest({ questions, onComplete, onSaveProgress }: Enneagr
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
-             {/* Opção A */}
-             <Card 
+            {/* Opção A */}
+            <Card
               onClick={() => handleSelect('A')}
               className={cn(
                 "cursor-pointer transition-all border-2 h-full flex flex-col hover:scale-[1.02] active:scale-[0.98]",
-                responses[currentQuestion.id] === 'A' 
-                  ? "border-neon bg-neon/5 shadow-lg" 
+                responses[currentQuestion.id] === 'A'
+                  ? "border-neon bg-neon/5 shadow-lg"
                   : "border-border hover:border-neon/40"
               )}
             >
@@ -106,12 +113,12 @@ export function EnneagramTest({ questions, onComplete, onSaveProgress }: Enneagr
             </div>
 
             {/* Opção B */}
-            <Card 
+            <Card
               onClick={() => handleSelect('B')}
               className={cn(
                 "cursor-pointer transition-all border-2 h-full flex flex-col hover:scale-[1.02] active:scale-[0.98]",
-                responses[currentQuestion.id] === 'B' 
-                  ? "border-neon bg-neon/5 shadow-lg" 
+                responses[currentQuestion.id] === 'B'
+                  ? "border-neon bg-neon/5 shadow-lg"
                   : "border-border hover:border-neon/40"
               )}
             >

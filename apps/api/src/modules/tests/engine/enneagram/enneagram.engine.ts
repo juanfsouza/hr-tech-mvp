@@ -112,12 +112,23 @@ export class EnneagramEngine {
     responses: Array<{ questionId: string; answer: string }>,
   ): EnneagramPairAnswer[] {
     return responses.map((r) => {
-      const parsed = JSON.parse(r.answer) as {
-        choice: 'A' | 'B';
-        typeA: EnneagramType;
-        typeB: EnneagramType;
-      };
-      return { pairId: r.questionId, ...parsed };
+      try {
+        const parsed = JSON.parse(r.answer);
+        return {
+          pairId: r.questionId,
+          choice: parsed.choice || r.answer, // Fallback para a própria string se não houver .choice
+          typeA: parsed.typeA,
+          typeB: parsed.typeB
+        };
+      } catch (e) {
+        // Se não for JSON, retorna o formato básico (o motor terá que lidar com typeA/B ausentes ou buscaremos depois)
+        return {
+          pairId: r.questionId,
+          choice: r.answer as 'A' | 'B',
+          typeA: 0, // Temporário
+          typeB: 0  // Temporário
+        };
+      }
     });
   }
 }
