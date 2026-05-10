@@ -192,7 +192,7 @@ export default function DashboardPage() {
                 jobs.map((job: Job) => (
                   <Dialog key={job.id}>
                     <DialogTrigger asChild>
-                      <Card className="border border-slate-200 dark:border-border/50 bg-white dark:bg-card/30 hover:bg-slate-50/50 dark:hover:bg-card/50 transition-all group cursor-pointer hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-neon/5 active:scale-[0.98]">
+                      <Card className="border border-border/10 drop-shadow-xl dark:border-border/10 bg-white dark:bg-card/30 hover:bg-slate-50/50 dark:hover:bg-card/50 transition-all group cursor-pointer hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-neon/5 active:scale-[0.98]">
                         <CardContent className="p-4 flex items-center justify-between">
                           <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-muted flex items-center justify-center group-hover:bg-forest/10 dark:group-hover:bg-neon/10 transition-colors">

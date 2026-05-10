@@ -52,7 +52,7 @@ export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Card Principal: Dados */}
-        <Card className="md:col-span-2 border-none bg-white dark:bg-card/40 shadow-2xl overflow-hidden rounded-[32px]">
+        <Card className="md:col-span-2 border-none bg-white dark:bg-card/40 shadow-2xl overflow-hidden rounded-md">
           <CardHeader className="p-8 pb-4 border-b border-slate-100 dark:border-white/5">
             <CardTitle className="text-xl flex items-center gap-3">
               <div className="p-2 rounded-xl bg-azure/10">
@@ -100,7 +100,7 @@ export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
 
         {/* Card Lateral: Estatísticas Rápidas */}
         <div className="space-y-6">
-          <Card className="border-none bg-forest/5 dark:bg-neon/5 shadow-inner rounded-[32px]">
+          <Card className="border-none shadow-lg drop-shadow-xl dark:bg-neon/5 shadow-inner rounded-md">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Zap className="w-5 h-5 text-neon" /> Estrutura

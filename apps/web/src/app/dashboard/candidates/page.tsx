@@ -154,7 +154,7 @@ export default function CandidatesPage() {
               <div key={jobId} className="space-y-3">
                 <Button
                   variant="ghost"
-                  className="w-full flex items-center justify-between p-8 hover:bg-forest/10 rounded-xl group transition-all"
+                  className="w-full drop-shadow-lg shadow-lg flex items-center justify-between p-8 hover:bg-forest/10 rounded-xl group transition-all"
                   onClick={() => toggleJob(jobId)}
                 >
                   <div className="flex items-center gap-3">
@@ -179,7 +179,7 @@ export default function CandidatesPage() {
                 {!expandedJobs[jobId] && (
                   <div className="grid gap-3 pl-2 md:pl-4">
                     {data.candidates.map((candidate) => (
-                      <Card key={candidate.id} className="border-border/50 bg-card/30 hover:bg-card/50 transition-all group overflow-hidden">
+                      <Card key={candidate.id} className="drop-shadow-lg shadow-lg border-border/50 bg-card/30 hover:bg-card/50 transition-all group overflow-hidden">
                         <CardContent className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                           <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-full bg-azure/10 flex items-center justify-center shrink-0">
