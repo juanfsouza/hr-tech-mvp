@@ -85,7 +85,7 @@ export function DashboardNavbar() {
       </div>
 
       <div className="flex items-center gap-4">
-        {!user?.companyId && (
+        {mounted && !user?.companyId && (
           <Link href="/onboarding">
             <Button variant="outline" className="hidden md:flex items-center gap-2 border-azure/30 text-azure hover:bg-azure/10 rounded-full font-bold px-4 h-10 transition-all group">
               <LayoutDashboard className="w-4 h-4 group-hover:rotate-12 transition-transform" />
