@@ -64,3 +64,23 @@ export class UpdateOnboardingDto {
     leadershipStyle?: string;
   };
 }
+
+export class UpdateCompanyDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  razaoSocial?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @Matches(/^\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}$/, {
+    message: 'CNPJ must be in format XX.XXX.XXX/XXXX-XX',
+  })
+  cnpj?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUrl()
+  websiteUrl?: string;
+}

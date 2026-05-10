@@ -50,6 +50,13 @@ export class Company extends Entity<CompanyProps> {
   get createdAt(): Date { return this.props.createdAt; }
   get updatedAt(): Date { return this.props.updatedAt; }
 
+  updateBasicInfo(props: { razaoSocial?: string; cnpj?: Cnpj; websiteUrl?: string }): void {
+    if (props.razaoSocial) this.props.razaoSocial = props.razaoSocial;
+    if (props.cnpj) this.props.cnpj = props.cnpj;
+    if (props.websiteUrl !== undefined) this.props.websiteUrl = props.websiteUrl;
+    this.props.updatedAt = new Date();
+  }
+
   updateAddress(address: CompanyAddress): void {
     this.props.address = address;
     this.props.updatedAt = new Date();

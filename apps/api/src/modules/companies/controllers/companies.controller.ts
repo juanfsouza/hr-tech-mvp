@@ -19,8 +19,9 @@ import { CurrentUser, AuthenticatedUser } from '@shared/infrastructure/http/deco
 import { CreateCompanyUseCase } from '@modules/companies/application/use-cases/create-company.use-case';
 import { UpdateOnboardingUseCase } from '@modules/companies/application/use-cases/update-onboarding.use-case';
 import { GetCompanyUseCase } from '@modules/companies/application/use-cases/get-company.use-case';
+import { UpdateCompanyUseCase } from '@modules/companies/application/use-cases/update-company.use-case';
 import { GetCompanyOutput } from '@/modules/companies/application/interfaces/get-company-output.interface';
-import { CreateCompanyDto, UpdateOnboardingDto } from '../application/dtos/create-company.dto';
+import { CreateCompanyDto, UpdateOnboardingDto, UpdateCompanyDto } from '../application/dtos/create-company.dto';
 
 @ApiTags('Companies')
 @ApiBearerAuth()
@@ -31,6 +32,7 @@ export class CompaniesController {
     private readonly createCompany: CreateCompanyUseCase,
     private readonly updateOnboarding: UpdateOnboardingUseCase,
     private readonly getCompany: GetCompanyUseCase,
+    private readonly updateCompany: UpdateCompanyUseCase,
   ) { }
 
   @Post()
@@ -68,6 +70,31 @@ export class CompaniesController {
 
     const result = await this.getCompany.execute(id);
     if (result.isLeft()) throw new NotFoundException(result.value.message);
+
+    return result.value;
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Atualizar dados básicos da empresa' })
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateCompanyDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<{ success: boolean }> {
+    if (user.companyId !== id && user.role !== 'ADMIN') {
+      throw new ForbiddenException();
+    }
+
+    const result = await this.updateCompany.execute({
+      companyId: id,
+      ...dto,
+    });
+
+    if (result.isLeft()) {
+      const err = result.value;
+      if (err.code === 'ENTITY_NOT_FOUND') throw new NotFoundException(err.message);
+      throw new BadRequestException(err.message);
+    }
 
     return result.value;
   }
