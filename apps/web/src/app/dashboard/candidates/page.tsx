@@ -94,8 +94,20 @@ export default function CandidatesPage() {
     setExpandedJobs(prev => ({ ...prev, [jobId]: !prev[jobId] }));
   };
 
-  const handleExportPDF = () => {
-    toast.info("A funcionalidade de exportação de PDF está sendo processada no servidor. Você receberá um e-mail em breve.");
+  const handleExportPDF = async () => {
+    if (!selectedCandidate?.matchId) {
+      toast.error("Nenhuma análise de match disponível para exportar.");
+      return;
+    }
+
+    try {
+      toast.loading("Gerando PDF...", { id: "pdf-gen" });
+      await matchService.downloadPdf(selectedCandidate.matchId, selectedCandidate.name);
+      toast.success("Download concluído!", { id: "pdf-gen" });
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao gerar PDF. Tente novamente.", { id: "pdf-gen" });
+    }
   };
 
   const handleShare = (candidate: Candidate | null) => {
@@ -123,7 +135,7 @@ export default function CandidatesPage() {
                 className="pl-10"
                 placeholder="Buscar por nome ou email..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
               />
             </div>
             <Button variant="outline"><Filter className="w-4 h-4 mr-2" /> Filtros</Button>

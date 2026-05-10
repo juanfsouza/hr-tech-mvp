@@ -1,7 +1,7 @@
 import {
   Controller, Post, Get, Body, Param,
   UseGuards, HttpCode, HttpStatus,
-  NotFoundException,
+  NotFoundException, Res,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { IsUUID } from 'class-validator';
@@ -11,6 +11,7 @@ import { CurrentUser } from '@shared/infrastructure/http/decorators/current-user
 import { MatchService } from '@modules/match/application/match.service';
 import { PrismaService } from '@shared/infrastructure/database/prisma.service';
 import { AuthenticatedUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
+import { PdfService } from '@shared/infrastructure/pdf/pdf.service';
 
 class TriggerMatchDto {
   @ApiProperty() @IsUUID() candidateId!: string;
@@ -25,6 +26,7 @@ export class MatchController {
   constructor(
     private readonly matchService: MatchService,
     private readonly prisma: PrismaService,
+    private readonly pdfService: PdfService,
   ) { }
 
   @Post('analyze')
@@ -85,5 +87,41 @@ export class MatchController {
       details: match.fullAnalysis,
       createdAt: match.createdAt,
     };
+  }
+
+  @Get(':matchId/pdf')
+  @ApiOperation({ summary: 'Exportar relatório de match em PDF' })
+  async downloadPdf(
+    @Param('matchId') matchId: string,
+    @CurrentUser() user: AuthenticatedUser,
+    @Res() res: any,
+  ) {
+    try {
+      const match = await this.prisma.match.findFirst({
+        where: { id: matchId, companyId: user.companyId! },
+        include: { candidate: true },
+      });
+      if (!match) throw new NotFoundException('Match not found');
+
+      console.log(`[MatchController] Gerando PDF para candidato: ${match.candidate.name}`);
+      
+      const pdfBuffer = await this.pdfService.generateMatchReportPdf(
+        match.candidate.name,
+        match.fullAnalysis,
+      );
+
+      res.header('Content-Type', 'application/pdf');
+      res.header('Content-Disposition', `attachment; filename=match-report-${match.candidate.name}.pdf`);
+      res.header('Content-Length', pdfBuffer.length);
+
+      return res.send(pdfBuffer);
+    } catch (error: any) {
+      console.error('[MatchController] Erro ao gerar PDF:', error.message || error);
+      return res.status(500).send({
+        statusCode: 500,
+        message: 'Falha ao gerar o arquivo PDF. Verifique os logs do servidor.',
+        error: error.message
+      });
+    }
   }
 }

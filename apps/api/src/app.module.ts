@@ -19,6 +19,7 @@ import { MatchModule } from './modules/match.module';
 import { NotificationsModule } from './modules/notifications.module';
 import { TestsModule } from './modules/tests.module';
 import { QueuesDashboardModule } from './modules/queues-dashboard.module';
+import { PdfModule } from './modules/pdf.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { HealthController } from './modules/health/controllers/health.controller';
 
@@ -78,6 +79,7 @@ import { HealthController } from './modules/health/controllers/health.controller
     CandidatesModule,
     MatchModule,
     AiModule,
+    PdfModule,
     QueuesDashboardModule,
     DashboardModule,
   ],

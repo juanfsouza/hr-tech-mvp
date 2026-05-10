@@ -12,7 +12,7 @@ export default function NewJobPage() {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
         <header className="mb-10">
-          <h1 className="text-4xl font-bold font-outfit mb-2">Criar Nova Vaga</h1>
+          <h1 className="text-4xl font-bold font-outfit dark:text-neon text-forest mb-2">Criar Nova Vaga</h1>
           <p className="text-muted-foreground text-lg">
             Escolha como deseja configurar sua nova oportunidade de recrutamento.
           </p>

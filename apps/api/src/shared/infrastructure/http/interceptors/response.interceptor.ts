@@ -14,14 +14,22 @@ interface SuccessResponse<T> {
 }
 
 @Injectable()
-export class ResponseInterceptor<T> implements NestInterceptor<T, SuccessResponse<T>> {
-  intercept(_context: ExecutionContext, next: CallHandler): Observable<SuccessResponse<T>> {
+export class ResponseInterceptor<T> implements NestInterceptor<T, SuccessResponse<T> | T> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<SuccessResponse<T> | T> {
+    const response = context.switchToHttp().getResponse();
+
     return next.handle().pipe(
-      map((data: T) => ({
-        success: true as const,
-        data,
-        timestamp: new Date().toISOString(),
-      })),
+      map((data: T) => {
+        if (response.sent) {
+          return data;
+        }
+
+        return {
+          success: true as const,
+          data,
+          timestamp: new Date().toISOString(),
+        };
+      }),
     );
   }
 }

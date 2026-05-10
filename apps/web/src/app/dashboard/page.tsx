@@ -26,7 +26,6 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Job, jobService } from "@/services/job-service";
-import { candidateService } from "@/services/candidate-service";
 import { authService } from "@/services/auth-service";
 import { toast } from "sonner";
 import {
@@ -118,7 +117,7 @@ export default function DashboardPage() {
       <div className="space-y-8">
         <header className="flex justify-between items-end">
           <div>
-            <h1 className="text-4xl font-bold font-outfit mb-2">Painel de Controle</h1>
+            <h1 className="text-4xl font-bold text-forest dark:text-neon font-outfit mb-2">Painel de Controle</h1>
             <p className="text-muted-foreground text-lg">Olá {user?.name || "Usuário"}, veja como estão seus processos seletivos hoje.</p>
           </div>
           {!user?.companyId && (
@@ -366,18 +365,6 @@ export default function DashboardPage() {
                 ) : (
                   <p className="text-sm text-slate-500 dark:text-muted-foreground text-center py-4 italic">Nenhuma atividade recente encontrada.</p>
                 )}
-              </CardContent>
-            </Card>
-
-            <Card className="border border-azure/20 dark:border-none bg-azure/5 dark:bg-azure/10 overflow-hidden relative group transition-all hover:bg-azure/10">
-              <div className="absolute top-0 right-0 p-2">
-                <Sparkles className="w-4 h-4 text-azure opacity-50" />
-              </div>
-              <CardContent className="p-6">
-                <h4 className="font-bold text-azure mb-2">Dica da IA</h4>
-                <p className="text-sm text-azure/80 dark:text-azure/80 italic leading-relaxed">
-                  "Você tem 3 candidatos com match acima de 90% para a vaga de Sênior Dev. Recomendo agendar as entrevistas técnicas ainda esta semana."
-                </p>
               </CardContent>
             </Card>
           </div>

@@ -54,7 +54,7 @@ export function MatchReportView({ analysis }: MatchReportViewProps) {
             </svg>
             <div className="absolute inset-0 flex items-center justify-center flex-col">
               <span className="text-4xl font-bold font-outfit">{analysis.overallScore}%</span>
-              <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Match Score</span>
+              <span className="text-[8px] uppercase font-bold text-muted-foreground tracking-widest">Match Score</span>
             </div>
           </div>
           <Badge className={cn("mt-2 rounded-lg px-4 py-3 font-bold", rec.bg, rec.color)}>
@@ -116,7 +116,7 @@ export function MatchReportView({ analysis }: MatchReportViewProps) {
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               {analysis.details.jobMatch.strengths.map((skill) => (
-                <Badge key={skill} variant="secondary" className="bg-forest/10 text-forest dark:text-neon border-none font-bold">
+                <Badge key={skill} variant="secondary" className="bg-forest/10 w-full text-forest dark:text-neon border-none font-bold">
                   {skill}
                 </Badge>
               ))}

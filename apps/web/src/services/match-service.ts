@@ -45,5 +45,16 @@ export const matchService = {
   async getByCandidate(candidateId: string) {
     const { data } = await api.get<Partial<MatchAnalysis>[]>(`/match/candidate/${candidateId}`);
     return data;
+  },
+
+  async downloadPdf(matchId: string, candidateName: string) {
+    const { data } = await api.get(`/match/${matchId}/pdf`, { responseType: 'blob' });
+    const url = window.URL.createObjectURL(new Blob([data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `relatorio-match-${candidateName}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   }
 };

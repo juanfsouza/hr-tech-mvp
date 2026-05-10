@@ -103,6 +103,7 @@ Esta é uma descrição gerada automaticamente porque o serviço de IA está ind
 
     const prompt = `
 Analise a compatibilidade do candidato com a vaga e empresa abaixo.
+IMPORTANTE: Retorne TODOS os textos (resumo, justificativas, pontos fortes, riscos e plano de desenvolvimento) em PORTUGUÊS DO BRASIL.
 
 **CANDIDATO**: ${input.candidate.name}
 - DISC: D=${input.candidate.disc.D}%, I=${input.candidate.disc.I}%, S=${input.candidate.disc.S}%, C=${input.candidate.disc.C}% (Dominante: ${input.candidate.disc.dominant})

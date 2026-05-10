@@ -174,7 +174,7 @@ export function JobCreationWizard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full border-azure text-azure hover:bg-azure/10 font-bold">
+              <Button variant="outline" className="w-full border-azure m-10 text-azure hover:bg-azure/10 font-bold">
                 Cadastro Manual
                 <ChevronRight className="ml-2 w-4 h-4" />
               </Button>
@@ -188,7 +188,7 @@ export function JobCreationWizard() {
   if (mode === "MANUAL") {
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <Card className="border-none bg-transparent">
+        <Card className="border-none bg-transparent p-5">
           <CardHeader className="px-0">
             <CardTitle className="text-3xl font-outfit">Cadastro Manual</CardTitle>
             <CardDescription className="text-lg">Preencha os dados da vaga para começar.</CardDescription>
@@ -206,7 +206,7 @@ export function JobCreationWizard() {
               <Label>Descrição da Vaga</Label>
               <Textarea
                 placeholder="Cole aqui a sua descrição de vaga completa..."
-                className="min-h-[300px]"
+                className="min-h-[300px] rounded-xl"
                 value={manualData.description}
                 onChange={e => setManualData({ ...manualData, description: e.target.value })}
               />
