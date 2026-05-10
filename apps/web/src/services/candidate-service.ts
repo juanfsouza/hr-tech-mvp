@@ -8,6 +8,7 @@ export interface Candidate {
   matchScore?: number;
   matchId?: string;
   status: string;
+  jobId?: string;
 }
 
 export const candidateService = {

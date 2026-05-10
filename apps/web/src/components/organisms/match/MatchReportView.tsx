@@ -23,16 +23,18 @@ interface MatchReportViewProps {
 export function MatchReportView({ analysis }: MatchReportViewProps) {
   const getRecommendationStyle = (rec: string) => {
     switch (rec) {
-      case "HIRE": return { icon: CheckCircle2, label: "Recomendado", color: "text-forest dark:text-neon", bg: "bg-forest/10 dark:bg-neon/10" };
-      case "RECONSIDER": return { icon: AlertCircle, label: "Reavaliar", color: "text-azure", bg: "bg-azure/10" };
-      default: return { icon: XCircle, label: "Não Recomendado", color: "text-destructive", bg: "bg-destructive/10" };
+      case "STRONG_YES": return { icon: CheckCircle2, label: "Fortemente Recomendado", color: "text-forest dark:text-neon", bg: "bg-forest/10 dark:bg-neon/10" };
+      case "YES": return { icon: CheckCircle2, label: "Recomendado", color: "text-forest dark:text-neon", bg: "bg-forest/10 dark:bg-neon/10" };
+      case "MAYBE": return { icon: AlertCircle, label: "Reavaliar / Atenção", color: "text-azure", bg: "bg-azure/10" };
+      case "NO": return { icon: XCircle, label: "Não Recomendado", color: "text-destructive", bg: "bg-destructive/10" };
+      default: return { icon: AlertCircle, label: "Análise Pendente", color: "text-muted-foreground", bg: "bg-muted/10" };
     }
   };
 
   const rec = getRecommendationStyle(analysis.recommendation);
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-8 max-w-4xl mx-auto pb-12">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Score Circle */}
         <Card className="md:col-span-1 border-none bg-card/30 backdrop-blur-xl flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
@@ -82,43 +84,58 @@ export function MatchReportView({ analysis }: MatchReportViewProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Dimensions */}
-        <Card className="border-border/50">
+        <Card className="border-border/50 bg-card/10">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2 font-outfit">
               <Target className="w-5 h-5 text-azure" /> Dimensões de Avaliação
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <DimensionRow label="Match Cultural" score={analysis.details.cultureMatch} color="bg-forest dark:bg-neon" />
-            <DimensionRow label="Habilidades Técnicas" score={analysis.details.technicalSkills} color="bg-azure" />
-            <DimensionRow label="Potencial de Liderança" score={analysis.details.leadershipPotential} color="bg-coral" />
+            <DimensionRow 
+              label="Alinhamento com Vaga" 
+              score={analysis.details.jobMatch.score} 
+              rationale={analysis.details.jobMatch.rationale}
+              color="bg-azure" 
+            />
+            <DimensionRow 
+              label="Match Cultural" 
+              score={analysis.details.cultureMatch.score} 
+              rationale={analysis.details.cultureMatch.rationale}
+              color="bg-forest dark:bg-neon" 
+            />
+            <DimensionRow 
+              label="Match com Liderança" 
+              score={analysis.details.leaderMatch.score} 
+              rationale={analysis.details.leaderMatch.rationale}
+              color="bg-coral" 
+            />
           </CardContent>
         </Card>
 
-        {/* Soft Skills & Risks */}
+        {/* Strengths, Risks & Development */}
         <div className="space-y-6">
           <Card className="border-border/50">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Soft Skills Identificadas</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Pontos Fortes (IA)</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
-              {analysis.details.softSkills.map((skill) => (
-                <Badge key={skill} variant="secondary" className="bg-background border-border">
+              {analysis.details.jobMatch.strengths.map((skill) => (
+                <Badge key={skill} variant="secondary" className="bg-forest/10 text-forest dark:text-neon border-none font-bold">
                   {skill}
                 </Badge>
               ))}
             </CardContent>
           </Card>
 
-          {analysis.details.risks && analysis.details.risks.length > 0 && (
+          {analysis.details.jobMatch.risks.length > 0 && (
             <Card className="border-destructive/20 bg-destructive/5">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-bold uppercase tracking-widest text-destructive flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4" /> Pontos de Atenção
+                  <AlertCircle className="w-4 h-4" /> Riscos de Contratação
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-1">
-                {analysis.details.risks.map((risk) => (
+                {analysis.details.jobMatch.risks.map((risk) => (
                   <p key={risk} className="text-sm text-destructive/80 flex items-start gap-2">
                     <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-destructive shrink-0" />
                     {risk}
@@ -127,18 +144,34 @@ export function MatchReportView({ analysis }: MatchReportViewProps) {
               </CardContent>
             </Card>
           )}
+
+          <Card className="border-azure/20 bg-azure/5">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold uppercase tracking-widest text-azure flex items-center gap-2">
+                <TrendingUp className="w-4 h-4" /> Plano de Desenvolvimento
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1">
+              {analysis.details.developmentPlan.map((step) => (
+                <p key={step} className="text-sm text-azure/80 flex items-start gap-2">
+                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-azure shrink-0" />
+                  {step}
+                </p>
+              ))}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
   );
 }
 
-function DimensionRow({ label, score, color }: { label: string; score: number; color: string }) {
+function DimensionRow({ label, score, rationale, color }: { label: string; score: number; rationale: string; color: string }) {
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm font-bold">
         <span>{label}</span>
-        <span>{score}%</span>
+        <span className="text-azure">{score}%</span>
       </div>
       <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
         <motion.div 
@@ -148,6 +181,9 @@ function DimensionRow({ label, score, color }: { label: string; score: number; c
           className={cn("h-full", color)}
         />
       </div>
+      <p className="text-[11px] text-muted-foreground leading-tight italic">
+        {rationale}
+      </p>
     </div>
   );
 }

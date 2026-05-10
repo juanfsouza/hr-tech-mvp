@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { Card, CardContent } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
@@ -10,12 +10,15 @@ import {
   Users,
   Search,
   Filter,
-  ChevronRight,
   BrainCircuit,
   UserCircle2,
   FileText,
   ExternalLink,
-  Loader2
+  Loader2,
+  ChevronDown,
+  ChevronUp,
+  Mail,
+  Briefcase
 } from "lucide-react";
 import { Input } from "@/components/atoms/input";
 import {
@@ -23,132 +26,242 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription
 } from "@/components/atoms/dialog";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { candidateService } from "@/services/candidate-service";
-import { matchService } from "@/services/match-service";
-
+import { useQuery } from "@tanstack/react-query";
+import { candidateService, Candidate } from "@/services/candidate-service";
+import { matchService, MatchAnalysis } from "@/services/match-service";
+import { jobService, Job } from "@/services/job-service";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function CandidatesPage() {
-  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [expandedJobs, setExpandedJobs] = useState<Record<string, boolean>>({});
 
-  // Buscar candidatos reais do banco
-  const { data: candidates, isLoading } = useQuery({
+  // Buscar candidatos e vagas
+  const { data: candidatesData, isLoading: isLoadingCandidates } = useQuery({
     queryKey: ["candidates"],
     queryFn: () => candidateService.list(),
+  });
+
+  const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
+    queryKey: ["jobs"],
+    queryFn: () => jobService.list(),
   });
 
   // Buscar detalhes do match ao abrir o modal
   const { data: fullMatch, isLoading: isLoadingMatch } = useQuery({
     queryKey: ["match", selectedCandidate?.matchId],
-    queryFn: () => matchService.getMatch(selectedCandidate.matchId),
+    queryFn: () => matchService.getMatch(selectedCandidate!.matchId!),
     enabled: !!selectedCandidate?.matchId,
   });
+
+  // Agrupar candidatos por vaga
+  const groupedCandidates = useMemo(() => {
+    const candidates = candidatesData?.items || [];
+    const jobs = (jobsData as { items: Job[] })?.items || [];
+
+    const groups: Record<string, { job: Job | null; candidates: Candidate[] }> = {
+      unlinked: { job: null, candidates: [] }
+    };
+
+    jobs.forEach((job: Job) => {
+      groups[job.id] = { job, candidates: [] };
+    });
+
+    candidates.forEach((candidate: Candidate) => {
+      const filtered = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        candidate.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+      if (!filtered) return;
+
+      if (candidate.jobId && groups[candidate.jobId]) {
+        groups[candidate.jobId].candidates.push(candidate);
+      } else {
+        groups.unlinked.candidates.push(candidate);
+      }
+    });
+
+    return Object.entries(groups).filter(([_, data]) => data.candidates.length > 0);
+  }, [candidatesData, jobsData, searchTerm]);
+
+  const toggleJob = (jobId: string): void => {
+    setExpandedJobs(prev => ({ ...prev, [jobId]: !prev[jobId] }));
+  };
+
+  const handleExportPDF = () => {
+    toast.success("Gerando PDF do relatório...");
+  };
+
+  const handleShare = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copiado para a área de transferência!");
+  };
+
+  const isLoading = isLoadingCandidates || isLoadingJobs;
 
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <header className="flex justify-between items-end">
+        <header className="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
           <div>
-            <h1 className="text-4xl font-bold font-outfit mb-2">Candidatos</h1>
-            <p className="text-muted-foreground text-lg">Gerencie os talentos e visualize as análises de match.</p>
+            <h1 className="text-4xl font-bold font-outfit mb-2">Talentos</h1>
+            <p className="text-muted-foreground text-lg">Gerencie os candidatos e visualize as análises de match por vaga.</p>
           </div>
           <div className="flex gap-3">
-            <div className="relative w-64">
+            <div className="relative w-full md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input className="pl-10" placeholder="Buscar candidato..." />
+              <Input
+                className="pl-10"
+                placeholder="Buscar por nome ou email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
             <Button variant="outline"><Filter className="w-4 h-4 mr-2" /> Filtros</Button>
           </div>
         </header>
 
-        <div className="grid gap-4">
+        <div className="space-y-6">
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-20 w-full bg-muted animate-pulse rounded-2xl" />
+                <div key={i} className="h-24 w-full bg-muted animate-pulse rounded-2xl" />
               ))}
             </div>
-          ) : (
-            candidates?.items?.map((candidate: any) => (
-              <Card key={candidate.id} className="border-border/50 bg-card/30 hover:bg-card/50 transition-all group">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-azure/10 flex items-center justify-center">
-                      <UserCircle2 className="w-7 h-7 text-azure" />
+          ) : groupedCandidates.length > 0 ? (
+            groupedCandidates.map(([jobId, data]) => (
+              <div key={jobId} className="space-y-3">
+                <Button
+                  variant="ghost"
+                  className="w-full flex items-center justify-between p-2 hover:bg-muted/50 rounded-xl group transition-all"
+                  onClick={() => toggleJob(jobId)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-10 h-10 rounded-lg flex items-center justify-center transition-colors",
+                      data.job ? "bg-azure/10 text-azure" : "bg-slate-200 text-slate-500"
+                    )}>
+                      {data.job ? <Briefcase className="w-5 h-5" /> : <Users className="w-5 h-5" />}
                     </div>
-                    <div>
-                      <h4 className="font-bold text-lg leading-none mb-1">{candidate.name}</h4>
-                      <p className="text-sm text-muted-foreground">{candidate.email}</p>
+                    <div className="text-left">
+                      <h3 className="font-bold text-lg leading-tight">
+                        {data.job?.title || "Candidatos sem vaga vinculada"}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {data.candidates.length} {data.candidates.length === 1 ? "candidato" : "candidatos"}
+                      </p>
                     </div>
                   </div>
+                  {expandedJobs[jobId] ? <ChevronUp className="w-5 h-5 text-muted-foreground" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />}
+                </Button>
 
-                  <div className="flex items-center gap-8">
-                    <div className="text-center">
-                      <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Status</p>
-                      <Badge variant="secondary" className="bg-muted/50">{candidate.status}</Badge>
-                    </div>
+                {!expandedJobs[jobId] && (
+                  <div className="grid gap-3 pl-2 md:pl-4">
+                    {data.candidates.map((candidate) => (
+                      <Card key={candidate.id} className="border-border/50 bg-card/30 hover:bg-card/50 transition-all group overflow-hidden">
+                        <CardContent className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-azure/10 flex items-center justify-center shrink-0">
+                              <UserCircle2 className="w-7 h-7 text-azure" />
+                            </div>
+                            <div className="min-w-0">
+                              <h4 className="font-bold text-lg leading-none mb-1 truncate">{candidate.name}</h4>
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Mail className="w-3.5 h-3.5" />
+                                <span className="truncate">{candidate.email}</span>
+                              </div>
+                            </div>
+                          </div>
 
-                    <div className="text-center">
-                      <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Match IA</p>
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className={cn("h-full", (candidate.matchScore || 0) > 80 ? "bg-neon" : "bg-neon")}
-                            style={{ width: `${candidate.matchScore || 0}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-bold">{candidate.matchScore || 0}%</span>
-                      </div>
-                    </div>
+                          <div className="flex flex-wrap items-center gap-4 md:gap-8 ml-auto md:ml-0">
+                            <div className="text-center hidden sm:block">
+                              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Status</p>
+                              <Badge variant="secondary" className="bg-muted/50 text-[10px] uppercase">{candidate.status}</Badge>
+                            </div>
 
-                    <Button
-                      onClick={() => candidate.matchId && setSelectedCandidate(candidate)}
-                      variant={candidate.matchId ? "default" : "outline"}
-                      disabled={!candidate.matchId}
-                      className={cn(
-                        "rounded-xl gap-2",
-                        candidate.matchId ? "bg-neon text-chumbo dark:bg-neon dark:text-chumbo" : ""
-                      )}
-                    >
-                      <BrainCircuit className="w-4 h-4" />
-                      Ver Relatório
-                    </Button>
+                            <div className="text-center min-w-[100px]">
+                              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Match IA</p>
+                              <div className="flex items-center gap-2">
+                                <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-neon shadow-[0_0_8px_rgba(196,255,87,0.5)]"
+                                    style={{ width: `${candidate.matchScore || 0}%` }}
+                                  />
+                                </div>
+                                <span className="text-sm font-bold">{candidate.matchScore || 0}%</span>
+                              </div>
+                            </div>
+
+                            <Button
+                              onClick={() => candidate.matchId && setSelectedCandidate(candidate)}
+                              variant={candidate.matchId ? "default" : "outline"}
+                              disabled={!candidate.matchId}
+                              size="sm"
+                              className={cn(
+                                "rounded-xl gap-2 h-9 px-4 transition-all",
+                                candidate.matchId ? "bg-neon hover:bg-neon/80 text-chumbo border-none shadow-lg shadow-neon/10" : ""
+                              )}
+                            >
+                              <BrainCircuit className="w-4 h-4" />
+                              <span className="hidden xs:inline">Ver Relatório</span>
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </div>
             ))
+          ) : (
+            <Card className="p-12 text-center border-dashed bg-transparent">
+              <Users className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
+              <h3 className="text-xl font-bold mb-1">Nenhum candidato encontrado</h3>
+              <p className="text-muted-foreground">Tente ajustar sua busca ou filtros para encontrar o que procura.</p>
+            </Card>
           )}
         </div>
 
         {/* DIALOG DO RELATÓRIO */}
         <Dialog open={!!selectedCandidate} onOpenChange={() => setSelectedCandidate(null)}>
-          <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] md:h-auto max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-xl border-border/50 p-0 md:p-6">
-            <div className="p-6 md:p-0">
-              <DialogHeader>
-                <div className="flex flex-wrap items-center gap-3 mb-2">
-                  <Badge className="bg-neon/10 text-neon border-neon/20">Análise Claude 3.5 Sonnet</Badge>
-                  <span className="text-sm text-muted-foreground italic">Gerado em {selectedCandidate && new Date().toLocaleDateString()}</span>
-                </div>
-                <DialogTitle className="text-2xl md:text-3xl font-outfit flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  Relatório de Match: {selectedCandidate?.name}
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1 md:flex-none"><FileText className="w-4 h-4 mr-2" /> PDF</Button>
-                    <Button variant="outline" size="sm" className="flex-1 md:flex-none"><ExternalLink className="w-4 h-4 mr-2" /> Partilhar</Button>
-                  </div>
+          <DialogContent className="max-w-[95vw] md:max-w-5xl h-[90vh] md:h-auto max-h-[95vh] overflow-hidden bg-background/95 backdrop-blur-xl border-border/50 p-0 flex flex-col">
+            <DialogHeader className="p-6 pb-2 border-b border-border/50 shrink-0">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <Badge className="bg-neon/10 text-neon border-neon/20">Análise Claude 3.5 Sonnet</Badge>
+                <span className="text-sm text-muted-foreground italic">
+                  Gerado em {selectedCandidate && new Date().toLocaleDateString()}
+                </span>
+              </div>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <DialogTitle className="text-2xl md:text-3xl font-outfit">
+                  Relatório de Match: <span className="text-azure">{selectedCandidate?.name}</span>
                 </DialogTitle>
-              </DialogHeader>
+                <div className="flex gap-2">
+                  <Button onClick={handleExportPDF} variant="outline" size="sm" className="flex-1 md:flex-none gap-2 rounded-xl border-azure/20 text-azure hover:bg-azure/10">
+                    <FileText className="w-4 h-4" /> Exportar PDF
+                  </Button>
+                  <Button onClick={handleShare} variant="outline" size="sm" className="flex-1 md:flex-none gap-2 rounded-xl border-neon/20 text-neon hover:bg-neon/5">
+                    <ExternalLink className="w-4 h-4" /> Partilhar
+                  </Button>
+                </div>
+              </div>
+            </DialogHeader>
 
+            <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
               {isLoadingMatch ? (
                 <div className="py-20 text-center space-y-4">
-                  <Loader2 className="w-10 h-10 animate-spin mx-auto text-forest dark:text-neon" />
-                  <p className="text-muted-foreground">Analisando dados com IA...</p>
+                  <Loader2 className="w-10 h-10 animate-spin mx-auto text-neon" />
+                  <p className="text-muted-foreground animate-pulse">Consultando oráculo de IA...</p>
                 </div>
-              ) : fullMatch && (
-                <div className="py-6">
-                  <MatchReportView analysis={fullMatch} />
+              ) : fullMatch ? (
+                <MatchReportView analysis={fullMatch} />
+              ) : (
+                <div className="py-20 text-center">
+                  <p className="text-muted-foreground italic">Não foi possível carregar os detalhes do relatório.</p>
                 </div>
               )}
             </div>
@@ -157,8 +270,4 @@ export default function CandidatesPage() {
       </div>
     </DashboardLayout>
   );
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(" ");
 }

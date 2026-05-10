@@ -5,14 +5,25 @@ export interface MatchAnalysis {
   candidateId: string;
   jobId: string;
   overallScore: number;
-  recommendation: 'HIRE' | 'RECONSIDER' | 'NO';
+  recommendation: 'STRONG_YES' | 'YES' | 'MAYBE' | 'NO';
   summary: string;
   details: {
-    cultureMatch: number;
-    technicalSkills: number;
-    leadershipPotential: number;
-    softSkills: string[];
-    risks?: string[];
+    jobMatch: {
+      score: number;
+      rationale: string;
+      strengths: string[];
+      risks: string[];
+    };
+    leaderMatch: {
+      score: number;
+      rationale: string;
+      communicationTip: string;
+    };
+    cultureMatch: {
+      score: number;
+      rationale: string;
+    };
+    developmentPlan: string[];
   };
   createdAt: string;
 }
