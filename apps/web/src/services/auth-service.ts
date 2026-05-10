@@ -15,9 +15,7 @@ export const authService = {
   async login(email: string, password: string): Promise<LoginResponse> {
     const { data } = await api.post<LoginResponse>('/auth/login', { email, password });
     
-    if (data.accessToken) {
-      console.log("[Auth] Salvando token no localStorage:", data.accessToken.substring(0, 10) + "...");
-      localStorage.setItem('@SaaS:token', data.accessToken);
+    if (data.user) {
       localStorage.setItem('@SaaS:user', JSON.stringify(data.user));
     }
     

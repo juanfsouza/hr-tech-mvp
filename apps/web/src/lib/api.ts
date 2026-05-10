@@ -9,36 +9,91 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  // O token agora vai via Cookie (HttpOnly), então não precisamos injetar manualmente o Authorization Header
+  // a menos que o token ainda esteja no localStorage por transição.
   if (typeof window !== 'undefined') {
-    const allKeys = Object.keys(window.localStorage);
-    console.log(`[API] Chaves no localStorage: ${allKeys.join(', ')}`);
-    
     const token = window.localStorage.getItem('@SaaS:token');
     if (token) {
-      console.log(`[API] Token encontrado: Bearer ${token.substring(0, 10)}...`);
       config.headers.set('Authorization', `Bearer ${token}`);
-    } else {
-      console.warn(`[API] Requisição para ${config.url} SEM TOKEN no localStorage.`);
     }
   }
   return config;
 });
 
-// Interceptor para tratar erros globais (ex: 401 Unauthorized)
-// Interceptor para tratar respostas e erros globais
+// Flag para evitar múltiplas chamadas simultâneas de refresh
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 api.interceptors.response.use(
   (response) => {
-    // Se a resposta segue o padrão { success: true, data: ... }
     if (response.data && response.data.success && response.data.data) {
       return { ...response, data: response.data.data };
     }
     return response;
   },
-  (error) => {
-    if (error.response?.status === 401 && typeof window !== 'undefined') {
-      console.warn("[API] Recebido 401 do servidor. Removendo token do localStorage para segurança.");
-      window.localStorage.removeItem('@SaaS:token');
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Se erro for 401 e não for uma tentativa de refresh ou login
+    if (
+      error.response?.status === 401 && 
+      !originalRequest._retry && 
+      !originalRequest.url?.includes('/auth/refresh') &&
+      !originalRequest.url?.includes('/auth/login')
+    ) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(() => {
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        console.log("[API] Access token expirado. Tentando renovar via Refresh Token...");
+        // Tentamos o refresh (o cookie refresh_token será enviado automaticamente)
+        const { data } = await api.post('/auth/refresh');
+        
+        // Se o backend ainda retornar o accessToken no body (para compatibilidade/migração)
+        if (data.accessToken) {
+          localStorage.setItem('@SaaS:token', data.accessToken);
+        }
+
+        processQueue(null);
+        return api(originalRequest);
+      } catch (refreshError) {
+        console.error("[API] Refresh token falhou ou expirou. Deslogando usuário.");
+        processQueue(refreshError, null);
+        
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('@SaaS:token');
+          localStorage.removeItem('@SaaS:user');
+          window.location.href = '/login';
+        }
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
     return Promise.reject(error);
   }
 );

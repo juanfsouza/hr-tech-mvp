@@ -57,12 +57,21 @@ export class AuthController {
 
     const { accessToken, refreshToken, user } = result.value;
 
-    // Refresh token via HTTP-only cookie (não exposto ao JS do browser)
+    // Access token via HTTP-only cookie
+    reply.setCookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: process.env['NODE_ENV'] === 'production',
+      sameSite: 'lax', // Permite envio em navegações cross-site básicas
+      path: '/',
+      maxAge: 60 * 60, // 1 hora
+    });
+
+    // Refresh token via HTTP-only cookie
     reply.setCookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'strict',
-      path: '/api/v1/auth/refresh',
+      sameSite: 'lax',
+      path: '/', // Mudado para / para facilitar acesso e limpeza
       maxAge: 60 * 60 * 24 * 7, // 7 dias
     });
 
@@ -122,11 +131,19 @@ export class AuthController {
 
     const { accessToken, refreshToken: newRefreshToken } = result.value;
 
+    reply.setCookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: process.env['NODE_ENV'] === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60,
+    });
+
     reply.setCookie('refresh_token', newRefreshToken, {
       httpOnly: true,
       secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'strict',
-      path: '/api/v1/auth/refresh',
+      sameSite: 'lax',
+      path: '/',
       maxAge: 60 * 60 * 24 * 7,
     });
 
@@ -140,7 +157,8 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Encerrar sessão (revogar refresh token)' })
   async logout(@Res({ passthrough: true }) reply: FastifyReply): Promise<void> {
-    reply.clearCookie('refresh_token', { path: '/api/v1/auth/refresh' });
+    reply.clearCookie('access_token', { path: '/' });
+    reply.clearCookie('refresh_token', { path: '/' });
   }
 
   // ─── GET /auth/me ──────────────────────────────────────────────────────────
