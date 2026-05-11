@@ -3,6 +3,7 @@ import {
   Post,
   Body,
   Res,
+  Req,
   Get,
   HttpCode,
   HttpStatus,
@@ -124,9 +125,10 @@ export class AuthController {
   @ApiOperation({ summary: 'Renovar access token via refresh token (cookie)' })
   @ApiCookieAuth('refresh_token')
   async refresh(
+    @Req() request: any,
     @Res({ passthrough: true }) reply: FastifyReply,
   ): Promise<{ accessToken: string }> {
-    const refreshToken = (reply.request as unknown as { cookies: Record<string, string> }).cookies['refresh_token'];
+    const refreshToken = request.cookies['refresh_token'];
     if (!refreshToken) throw new UnauthorizedException('No refresh token provided.');
 
     const result = await this.refreshTokenUseCase.execute({ refreshToken });

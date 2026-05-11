@@ -56,7 +56,8 @@ api.interceptors.response.use(
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then(() => {
+          .then((token) => {
+            originalRequest.headers['Authorization'] = `Bearer ${token}`;
             return api(originalRequest);
           })
           .catch((err) => {
@@ -75,9 +76,10 @@ api.interceptors.response.use(
         // Se o backend ainda retornar o accessToken no body (para compatibilidade/migração)
         if (data.accessToken) {
           localStorage.setItem('@SaaS:token', data.accessToken);
+          originalRequest.headers['Authorization'] = `Bearer ${data.accessToken}`;
         }
 
-        processQueue(null);
+        processQueue(null, data.accessToken);
         return api(originalRequest);
       } catch (refreshError) {
         console.error("[API] Refresh token falhou ou expirou. Deslogando usuário.");

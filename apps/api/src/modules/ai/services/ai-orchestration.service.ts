@@ -18,8 +18,8 @@ export class AiOrchestrationService {
     let systemPrompt = 'Você é um assistente de RH focado em análise de candidatos e processos seletivos. Responda de forma concisa e útil.';
 
     if (jobId) {
-      const job = await this.prisma.job.findUnique({
-        where: { id: jobId },
+      const job = await this.prisma.job.findFirst({
+        where: { id: jobId, companyId },
         include: {
           candidates: {
             include: {

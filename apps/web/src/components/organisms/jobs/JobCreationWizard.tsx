@@ -275,7 +275,7 @@ export function JobCreationWizard() {
   if (mode === "IA_BRIEFING") {
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <Card className="border-none shadow-none bg-transparent">
+        <Card className="border-none shadow-none bg-transparent p-5">
           <CardHeader className="px-0">
             <div className="flex items-center gap-2 text-forest dark:text-neon mb-2">
               <BrainCircuit className="w-6 h-6" />
