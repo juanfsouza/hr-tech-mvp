@@ -46,6 +46,7 @@ export class CompaniesController {
       razaoSocial: dto.razaoSocial,
       cnpj: dto.cnpj,
       websiteUrl: dto.websiteUrl,
+      logoUrl: dto.logoUrl,
       userId: user.id,
     });
 

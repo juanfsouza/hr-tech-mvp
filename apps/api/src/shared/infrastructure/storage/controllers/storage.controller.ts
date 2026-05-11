@@ -1,37 +1,30 @@
-import {
-  Controller, Post, Get, Query, UseGuards, HttpCode, HttpStatus,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
-import { IsIn, IsString } from 'class-validator';
-import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
-import { Body } from '@nestjs/common';
-import { StorageBucket, StorageService } from '../services/storage.service';
+import { Controller, Post, Body, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { StorageService, StorageBucket } from '../services/storage.service';
+import { JwtAuthGuard } from '../../http/guards/jwt-auth.guard';
 
 class GetUploadUrlDto {
-  @IsIn(['resumes', 'logos', 'reports']) folder!: StorageBucket;
-  @IsString() extension!: string;
-  @IsString() contentType!: string;
+  bucket!: StorageBucket;
+  extension!: string;
+  contentType!: string;
 }
 
 @ApiTags('Storage')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('storage')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class StorageController {
-  constructor(private readonly storage: StorageService) { }
+  constructor(private readonly storageService: StorageService) {}
 
   @Post('upload-url')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obter URL presigned para upload direto (browser → S3)' })
-  async getUploadUrl(@Body() dto: GetUploadUrlDto): Promise<{ uploadUrl: string; key: string }> {
-    return this.storage.getUploadPresignedUrl(dto.folder, dto.extension, dto.contentType);
-  }
-
-  @Get('download-url')
-  @ApiOperation({ summary: 'Obter URL presigned para download temporário' })
-  @ApiQuery({ name: 'key', required: true })
-  async getDownloadUrl(@Query('key') key: string): Promise<{ url: string }> {
-    const url = await this.storage.getDownloadPresignedUrl(key);
-    return { url };
+  @ApiOperation({ summary: 'Gerar URL assinada para upload de arquivos no S3' })
+  @ApiBody({ type: GetUploadUrlDto })
+  async getUploadUrl(@Body() dto: GetUploadUrlDto) {
+    return this.storageService.getUploadPresignedUrl(
+      dto.bucket,
+      dto.extension,
+      dto.contentType
+    );
   }
 }

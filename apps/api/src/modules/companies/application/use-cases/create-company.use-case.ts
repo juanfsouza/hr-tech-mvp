@@ -42,6 +42,7 @@ export class CreateCompanyUseCase
       razaoSocial: input.razaoSocial.trim(),
       cnpj: cnpjOrError.value,
       websiteUrl: input.websiteUrl,
+      logoUrl: input.logoUrl,
     });
 
     await this.companyRepository.save(company);

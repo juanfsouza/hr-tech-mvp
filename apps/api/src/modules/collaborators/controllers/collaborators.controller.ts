@@ -10,6 +10,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
 import { CurrentUser, AuthenticatedUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
 import { CreateCollaboratorUseCase } from '../application/use-cases/create.collaborator.use-case';
+import { UpdateCollaboratorUseCase } from '../application/use-cases/update.collaborator.use-case';
+import { DeleteCollaboratorUseCase } from '../application/use-cases/delete.collaborator.use-case';
 import { OrgChartNode } from '@/modules/collaborators/application/interfaces/org-chart-node.interface';
 import { GetOrgChartUseCase } from '../application/use-cases/list.collaborato.use-case';
 
@@ -28,6 +30,8 @@ class CreateCollaboratorDto {
 export class CollaboratorsController {
   constructor(
     private readonly createCollaborator: CreateCollaboratorUseCase,
+    private readonly updateCollaborator: UpdateCollaboratorUseCase,
+    private readonly deleteCollaborator: DeleteCollaboratorUseCase,
     private readonly getOrgChart: GetOrgChartUseCase,
   ) { }
 
@@ -48,6 +52,44 @@ export class CollaboratorsController {
       throw new BadRequestException(err.message);
     }
     return { id: result.value.id, name: result.value.name };
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Atualizar dados ou posição no organograma' })
+  async update(
+    @Param('companyId') companyId: string,
+    @Param('id') id: string,
+    @Body() dto: Partial<CreateCollaboratorDto>,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<{ success: boolean }> {
+    if (user.companyId !== companyId) throw new ForbiddenException();
+
+    const result = await this.updateCollaborator.execute({
+      id,
+      companyId,
+      ...dto,
+    });
+
+    if (result.isLeft()) {
+      throw new BadRequestException(result.value.message);
+    }
+    return result.value;
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Remover colaborador do organograma' })
+  async remove(
+    @Param('companyId') companyId: string,
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<{ success: boolean }> {
+    if (user.companyId !== companyId) throw new ForbiddenException();
+
+    const result = await this.deleteCollaborator.execute(id, companyId);
+    if (result.isLeft()) {
+      throw new BadRequestException(result.value.message);
+    }
+    return result.value;
   }
 
   @Get('org-chart')

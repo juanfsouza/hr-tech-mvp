@@ -22,6 +22,11 @@ export class CreateCompanyDto {
   @Matches(/^https?:\/\/.+|^$/, { message: 'websiteUrl must be a valid URL or empty' })
   websiteUrl?: string;
 
+  @ApiPropertyOptional({ example: 'https://s3.amazonaws.com/bucket/logos/my-logo.png' })
+  @IsOptional()
+  @IsString()
+  logoUrl?: string;
+
   @ApiProperty({ example: 'uuid-do-usuario' })
   @IsString()
   @IsNotEmpty()
