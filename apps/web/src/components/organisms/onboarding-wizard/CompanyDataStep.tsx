@@ -63,6 +63,7 @@ export function CompanyDataStep() {
       }
       
       updateCompanyData({
+        id: data.companyId || user?.companyId,
         name: data.razaoSocial,
         cnpj: data.cnpj
       });

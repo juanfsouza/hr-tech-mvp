@@ -23,27 +23,17 @@ export class UpdateOnboardingUseCase
       return left(new EntityNotFoundError('Company', input.companyId));
     }
 
-    if (input.step === 1) {
-      if (input.address) company.updateAddress(input.address);
-      if (input.logoUrl) company.updateLogo(input.logoUrl);
-      company.advanceOnboarding('IN_PROGRESS');
+    if (input.companyContext || input.perfilRitmo || input.valores) {
+      company.updateContext({
+        companyContext: input.companyContext,
+        companyProfile: input.perfilRitmo?.toUpperCase() as any,
+        cultureValues: input.valores,
+      });
     }
 
-    if (input.step === 4 && input.context) {
-      company.updateContext(input.context);
-
-      if (!company.hasCompleteContext()) {
-        const count = input.context.companyContext?.trim().split(/\s+/).filter(w => w.length > 0).length || 0;
-        return left(
-          new BusinessRuleViolationError(
-            `O contexto da empresa precisa de pelo menos 100 palavras. Atual: ${count} palavras.`,
-          ),
-        );
-      }
+    if (input.isComplete) {
       company.completeOnboarding();
-    }
-
-    if (input.step !== 1 && input.step !== 4) {
+    } else {
       company.advanceOnboarding('IN_PROGRESS');
     }
 

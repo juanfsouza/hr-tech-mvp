@@ -58,10 +58,10 @@ export class CompaniesController {
       throw new BadRequestException(err.message);
     }
 
-    return { 
-      companyId: result.value.companyId, 
+    return {
+      companyId: result.value.companyId,
       cnpj: result.value.cnpj,
-      razaoSocial: result.value.razaoSocial 
+      razaoSocial: result.value.razaoSocial
     };
   }
 

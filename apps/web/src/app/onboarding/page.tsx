@@ -25,6 +25,7 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (company) {
       updateCompanyData({
+        id: company.id,
         name: company.razaoSocial,
         cnpj: company.cnpj,
       });

@@ -163,9 +163,11 @@ export function PersonalityTestsStep() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-[32px] bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <div className="space-y-2">
                     <Label>Colaborador</Label>
-                    <Select onValueChange={setSelectedNode}>
-                      <SelectTrigger className="bg-white dark:bg-background border-none h-11 rounded-xl shadow-sm">
-                        <SelectValue placeholder="Selecione..." />
+                    <Select value={selectedNode || ""} onValueChange={setSelectedNode}>
+                      <SelectTrigger className="bg-white truncate dark:bg-background border-none h-11 rounded-xl shadow-sm">
+                        <SelectValue placeholder="Selecione...">
+                          {selectedNode ? organogram.find(n => n.id === selectedNode)?.name : null}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         {organogram.map(node => (
@@ -181,7 +183,7 @@ export function PersonalityTestsStep() {
                         <Label>Perfil DISC Principal</Label>
                         <Select
                           value={personalityResults[selectedNode]?.disc || ""}
-                          onValueChange={(val) => updatePersonalityResult(selectedNode, { disc: val })}
+                          onValueChange={(val) => updatePersonalityResult(selectedNode, { disc: val! })}
                         >
                           <SelectTrigger className="bg-white dark:bg-background border-none h-11 rounded-xl shadow-sm">
                             <SelectValue placeholder="Ex: D, I, S, C..." />
@@ -199,7 +201,7 @@ export function PersonalityTestsStep() {
                         <Label>Tipo Eneagrama</Label>
                         <Select
                           value={personalityResults[selectedNode]?.enneagram || ""}
-                          onValueChange={(val) => updatePersonalityResult(selectedNode, { enneagram: val })}
+                          onValueChange={(val) => updatePersonalityResult(selectedNode, { enneagram: val! })}
                         >
                           <SelectTrigger className="bg-white dark:bg-background border-none h-11 rounded-xl shadow-sm">
                             <SelectValue placeholder="Tipo..." />

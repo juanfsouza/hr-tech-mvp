@@ -5,30 +5,45 @@ import { AiOrchestrationService } from '../services/ai-orchestration.service';
 import { FastifyReply } from 'fastify';
 import { AuthenticatedUser, CurrentUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
 
+import { IsString, IsArray, IsOptional } from 'class-validator';
+
 export class ChatMessageDto {
+  @IsString()
   role!: 'user' | 'assistant';
+  
+  @IsString()
   content!: string;
 }
 
 export class ChatRequestDto {
+  @IsArray()
   messages!: ChatMessageDto[];
+  
+  @IsString()
+  @IsOptional()
   jobId?: string;
 }
 
 export class GenerateContextDto {
+  @IsString()
   companyName!: string;
+  
+  @IsString()
   profile!: string;
+  
+  @IsArray()
+  @IsString({ each: true })
   tags!: string[];
 }
 
 @ApiTags('AI Chat')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('ai/chat')
+@Controller('ai')
 export class AiController {
   constructor(private readonly aiOrchestration: AiOrchestrationService) { }
 
-  @Post('stream')
+  @Post('chat/stream')
   @ApiOperation({ summary: 'Conversar com IA do RH via Stream (POST)' })
   async streamChat(
     @Body() body: ChatRequestDto,

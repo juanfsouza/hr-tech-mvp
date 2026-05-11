@@ -1,11 +1,8 @@
-import { CompanyAddress } from "../../domain/interfaces/company-address.interface";
-import { CompanyContext } from "../../domain/interfaces/company-context.interface";
 export interface UpdateOnboardingInput {
-    companyId: string;
-    step: 1 | 2 | 3 | 4;
-    razaoSocial?: string;
-    logoUrl?: string;
-    websiteUrl?: string;
-    address?: CompanyAddress;
-    context?: Partial<CompanyContext>;
+  companyId: string;
+  step?: number;
+  companyContext?: string;
+  perfilRitmo?: string;
+  valores?: string[];
+  isComplete?: boolean;
 }

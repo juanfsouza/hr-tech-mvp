@@ -9,7 +9,7 @@ import { Label } from "@/components/atoms/label";
 import { Badge } from "@/components/atoms/badge";
 import { Input } from "@/components/atoms/input";
 import { useOnboardingStore } from "@/store/onboarding-store";
-import { Rocket, ShieldCheck, RefreshCcw, X, Plus, Sparkles, ChevronRight, ArrowLeft, CheckCircle, Wand2, Loader2 } from "lucide-react";
+import { Rocket, ShieldCheck, RefreshCcw, X, Plus, Sparkles, ArrowLeft, CheckCircle, Wand2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -33,7 +33,7 @@ export function CompanyContextStep() {
   const router = useRouter();
 
   const generateMutation = useMutation({
-    mutationFn: () => aiService.generateCompanyContext(companyData.name, profile, tags),
+    mutationFn: () => aiService.generateCompanyContext(companyData.name, profile!, tags),
     onSuccess: (text) => {
       setNarrative(text);
       toast.success("Narrativa gerada com sucesso!");
@@ -44,7 +44,7 @@ export function CompanyContextStep() {
   });
 
   const wordCount = useMemo(() => {
-    return narrative.trim().split(/\s+/).filter(w => w.length > 0).length;
+    return narrative.trim().split(/\s+/).filter((w: string | any[]) => w.length > 0).length;
   }, [narrative]);
 
   const isComplete = profile && wordCount >= 100 && tags.length >= 3;
@@ -63,8 +63,8 @@ export function CompanyContextStep() {
     try {
       // 1. Sincronizar Organograma e Resultados Psicométricos
       await companyService.syncOrganogram(
-        companyData.id!, 
-        organogram, 
+        companyData.id!,
+        organogram,
         personalityResults
       );
 
@@ -100,7 +100,6 @@ export function CompanyContextStep() {
       <Card className="border-none shadow-none bg-transparent p-5">
         <CardHeader className="px-0 pt-0">
           <CardTitle className="text-3xl font-outfit text-forest dark:text-neon flex items-center gap-2">
-            <Sparkles className="w-8 h-8" />
             Contexto e Ritmo
           </CardTitle>
           <CardDescription className="text-lg">

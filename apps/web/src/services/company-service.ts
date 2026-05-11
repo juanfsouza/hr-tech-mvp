@@ -15,7 +15,15 @@ export interface UpdateOnboardingInput {
   isComplete?: boolean;
 }
 
-export const companyService = {
+export interface CompanyService {
+  create(input: CreateCompanyInput): Promise<{ companyId: string; cnpj: string; razaoSocial: string }>;
+  updateOnboarding(id: string, input: UpdateOnboardingInput): Promise<any>;
+  update(id: string, input: Partial<CreateCompanyInput>): Promise<any>;
+  getById(id: string): Promise<any>;
+  syncOrganogram(companyId: string, nodes: any[], personalityResults: any): Promise<any>;
+}
+
+export const companyService: CompanyService = {
   async create(input: CreateCompanyInput) {
     const { data } = await api.post<{ companyId: string; cnpj: string; razaoSocial: string }>('/companies', input);
     return data;

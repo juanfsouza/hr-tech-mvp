@@ -234,7 +234,7 @@ export function JobCreationWizard() {
               <Label>Líder Responsável</Label>
               <Select
                 value={manualData.responsibleId}
-                onValueChange={(val) => setManualData({ ...manualData, responsibleId: val })}
+                onValueChange={(val) => setManualData({ ...manualData, responsibleId: val! })}
               >
                 <SelectTrigger className="rounded-xl h-12">
                   <SelectValue placeholder="Selecione o gestor da vaga" />
@@ -296,7 +296,7 @@ export function JobCreationWizard() {
                 <Label>Líder Direto</Label>
                 <Select
                   value={briefing.leaderId}
-                  onValueChange={(val) => setBriefing({ ...briefing, leaderId: val })}
+                  onValueChange={(val) => setBriefing({ ...briefing, leaderId: val! })}
                 >
                   <SelectTrigger className="rounded-xl h-12">
                     <SelectValue placeholder="Quem será o gestor?" />

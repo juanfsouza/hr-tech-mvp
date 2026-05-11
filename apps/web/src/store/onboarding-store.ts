@@ -12,9 +12,13 @@ export interface OrganogramNode {
 interface OnboardingState {
   step: number;
   companyData: {
+    id: string;
     name: string;
     cnpj: string;
     logo?: string;
+    profile?: string;
+    narrative?: string;
+    values?: string[];
     address?: {
       zipCode: string;
       street: string;
@@ -42,6 +46,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       companyData: {
         name: '',
         cnpj: '',
+        id: ''
       },
       organogram: [],
       personalityResults: {},

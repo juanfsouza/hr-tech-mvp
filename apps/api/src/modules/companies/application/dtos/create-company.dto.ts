@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, Matches, IsOptional, IsUrl, MinLength } from 'class-validator';
+import { IsString, IsNotEmpty, Matches, IsOptional, IsUrl, MinLength, IsArray, IsBoolean, IsNumber } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateCompanyDto {
@@ -34,40 +34,31 @@ export class CreateCompanyDto {
 }
 
 export class UpdateOnboardingDto {
-  @ApiProperty({ example: 1, enum: [1, 2, 3, 4] })
-  step!: 1 | 2 | 3 | 4;
+  @ApiPropertyOptional({ example: 1 })
+  @IsOptional()
+  @IsNumber()
+  step?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsUrl()
-  logoUrl?: string;
+  @IsString()
+  companyContext?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsUrl()
-  websiteUrl?: string;
+  @IsString()
+  perfilRitmo?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  address?: {
-    cep: string;
-    logradouro: string;
-    numero: string;
-    complemento?: string;
-    bairro: string;
-    cidade: string;
-    estado: string;
-  };
+  @IsArray()
+  @IsString({ each: true })
+  valores?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()
-  context?: {
-    companyProfile?: 'STARTUP' | 'CONSOLIDATED' | 'RESTRUCTURING' | 'OTHER';
-    companyContext?: string;
-    cultureValues?: string[];
-    mainChallenges?: string;
-    leadershipStyle?: string;
-  };
+  @IsBoolean()
+  isComplete?: boolean;
 }
 
 export class UpdateCompanyDto {
