@@ -49,7 +49,18 @@ Responda sempre em Português do Brasil.
       }
     }
 
-    return this.claude.stream(messages, { systemPrompt });
+    try {
+      console.log('[AiOrchestration] Iniciando chat contextual com Claude...');
+      return await this.claude.stream(messages, { systemPrompt });
+    } catch (error) {
+      console.warn('[AiOrchestration] Claude falhou no chat. Tentando com Grok...', error);
+      try {
+        return await this.grok.stream(messages, { systemPrompt });
+      } catch (grokError) {
+        console.error('[AiOrchestration] Falha total no chat assistente.', grokError);
+        throw new Error('Ambos os serviços de IA estão indisponíveis.');
+      }
+    }
   }
 
   async generateJobDescription(input: GenerateJdInput): Promise<string> {

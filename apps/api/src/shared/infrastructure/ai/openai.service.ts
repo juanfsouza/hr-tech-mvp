@@ -82,4 +82,27 @@ export class OpenAiService {
       outputTokens: response.usage?.completion_tokens || 0,
     };
   }
+  
+  async *stream(messages: ClaudeMessage[], options: ClaudeOptions = {}): AsyncGenerator<string> {
+    if (!this.client) {
+      throw new Error('OPENAI_KEY_MISSING');
+    }
+    const stream = await this.client.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages: [
+        ...(options.systemPrompt ? [{ role: 'system' as const, content: options.systemPrompt }] : []),
+        ...messages.map((m) => ({ 
+          role: (m.role === 'assistant' ? 'assistant' : 'user') as 'assistant' | 'user', 
+          content: m.content 
+        })),
+      ],
+      max_tokens: options.maxTokens ?? 2048,
+    });
+
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content || '';
+      if (content) yield content;
+    }
+  }
 }
