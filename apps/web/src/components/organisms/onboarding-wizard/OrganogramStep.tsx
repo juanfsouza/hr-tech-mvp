@@ -42,7 +42,7 @@ export function OrganogramStep() {
       exit={{ opacity: 0, x: -20 }}
       className="space-y-6"
     >
-      <Card className="border-none shadow-none bg-transparent">
+      <Card className="border-none shadow-none bg-transparent p-5">
         <CardHeader className="px-0 pt-0">
           <div className="flex justify-between items-start">
             <div>

@@ -41,7 +41,7 @@ export class CompaniesController {
   async create(
     @Body() dto: CreateCompanyDto,
     @CurrentUser() user: AuthenticatedUser,
-  ): Promise<{ companyId: string; cnpj: string }> {
+  ): Promise<{ companyId: string; cnpj: string; razaoSocial: string }> {
     const result = await this.createCompany.execute({
       razaoSocial: dto.razaoSocial,
       cnpj: dto.cnpj,
@@ -56,7 +56,11 @@ export class CompaniesController {
       throw new BadRequestException(err.message);
     }
 
-    return { companyId: result.value.companyId, cnpj: result.value.cnpj };
+    return { 
+      companyId: result.value.companyId, 
+      cnpj: result.value.cnpj,
+      razaoSocial: result.value.razaoSocial 
+    };
   }
 
   @Get(':id')

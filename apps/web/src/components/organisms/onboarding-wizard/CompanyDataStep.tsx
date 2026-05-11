@@ -33,11 +33,11 @@ type CompanyFormData = z.infer<typeof companySchema>;
 export function CompanyDataStep() {
   const { companyData, updateCompanyData, nextStep } = useOnboardingStore();
   const [isFetchingCep, setIsFetchingCep] = useState(false);
+  const user = authService.getUser();
 
   const mutation = useMutation({
     mutationFn: (data: CompanyFormData) => {
-      const user = authService.getUser();
-      const companyId = user.companyId;
+      const companyId = user?.companyId;
 
       if (companyId) {
         return companyService.update(companyId, {
@@ -51,15 +51,14 @@ export function CompanyDataStep() {
         razaoSocial: data.name,
         cnpj: data.cnpj,
         websiteUrl: data.website || undefined,
-        userId: user.id,
+        userId: user!.id,
       });
     },
     onSuccess: (data: any) => {
       toast.success(user?.companyId ? "Dados atualizados!" : "Empresa cadastrada!");
       
-      const currentUser = authService.getUser();
-      if (currentUser && !currentUser.companyId) {
-        const updatedUser = { ...currentUser, companyId: data.companyId };
+      if (user && !user.companyId) {
+        const updatedUser = { ...user, companyId: data.companyId };
         localStorage.setItem('@SaaS:user', JSON.stringify(updatedUser));
       }
       
