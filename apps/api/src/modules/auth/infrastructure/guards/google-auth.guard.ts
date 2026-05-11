@@ -1,9 +1,11 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class GoogleAuthGuard extends AuthGuard('google') {
   override async canActivate(context: ExecutionContext): Promise<boolean> {
+    const logger = new Logger('GoogleAuthGuard');
+    logger.log('Iniciando canActivate do Google Auth...');
     const response = context.switchToHttp().getResponse();
 
     if (!response.setHeader && response.raw) {

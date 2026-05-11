@@ -15,7 +15,17 @@ export class DashboardController {
   @Get('stats')
   @ApiOperation({ summary: 'Obter estatísticas reais do dashboard' })
   async getStats(@CurrentUser() user: AuthenticatedUser) {
-    const companyId = user.companyId!;
+    const companyId = user.companyId;
+
+    if (!companyId) {
+      return {
+        activeJobs: 0,
+        totalCandidates: 0,
+        avgMatch: 0,
+        testsCompleted: 0,
+        recentActivity: [],
+      };
+    }
 
     const [activeJobs, totalCandidates, candidatesWithMatch, auditLogs] = await Promise.all([
       this.prisma.job.count({ where: { companyId, status: 'ACTIVE', deletedAt: null } }),
@@ -53,7 +63,9 @@ export class DashboardController {
   @Get('notifications')
   @ApiOperation({ summary: 'Listar notificações recentes' })
   async getNotifications(@CurrentUser() user: AuthenticatedUser) {
-    const companyId = user.companyId!;
+    const companyId = user.companyId;
+
+    if (!companyId) return [];
 
     const notifications = await this.prisma.auditLog.findMany({
       where: { companyId },

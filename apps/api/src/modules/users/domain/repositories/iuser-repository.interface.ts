@@ -3,6 +3,7 @@ import { User } from "../entities/user.entity";
 
 export interface IUserRepository {
     findByVerificationToken(token: string): Promise<User | null>;
+    findByResetToken(token: string): Promise<User | null>;
     findById(id: string): Promise<User | null>;
     findByEmail(email: Email): Promise<User | null>;
     findByCompany(companyId: string, cursor?: string, take?: number): Promise<User[]>;

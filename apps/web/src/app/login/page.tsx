@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { authService } from "@/services/auth-service";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import Link from "next/link";
 
 const BrandLogo = () => (
   <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -62,7 +63,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<"login" | "signin">("login");
-  const [focusedField, setFocusedField] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -74,7 +74,7 @@ export default function LoginPage() {
     const userParam = searchParams.get('user');
     if (userParam) {
       try {
-        const userData = JSON.parse(Buffer.from(userParam, 'base64').toString());
+        const userData = JSON.parse(atob(userParam));
         localStorage.setItem('@SaaS:user', JSON.stringify(userData));
         toast.success(`Bem-vindo, ${userData.name}!`);
         router.push("/dashboard");
@@ -124,13 +124,11 @@ export default function LoginPage() {
         transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
         className="w-full max-w-[1200px] rounded-[28px] shadow-[0_24px_64px_rgba(74,84,82,0.15)] flex flex-col md:flex-row min-h-[520px] overflow-hidden relative bg-white"
       >
-        {/* ── PAINEL LATERAL (Forest) ── */}
+        {/* ── PAINEL LATERAL ── */}
         <div className="w-full md:w-[35%] bg-gradient-to-br from-[#597048] to-[#4A5452] relative flex flex-col overflow-hidden p-8 md:p-0">
-          
-          {/* Blobs Animados (Apenas Desktop para performance) */}
+
           <div className="hidden md:block">
-             <div className="absolute -top-20 -left-20 w-80 h-80 bg-[#C4FF57] opacity-20 rounded-full blur-3xl animate-pulse" />
-             <div className="absolute top-40 -left-10 w-64 h-64 bg-[#C4FF57] opacity-10 rounded-full blur-3xl" />
+            <div className="absolute -top-20 -left-20 w-40 h-40 bg-[#C4FF57] opacity-20 rounded-full blur-3xl animate-pulse" />
           </div>
 
           <div className="relative z-10 flex flex-row md:flex-col gap-4 mt-0 md:mt-24 md:pl-10">
@@ -138,16 +136,14 @@ export default function LoginPage() {
               const isActive = activeTab === tab;
               return (
                 <div key={tab} className="relative flex-1 md:flex-none">
-                  {/* INDICADOR ATIVO */}
                   {isActive && (
                     <motion.div
                       layoutId="activeTabBackground"
                       transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                      className="absolute inset-0 md:-right-1 bg-white shadow-[-5px_0_20px_rgba(0,0,0,0.05)] z-0 rounded-xl md:rounded-l-full md:rounded-r-none"
+                      className="absolute inset-0 md:-right-1 bg-white z-0 rounded-xl md:rounded-l-full md:rounded-r-none shadow-[-5px_0_20px_rgba(0,0,0,0.05)]"
                     >
-                      {/* Cantos Invertidos (Apenas Desktop) */}
-                      <div className="hidden md:block absolute -top-5 right-0 w-5 h-5 bg-transparent rounded-br-[20px] shadow-[5px_5px_0_0px_#fff]" />
-                      <div className="hidden md:block absolute -bottom-5 right-0 w-5 h-5 bg-transparent rounded-tr-[20px] shadow-[5px_-5px_0_0px_#fff]" />
+                      <div className="hidden md:block absolute -top-5 right-0 w-5 h-5 bg-transparent rounded-br-[20px] shadow-[5px_5px_0_0px_white]" />
+                      <div className="hidden md:block absolute -bottom-5 right-0 w-5 h-5 bg-transparent rounded-tr-[20px] shadow-[5px_-5px_0_0px_white]" />
                     </motion.div>
                   )}
 
@@ -162,11 +158,6 @@ export default function LoginPage() {
               );
             })}
           </div>
-
-          {/* Logo Mobile (Escondida em Desktop) */}
-          <div className="md:hidden flex justify-end flex-1 items-center">
-             <div className="scale-75 origin-right"><BrandLogo /></div>
-          </div>
         </div>
 
         {/* ── PAINEL FORMULÁRIO ── */}
@@ -177,8 +168,8 @@ export default function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             className="w-full max-w-md flex flex-col items-center"
           >
-            <div className="hidden md:block mb-4">
-              <BrandLogo />
+            <div className="mb-8">
+              <img src="/logo_black.png" alt="RH TECH" className="h-22 w-auto object-contain" />
             </div>
 
             <h1 className="text-xl md:text-2xl font-black text-[#597048] tracking-[0.25em] uppercase mb-8 md:mb-12 text-center">
@@ -229,18 +220,20 @@ export default function LoginPage() {
             </div>
 
             <div className="w-full flex flex-col md:flex-row items-center justify-between mt-10 gap-6">
-              <button className="text-[11px] font-bold text-[#597048] opacity-70 hover:opacity-100 uppercase tracking-widest">
+              <Link
+                href="/forgot-password"
+                className="text-[11px] font-bold text-[#597048] opacity-70 hover:opacity-100 uppercase tracking-widest transition-colors"
+              >
                 Esqueceu a senha?
-              </button>
+              </Link>
 
               <motion.button
                 onClick={handleSubmit}
                 disabled={loading || success}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={`w-full md:w-auto px-10 py-4 rounded-full font-black text-[11px] tracking-[0.2em] shadow-lg transition-colors ${
-                  success ? "bg-[#43c98a]" : "bg-[#597048] hover:bg-[#4A5452]"
-                } text-white`}
+                className={`w-full md:w-auto px-10 py-4 rounded-full font-black text-[11px] tracking-[0.2em] shadow-lg transition-colors ${success ? "bg-[#43c98a]" : "bg-[#597048] hover:bg-[#4A5452]"
+                  } text-white`}
               >
                 {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" /> : (success ? "✓" : (activeTab === "login" ? "ENTRAR" : "CRIAR CONTA"))}
               </motion.button>
@@ -250,7 +243,7 @@ export default function LoginPage() {
             <div className="mt-12 w-full border-t border-[#F1F3F2] pt-8 text-center">
               <p className="text-[9px] text-[#8D9999] font-black tracking-[0.2em] mb-6 uppercase">Ou entre com</p>
               <div className="flex justify-center">
-                <button 
+                <button
                   onClick={handleGoogleLogin}
                   className="flex items-center gap-3 px-8 py-3 rounded-xl border border-[#F1F3F2] hover:bg-slate-50 transition-all text-xs font-bold text-[#4A5452]"
                 >
@@ -265,9 +258,7 @@ export default function LoginPage() {
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&display=swap');
-        *, *::before, *::after { box-sizing: border-box; }
         ::placeholder { color: #8D9999; opacity: 0.5; }
-        body { margin: 0; }
       `}</style>
     </div>
   );

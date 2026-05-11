@@ -11,6 +11,7 @@ import {
   BadRequestException,
   UseGuards,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
 import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth, ApiCookieAuth } from '@nestjs/swagger';
@@ -19,10 +20,12 @@ import { RegisterUseCase } from '@modules/auth/application/use-cases/register.us
 import { RefreshTokenUseCase } from '@modules/auth/application/use-cases/refresh-token.use-case';
 import { VerifyEmailUseCase } from '@modules/auth/application/use-cases/verify-email.use-case';
 import { OAuthLoginUseCase } from '@modules/auth/application/use-cases/oauth-login.use-case';
+import { ForgotPasswordUseCase } from '@modules/auth/application/use-cases/forgot-password.use-case';
+import { ResetPasswordUseCase } from '@modules/auth/application/use-cases/reset-password.use-case';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
 import { GoogleAuthGuard } from '../infrastructure/guards/google-auth.guard';
 import { CurrentUser, AuthenticatedUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
-import { LoginDto, RegisterDto } from '../application/dtos/login.dto';
+import { LoginDto, RegisterDto, ForgotPasswordDto, ResetPasswordDto } from '../application/dtos/login.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -33,6 +36,8 @@ export class AuthController {
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly verifyEmailUseCase: VerifyEmailUseCase,
     private readonly oauthLoginUseCase: OAuthLoginUseCase,
+    private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
   ) { }
 
   // ─── POST /auth/login ──────────────────────────────────────────────────────
@@ -82,13 +87,10 @@ export class AuthController {
   }
 
   // ─── POST /auth/register ───────────────────────────────────────────────────
-  @Post('register')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Registrar novo usuário de RH em empresa existente' })
+  @ApiOperation({ summary: 'Registrar novo usuário de RH' })
   @ApiBody({ type: RegisterDto })
   async register(@Body() dto: RegisterDto): Promise<{ userId: string; message: string }> {
     const result = await this.registerUseCase.execute({
-      companyId: dto.companyId,
       name: dto.name,
       email: dto.email,
       password: dto.password,
@@ -175,6 +177,35 @@ export class AuthController {
     return user;
   }
 
+  // ─── POST /auth/forgot-password ────────────────────────────────────────────
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Solicitar recuperação de senha' })
+  @ApiBody({ type: ForgotPasswordDto })
+  async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<{ message: string }> {
+    const result = await this.forgotPasswordUseCase.execute({ email: dto.email });
+    if (result.isLeft()) {
+      throw new BadRequestException(result.value.message);
+    }
+    return result.value;
+  }
+
+  // ─── POST /auth/reset-password ─────────────────────────────────────────────
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Redefinir senha usando token' })
+  @ApiBody({ type: ResetPasswordDto })
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<{ message: string }> {
+    const result = await this.resetPasswordUseCase.execute({
+      token: dto.token,
+      newPassword: dto.newPassword,
+    });
+    if (result.isLeft()) {
+      throw new BadRequestException(result.value.message);
+    }
+    return result.value;
+  }
+
   // ─── GOOGLE AUTH ───────────────────────────────────────────────────────────
   @Get('google')
   @UseGuards(GoogleAuthGuard)
@@ -187,23 +218,28 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @ApiOperation({ summary: 'Callback do Google OAuth' })
   async googleAuthRedirect(
-    @Res({ passthrough: true }) reply: FastifyReply,
+    @Res() reply: FastifyReply,
     @CurrentUser() googleUser: any,
   ) {
+    const logger = new Logger('GoogleAuth');
+    logger.log(`Usuário autenticado via Google: ${googleUser?.email}`);
     const result = await this.oauthLoginUseCase.execute({
       email: googleUser.email,
       name: `${googleUser.firstName} ${googleUser.lastName}`,
       picture: googleUser.picture,
     });
 
+    const frontendUrl = process.env['FRONTEND_URL'] ?? 'http://localhost:3000';
+
     if (result.isLeft()) {
-      // Se der erro, redireciona para o login com erro
-      return reply.redirect(`${process.env['FRONTEND_URL']}/login?error=${result.value.message}`);
+      const errorUrl = `${frontendUrl}/login?error=${encodeURIComponent(result.value.message)}`;
+      logger.error(`Redirecionando com erro para: ${errorUrl}`);
+      return reply.redirect(errorUrl);
     }
 
     const { accessToken, refreshToken, user } = result.value;
 
-    // Configurar Cookies (Igual ao login manual)
+    // Configurar Cookies
     reply.setCookie('access_token', accessToken, {
       httpOnly: true,
       secure: process.env['NODE_ENV'] === 'production',
@@ -220,9 +256,27 @@ export class AuthController {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    // Redireciona para o Dashboard no Frontend
-    // Passamos os dados do usuário via localStorage (o que o frontend já faz)
-    // Mas no redirecionamento, o frontend precisará buscar o usuário
-    return reply.redirect(`${process.env['FRONTEND_URL']}/dashboard?auth=google&user=${Buffer.from(JSON.stringify(user)).toString('base64')}`);
+    const userBase64 = Buffer.from(JSON.stringify(user)).toString('base64');
+    const redirectUrl = `${frontendUrl}/dashboard?auth=google&user=${userBase64}`;
+
+    logger.log(`Redirecionando via HTML (Seguro para Cookies): ${redirectUrl}`);
+
+    // Enviamos um HTML simples que faz o redirecionamento. 
+    // Isso garante que o Fastify processe os Cookies antes da mudança de página.
+    return reply.type('text/html').send(`
+      <html>
+        <head>
+          <title>Redirecionando...</title>
+          <script>
+            window.location.href = "${redirectUrl}";
+          </script>
+        </head>
+        <body style="background: #0f172a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
+          <div style="text-align: center;">
+            <p>Autenticação concluída! Redirecionando para o dashboard...</p>
+          </div>
+        </body>
+      </html>
+    `);
   }
 }

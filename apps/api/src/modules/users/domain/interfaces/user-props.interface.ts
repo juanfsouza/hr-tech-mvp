@@ -13,6 +13,8 @@ export interface UserProps {
     isActive: boolean;
     isVerified: boolean;
     verificationToken?: string;
+    passwordResetToken?: string;
+    passwordResetExpires?: Date;
     createdAt: Date;
     updatedAt: Date;
     deletedAt?: Date;

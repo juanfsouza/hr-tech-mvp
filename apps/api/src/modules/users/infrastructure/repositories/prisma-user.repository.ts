@@ -64,6 +64,8 @@ export class PrismaUserRepository implements IUserRepository {
         isActive: user.isActive,
         isVerified: user.isVerified,
         verificationToken: user.verificationToken,
+        passwordResetToken: user.passwordResetToken,
+        passwordResetExpires: user.passwordResetExpires,
         lastLoginAt: user.lastLoginAt,
         companyId: user.companyId,
         deletedAt: user.deletedAt,
@@ -103,6 +105,13 @@ export class PrismaUserRepository implements IUserRepository {
     return record ? this.toDomain(record) : null;
   }
 
+  async findByResetToken(token: string): Promise<User | null> {
+    const record = await this.prisma.user.findFirst({
+      where: { passwordResetToken: token, deletedAt: null },
+    });
+    return record ? this.toDomain(record) : null;
+  }
+
   private toDomain(record: PrismaUserRecord): User {
     const emailOrError = Email.create(record.email);
     if (emailOrError.isLeft()) {
@@ -121,6 +130,8 @@ export class PrismaUserRepository implements IUserRepository {
         isActive: record.isActive,
         isVerified: record.isVerified,
         verificationToken: record.verificationToken ?? undefined,
+        passwordResetToken: record.passwordResetToken ?? undefined,
+        passwordResetExpires: record.passwordResetExpires ?? undefined,
         createdAt: record.createdAt,
         updatedAt: record.updatedAt,
         deletedAt: record.deletedAt ?? undefined,

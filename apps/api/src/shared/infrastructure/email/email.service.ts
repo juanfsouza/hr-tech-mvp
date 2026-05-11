@@ -180,4 +180,25 @@ export class EmailService {
       ] : undefined,
     );
   }
+
+  async sendPasswordResetEmail(to: string, name: string, token: string): Promise<void> {
+    const resetUrl = `${process.env['FRONTEND_URL']}/reset-password?token=${token}`;
+
+    await this.send({
+      to,
+      subject: 'Redefina sua senha - RH TECH',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #6366f1;">Olá, ${name}!</h2>
+          <p>Recebemos uma solicitação para redefinir sua senha no RH TECH. Clique no botão abaixo para prosseguir:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" style="background-color: #6366f1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+              Redefinir Senha
+            </a>
+          </div>
+          <p style="font-size: 12px; color: #666;">Este link é válido por 1 hora. Se você não solicitou isso, ignore este e-mail.</p>
+        </div>
+      `,
+    });
+  }
 }

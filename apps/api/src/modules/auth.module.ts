@@ -8,6 +8,8 @@ import { RegisterUseCase } from './auth/application/use-cases/register.use-case'
 import { RefreshTokenUseCase } from './auth/application/use-cases/refresh-token.use-case';
 import { VerifyEmailUseCase } from './auth/application/use-cases/verify-email.use-case';
 import { OAuthLoginUseCase } from './auth/application/use-cases/oauth-login.use-case';
+import { ForgotPasswordUseCase } from './auth/application/use-cases/forgot-password.use-case';
+import { ResetPasswordUseCase } from './auth/application/use-cases/reset-password.use-case';
 import { JwtStrategy } from './auth/infrastructure/jwt.strategy';
 import { GoogleStrategy } from './auth/infrastructure/google.strategy';
 import { BcryptHashService } from './auth/infrastructure/services/bcrypt-hash.service';
@@ -40,6 +42,8 @@ import { UsersModule } from './users.module';
     RefreshTokenUseCase,
     VerifyEmailUseCase,
     OAuthLoginUseCase,
+    ForgotPasswordUseCase,
+    ResetPasswordUseCase,
     JwtStrategy,
     GoogleStrategy,
     { provide: HASH_SERVICE, useClass: BcryptHashService },

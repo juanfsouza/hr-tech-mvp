@@ -38,6 +38,8 @@ export class User extends Entity<UserProps> {
   get isActive(): boolean { return this.props.isActive; }
   get isVerified(): boolean { return this.props.isVerified; }
   get verificationToken(): string | undefined { return this.props.verificationToken; }
+  get passwordResetToken(): string | undefined { return this.props.passwordResetToken; }
+  get passwordResetExpires(): Date | undefined { return this.props.passwordResetExpires; }
   get createdAt(): Date { return this.props.createdAt; }
   get updatedAt(): Date { return this.props.updatedAt; }
   get deletedAt(): Date | undefined { return this.props.deletedAt; }
@@ -84,6 +86,18 @@ export class User extends Entity<UserProps> {
 
   setVerificationToken(token: string): void {
     this.props.verificationToken = token;
+    this.props.updatedAt = new Date();
+  }
+
+  setPasswordResetToken(token: string, expires: Date): void {
+    this.props.passwordResetToken = token;
+    this.props.passwordResetExpires = expires;
+    this.props.updatedAt = new Date();
+  }
+
+  clearPasswordReset(): void {
+    this.props.passwordResetToken = undefined;
+    this.props.passwordResetExpires = undefined;
     this.props.updatedAt = new Date();
   }
 }

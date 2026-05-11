@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
@@ -46,6 +49,28 @@ import { dashboardService } from "@/services/dashboard-service";
 export default function DashboardPage() {
   const user = authService.getUser();
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+
+  // Capturar dados do Google OAuth se presentes na URL
+  useEffect(() => {
+    const authType = searchParams.get('auth');
+    const userDataBase64 = searchParams.get('user');
+
+    if (authType === 'google' && userDataBase64) {
+      try {
+        const userData = JSON.parse(atob(userDataBase64));
+        localStorage.setItem('@SaaS:user', JSON.stringify(userData));
+        
+        // Limpar a URL para não expor os dados
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // Forçar um pequeno refresh para atualizar o estado do user
+        if (!user) window.location.reload();
+      } catch (e) {
+        console.error("Erro ao processar login do Google:", e);
+      }
+    }
+  }, [searchParams, user]);
 
   // Buscar estatísticas reais do dashboard
   const { data: stats, isLoading: isLoadingStats } = useQuery({

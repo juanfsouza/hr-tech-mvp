@@ -10,6 +10,8 @@ export interface PrismaUserRecord {
     isActive: boolean;
     isVerified: boolean;
     verificationToken: string | null;
+    passwordResetToken: string | null;
+    passwordResetExpires: Date | null;
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date | null;

@@ -21,11 +21,6 @@ export class LoginDto {
 }
 
 export class RegisterDto {
-  @ApiPropertyOptional({ example: 'uuid-da-empresa' })
-  @IsUUID()
-  @IsOptional()
-  companyId?: string;
-
   @ApiProperty({ example: 'João Silva' })
   @IsString()
   @IsNotEmpty()
@@ -47,4 +42,24 @@ export class RegisterDto {
   @IsOptional()
   @IsIn(['ADMIN', 'HR', 'VIEWER'])
   role?: UserRole;
+}
+
+export class ForgotPasswordDto {
+  @ApiProperty({ example: 'joao@empresa.com' })
+  @IsEmail()
+  @IsNotEmpty()
+  email!: string;
+}
+
+export class ResetPasswordDto {
+  @ApiProperty({ example: 'uuid-do-token' })
+  @IsString()
+  @IsNotEmpty()
+  token!: string;
+
+  @ApiProperty({ example: 'NovaSenha@123' })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  newPassword!: string;
 }
