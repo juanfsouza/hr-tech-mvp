@@ -116,7 +116,7 @@ export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
               <div className="flex justify-between items-center">
                 <CardTitle className="text-xl flex items-center gap-3">
                   <Zap className="w-5 h-5 text-neon" />
-                  Contexto Estratégico (IA)
+                  Contexto Estratégico
                 </CardTitle>
                 <Badge variant="outline" className="border-neon/20 text-neon font-bold">
                   {company.context?.companyProfile || 'STARTUP'}
@@ -129,7 +129,7 @@ export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
                   "{company.context?.companyContext || 'A narrativa estratégica ainda não foi gerada ou está pendente.'}"
                 </p>
               </div>
-              
+
               <div className="pt-4 border-t border-slate-200 dark:border-white/5">
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-3">Valores e Cultura</span>
                 <div className="flex flex-wrap gap-2">
@@ -138,8 +138,8 @@ export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
                       {val}
                     </Badge>
                   )) || (
-                    <span className="text-xs text-muted-foreground">Nenhum valor cadastrado.</span>
-                  )}
+                      <span className="text-xs text-muted-foreground">Nenhum valor cadastrado.</span>
+                    )}
                 </div>
               </div>
             </CardContent>
@@ -148,7 +148,7 @@ export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
 
         {/* Card Lateral: Estatísticas Rápidas */}
         <div className="space-y-6">
-          <Card className="border-none shadow-lg drop-shadow-xl dark:bg-neon/5 shadow-inner rounded-md">
+          <Card className="border-none py-4 shadow-lg drop-shadow-xl dark:bg-neon/5 shadow-inner rounded-md">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Zap className="w-5 h-5 text-neon" /> Estrutura

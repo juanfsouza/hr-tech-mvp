@@ -23,11 +23,11 @@ interface EnneagramTestProps {
   onSaveProgress: (questionId: string, answer: string) => Promise<void>;
 }
 
-export function EnneagramTest({ 
-  questions, 
-  initialResponses = {}, 
-  onComplete, 
-  onSaveProgress 
+export function EnneagramTest({
+  questions,
+  initialResponses = {},
+  onComplete,
+  onSaveProgress
 }: EnneagramTestProps) {
   const [responses, setResponses] = useState<{ [id: string]: 'A' | 'B' }>(() => {
     const parsed: Record<string, 'A' | 'B'> = {};
@@ -90,6 +90,13 @@ export function EnneagramTest({
         <Progress value={progress} className="h-2" />
       </div>
 
+      <div className="bg-neon/5 p-4 rounded-xl border border-neon/10 mb-2 flex items-start gap-3">
+        <Info className="w-5 h-5 text-neon shrink-0 mt-0.5" />
+        <p className="text-sm text-muted-foreground">
+          Leia as duas afirmações abaixo e escolha aquela que <strong>melhor descreve</strong> o seu comportamento habitual.
+        </p>
+      </div>
+
       <AnimatePresence mode="wait">
         <motion.div
           key={currentQuestion.id}
@@ -99,13 +106,6 @@ export function EnneagramTest({
           transition={{ duration: 0.3 }}
           className="space-y-6"
         >
-          <div className="bg-neon/5 p-4 rounded-xl border border-neon/10 mb-2 flex items-start gap-3">
-            <Info className="w-5 h-5 text-neon shrink-0 mt-0.5" />
-            <p className="text-sm text-muted-foreground">
-              Leia as duas afirmações abaixo e escolha aquela que <strong>melhor descreve</strong> o seu comportamento habitual.
-            </p>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
             {/* Opção A */}
             <Card

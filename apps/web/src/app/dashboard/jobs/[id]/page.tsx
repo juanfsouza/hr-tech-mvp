@@ -283,7 +283,7 @@ export default function JobDetailsPage() {
 
           {/* Sidebar Info */}
           <div className="space-y-6">
-            <Card className="border-border/50 bg-card/30 backdrop-blur-sm">
+            <Card className="border-border/50 bg-card/30 backdrop-blur-sm py-4">
               <CardHeader>
                 <CardTitle className="text-lg">Informações Rápidas</CardTitle>
               </CardHeader>
@@ -312,7 +312,7 @@ export default function JobDetailsPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-forest/5 dark:bg-neon/5 border-none">
+            <Card className="bg-forest/5 dark:bg-neon/5 border-none py-4">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Clock className="w-5 h-5" /> Status do Processo

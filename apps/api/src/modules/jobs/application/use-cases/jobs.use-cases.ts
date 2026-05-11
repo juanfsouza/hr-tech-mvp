@@ -37,7 +37,7 @@ export class CreateJobUseCase {
     await this.prisma.auditLog.create({
       data: {
         companyId: input.companyId,
-        userId: input.responsibleId || null,
+        userId: input.creatorId,
         action: 'JOB_CREATED',
         entityType: 'Job',
         entityId: job.id.value,

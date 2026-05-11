@@ -8,4 +8,5 @@ export interface CreateJobInput {
     location?: string;
     isRemote?: boolean;
     responsibleId?: string;
+    creatorId: string;
 }

@@ -53,6 +53,7 @@ export class JobsController {
 
     const result = await this.createJobUseCase.execute({
       companyId: user.companyId!,
+      creatorId: user.id,
       ...dto,
     });
     return result.value;

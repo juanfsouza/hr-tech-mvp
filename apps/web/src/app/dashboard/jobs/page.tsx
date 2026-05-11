@@ -40,7 +40,7 @@ export default function JobsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 drop-shadow-xl">
             {jobs.items.map((job: any) => (
               <motion.div key={job.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                <Card className="hover:border-slate-300 dark:hover:border-neon/50 transition-all cursor-pointer bg-white dark:bg-card/50 border-slate-200 dark:border-border/50 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-neon/5 group">
+                <Card className="hover:border-slate-300 py-4 dark:hover:border-neon/50 transition-all cursor-pointer bg-white dark:bg-card/50 border-slate-200 dark:border-border/50 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-neon/5 group">
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div className="p-2 rounded-lg bg-slate-100 dark:bg-neon/10 group-hover:bg-forest/10 dark:group-hover:bg-neon/20 transition-colors">

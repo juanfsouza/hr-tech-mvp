@@ -387,7 +387,7 @@ export function JobCreationWizard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <Card className="border-forest/20 dark:border-neon/20 overflow-hidden">
-              <CardHeader className="bg-muted/30">
+              <CardHeader className="bg-muted/30 p-2">
                 <CardTitle>Job Description</CardTitle>
                 <CardDescription>Edite o texto abaixo para ajustar detalhes finais.</CardDescription>
               </CardHeader>

@@ -104,7 +104,7 @@ export default function TestsPortalPage() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="md:col-span-2 border-none bg-white dark:bg-card/30 shadow-xl overflow-hidden">
+          <Card className="md:col-span-2 border-none bg-white py-4 dark:bg-card/30 shadow-xl overflow-hidden">
             <CardHeader className="border-b border-border/50">
               <CardTitle className="text-xl flex items-center gap-2">
                 <Users className="w-5 h-5 text-azure" /> Candidatos Disponíveis
@@ -163,7 +163,7 @@ export default function TestsPortalPage() {
           </Card>
 
           <div className="space-y-6">
-            <Card className="border-none bg-forest/5 dark:bg-neon/5 shadow-inner">
+            <Card className="border-none py-4 bg-forest/5 dark:bg-neon/5 shadow-inner">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2 text-forest dark:text-neon">
                   <BrainCircuit className="w-5 h-5" /> Sobre os Testes
@@ -200,7 +200,7 @@ export default function TestsPortalPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-none bg-azure/5 shadow-inner">
+            <Card className="border-none bg-azure/5 shadow-inner py-4">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2 text-azure">
                   <UserPlus className="w-5 h-5" /> Novo Candidato?

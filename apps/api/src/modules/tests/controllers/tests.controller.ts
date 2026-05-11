@@ -16,6 +16,7 @@ import { CompleteTestUseCase } from '../application/use-cases/complete-session.u
 import { CreateTestSessionUseCase } from '../application/use-cases/create-session.use-case';
 import { GetTestSessionByTokenUseCase } from '../application/use-cases/list.session.use-case';
 import { SaveProgressUseCase } from '../application/use-cases/save-session.use-case';
+import { ListCompanySessionsUseCase } from '../application/use-cases/list-company-sessions.use-case';
 
 class CreateSessionDto {
   @ApiProperty({ required: false }) @IsOptional() @IsUUID() candidateId?: string;
