@@ -110,15 +110,21 @@ export function CandidateModal({ open, onOpenChange, candidate, jobs, onSuccess 
                 value={formData.jobId}
                 onValueChange={(value) => setFormData({ ...formData, jobId: value })}
               >
-                <SelectTrigger className="h-12 bg-background/50 border-border/50 rounded-xl">
-                  <SelectValue placeholder="Selecione uma vaga para este talento" />
+                <SelectTrigger className="h-12 w-full bg-background/50 border-border/50 rounded-xl justify-between">
+                  <SelectValue placeholder="Selecione uma vaga para este talento">
+                    {jobs.find(j => j.id === formData.jobId)?.title}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  {jobs.map((job) => (
-                    <SelectItem key={job.id} value={job.id}>
-                      {job.title}
-                    </SelectItem>
-                  ))}
+                  {jobs.length > 0 ? (
+                    jobs.map((job) => (
+                      <SelectItem key={job.id} value={job.id}>
+                        {job.title}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <div className="p-2 text-sm text-muted-foreground italic">Carregando vagas...</div>
+                  )}
                 </SelectContent>
               </Select>
             </div>
