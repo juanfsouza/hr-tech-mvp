@@ -21,7 +21,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <DashboardNavbar />
         <div className="flex flex-1">
           <DashboardSidebar />
-          <main className="flex-1 p-8 overflow-y-auto">
+          <main className="flex-1 p-4 overflow-y-auto">
             <div className="max-w-6xl mx-auto">
               {children}
             </div>

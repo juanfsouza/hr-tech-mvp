@@ -16,12 +16,23 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
 
+import { useOnboardingStore } from "@/store/onboarding-store";
+import { useRouter } from "next/navigation";
+
 interface CompanyOverviewProps {
   company: any;
   onEdit: () => void;
 }
 
 export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
+  const { setStep } = useOnboardingStore();
+  const router = useRouter();
+
+  const handleViewOrganogram = () => {
+    setStep(2);
+    onEdit();
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <header className="flex flex-col md:flex-row md:justify-between md:items-end gap-6">
@@ -125,11 +136,20 @@ export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
           </Card>
 
           <Button
+            onClick={handleViewOrganogram}
             variant="ghost"
             className="w-full h-14 rounded-[24px] border-2 border-dashed border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-slate-500 gap-3"
           >
             Ver Organograma Completo
             <ArrowRight className="w-4 h-4" />
+          </Button>
+
+          <Button
+            onClick={() => router.push("/dashboard")}
+            className="w-full h-14 rounded-[24px] bg-forest dark:bg-neon text-white dark:text-chumbo font-black text-lg shadow-xl shadow-neon/20 gap-3 hover:scale-[1.02] transition-all"
+          >
+            <Zap className="w-5 h-5 fill-current" />
+            Começar a Contratar
           </Button>
         </div>
       </div>

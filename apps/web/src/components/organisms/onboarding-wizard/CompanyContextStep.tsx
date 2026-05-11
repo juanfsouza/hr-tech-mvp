@@ -9,10 +9,12 @@ import { Label } from "@/components/atoms/label";
 import { Badge } from "@/components/atoms/badge";
 import { Input } from "@/components/atoms/input";
 import { useOnboardingStore } from "@/store/onboarding-store";
-import { Rocket, ShieldCheck, RefreshCcw, X, Plus, Sparkles, ChevronRight, ArrowLeft, CheckCircle } from "lucide-react";
+import { Rocket, ShieldCheck, RefreshCcw, X, Plus, Sparkles, ChevronRight, ArrowLeft, CheckCircle, Wand2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { aiService } from "@/services/ai-service";
+import { useMutation } from "@tanstack/react-query";
 
 const COMPANY_PROFILES = [
   { id: "startup", label: "Startup", icon: Rocket, desc: "Alto crescimento e ritmo acelerado." },
@@ -21,12 +23,24 @@ const COMPANY_PROFILES = [
 ];
 
 export function CompanyContextStep() {
-  const { prevStep } = useOnboardingStore();
-  const [profile, setProfile] = useState<string | null>(null);
-  const [narrative, setNarrative] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
+  const { companyData, updateCompanyData, prevStep } = useOnboardingStore();
+  const [profile, setProfile] = useState<string | null>(companyData.profile || null);
+  const [narrative, setNarrative] = useState(companyData.narrative || "");
+  const [tags, setTags] = useState<string[]>(companyData.values || []);
   const [tagInput, setTagInput] = useState("");
   const [isFinishing, setIsFinishing] = useState(false);
+  const router = useRouter();
+
+  const generateMutation = useMutation({
+    mutationFn: () => aiService.generateCompanyContext(companyData.name, profile, tags),
+    onSuccess: (text) => {
+      setNarrative(text);
+      toast.success("Narrativa gerada com sucesso!");
+    },
+    onError: () => {
+      toast.error("Erro ao gerar narrativa com IA.");
+    }
+  });
 
   const wordCount = useMemo(() => {
     return narrative.trim().split(/\s+/).filter(w => w.length > 0).length;
@@ -43,14 +57,12 @@ export function CompanyContextStep() {
 
   const removeTag = (t: string) => setTags(tags.filter(tag => tag !== t));
 
-  const router = useRouter();
-
   const handleFinish = () => {
     setIsFinishing(true);
     toast.success("Onboarding concluído com sucesso!", {
       description: "Sua conta está configurada. Redirecionando para o Dashboard...",
     });
-    
+
     setTimeout(() => {
       router.push("/dashboard");
     }, 2000);
@@ -63,7 +75,7 @@ export function CompanyContextStep() {
       exit={{ opacity: 0, x: -20 }}
       className="space-y-8"
     >
-      <Card className="border-none shadow-none bg-transparent">
+      <Card className="border-none shadow-none bg-transparent p-5">
         <CardHeader className="px-0 pt-0">
           <CardTitle className="text-3xl font-outfit text-forest dark:text-neon flex items-center gap-2">
             <Sparkles className="w-8 h-8" />
@@ -85,8 +97,8 @@ export function CompanyContextStep() {
                   onClick={() => setProfile(p.id)}
                   className={cn(
                     "flex flex-col items-center p-6 rounded-2xl border-2 transition-all text-center gap-3",
-                    profile === p.id 
-                      ? "border-forest dark:border-neon bg-forest/5 dark:bg-neon/5" 
+                    profile === p.id
+                      ? "border-forest dark:border-neon bg-forest/5 dark:bg-neon/5"
                       : "border-muted hover:border-muted-foreground/50 bg-card/30"
                   )}
                 >
@@ -104,21 +116,37 @@ export function CompanyContextStep() {
           <div className="space-y-4">
             <div className="flex justify-between items-end">
               <Label className="text-lg">Descreva o momento atual da sua empresa</Label>
-              <span className={cn(
-                "text-sm font-bold px-2 py-1 rounded-md transition-colors",
-                wordCount < 100 ? "text-destructive bg-destructive/10" : "text-forest dark:text-neon bg-forest/10 dark:bg-neon/10"
-              )}>
-                {wordCount} / 100 palavras
-              </span>
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-4 rounded-xl border-forest/30 dark:border-neon/30 text-forest dark:text-neon hover:bg-forest/10 dark:hover:bg-neon/10 gap-2 font-bold transition-all"
+                  onClick={() => generateMutation.mutate()}
+                  disabled={generateMutation.isPending || !profile}
+                >
+                  {generateMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Wand2 className="w-4 h-4" />
+                  )}
+                  {narrative ? "Melhorar com IA" : "Gerar com IA"}
+                </Button>
+                <span className={cn(
+                  "text-sm font-bold px-2 py-1 rounded-md transition-colors",
+                  wordCount < 100 ? "text-destructive bg-destructive/10" : "text-forest dark:text-neon bg-forest/10 dark:bg-neon/10"
+                )}>
+                  {wordCount} / 100 palavras
+                </span>
+              </div>
             </div>
-            <Textarea 
+            <Textarea
               placeholder="Ex: Estamos em um momento de expansão acelerada após a última rodada de investimentos. Buscamos pessoas que tenham perfil de dono e consigam lidar com a ambiguidade..."
               className="min-h-[150px] text-lg resize-none p-4"
               value={narrative}
               onChange={(e) => setNarrative(e.target.value)}
             />
             <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-              <motion.div 
+              <motion.div
                 className={cn("h-full", wordCount >= 100 ? "bg-forest dark:bg-neon" : "bg-destructive")}
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min((wordCount / 100) * 100, 100)}%` }}
@@ -140,8 +168,8 @@ export function CompanyContextStep() {
               ))}
             </div>
             <div className="flex gap-2">
-              <Input 
-                placeholder="Ex: Transparência" 
+              <Input
+                placeholder="Ex: Transparência"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addTag()}
@@ -157,12 +185,12 @@ export function CompanyContextStep() {
               <ArrowLeft className="mr-2 w-5 h-5" />
               Voltar
             </Button>
-            <Button 
-              onClick={handleFinish} 
+            <Button
+              onClick={handleFinish}
               className={cn(
                 "flex-[2] h-12 text-lg font-bold transition-all",
-                isComplete 
-                  ? "bg-forest dark:bg-neon dark:text-chumbo shadow-lg shadow-forest/20 dark:shadow-neon/20" 
+                isComplete
+                  ? "bg-forest dark:bg-neon dark:text-chumbo shadow-lg shadow-forest/20 dark:shadow-neon/20"
                   : "bg-muted text-muted-foreground grayscale"
               )}
               disabled={!isComplete || isFinishing}

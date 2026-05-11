@@ -15,6 +15,12 @@ export class ChatRequestDto {
   jobId?: string;
 }
 
+export class GenerateContextDto {
+  companyName!: string;
+  profile!: string;
+  tags!: string[];
+}
+
 @ApiTags('AI Chat')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -55,5 +61,13 @@ export class AiController {
       res.raw.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
       res.raw.end();
     }
+  }
+
+  @Post('generate-context')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Gerar narrativa de contexto da empresa via IA' })
+  async generateContext(@Body() dto: GenerateContextDto) {
+    const text = await this.aiOrchestration.generateCompanyContext(dto);
+    return { text };
   }
 }

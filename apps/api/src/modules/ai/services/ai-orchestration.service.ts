@@ -63,6 +63,31 @@ Responda sempre em Português do Brasil.
     }
   }
 
+  async generateCompanyContext(input: { companyName: string; profile: string; tags: string[] }): Promise<string> {
+    const prompt = `
+Escreva uma narrativa profissional e inspiradora para o momento atual da empresa "${input.companyName}".
+O perfil de ritmo da empresa é: ${input.profile}.
+Alguns valores/tags: ${input.tags.join(', ')}.
+
+O texto deve ter cerca de 100 palavras, ser engajante para novos candidatos e explicar o que a empresa busca nesse momento. 
+Responda apenas com o texto da narrativa, em Português do Brasil.
+    `.trim();
+
+    try {
+      const response = await this.claude.chat([{ role: 'user', content: prompt }], {
+        systemPrompt: 'Você é um especialista em employer branding e comunicação corporativa.',
+        maxTokens: 1000,
+      });
+      return response.content;
+    } catch (error) {
+      const response = await this.grok.chat([{ role: 'user', content: prompt }], {
+        systemPrompt: 'Você é um especialista em employer branding e comunicação corporativa.',
+        maxTokens: 1000,
+      });
+      return response.content;
+    }
+  }
+
   async generateJobDescription(input: GenerateJdInput): Promise<string> {
     const prompt = `
 Gere uma Job Description profissional e atrativa em português para a vaga abaixo.

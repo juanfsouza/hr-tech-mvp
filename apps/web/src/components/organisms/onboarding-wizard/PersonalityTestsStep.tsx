@@ -37,7 +37,7 @@ export function PersonalityTestsStep() {
       exit={{ opacity: 0, x: -20 }}
       className="space-y-6"
     >
-      <Card className="border-none shadow-none bg-transparent">
+      <Card className="border-none shadow-none bg-transparent p-5">
         <CardHeader className="px-0 pt-0">
           <CardTitle className="text-3xl font-outfit text-forest dark:text-neon flex items-center gap-2">
             <Brain className="w-8 h-8" />
@@ -61,7 +61,7 @@ export function PersonalityTestsStep() {
               />
               <Label
                 htmlFor="option-a"
-                className="flex flex-col h-full items-center justify-between rounded-2xl border-2 border-muted bg-popover p-6 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-forest dark:peer-data-[state=checked]:border-neon transition-all cursor-pointer"
+                className="flex flex-col h-full items-center justify-between rounded-2xl border-2 border-muted bg-popover p-6 dark:hover:bg-neon hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-forest dark:peer-data-[state=checked]:border-neon transition-all cursor-pointer"
               >
                 <div className="text-center">
                   <p className="text-lg font-bold mb-1">Já tenho os resultados</p>
@@ -81,7 +81,7 @@ export function PersonalityTestsStep() {
               />
               <Label
                 htmlFor="option-b"
-                className="flex flex-col h-full items-center justify-between rounded-2xl border-2 border-muted bg-popover p-6 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-forest dark:peer-data-[state=checked]:border-neon transition-all cursor-pointer"
+                className="flex flex-col h-full dark:hover:bg-neon items-center justify-between rounded-2xl border-2 border-muted bg-popover p-6 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-forest dark:peer-data-[state=checked]:border-neon transition-all cursor-pointer"
               >
                 <div className="text-center">
                   <p className="text-lg font-bold mb-1">Ainda não tenho</p>

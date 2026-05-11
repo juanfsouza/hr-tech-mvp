@@ -48,17 +48,17 @@ export default function OnboardingPage() {
     <DashboardLayout>
       <div className="max-w-5xl mx-auto py-8 px-4">
         {showOverview ? (
-          <CompanyOverview 
-            company={company} 
-            onEdit={() => setIsEditing(true)} 
+          <CompanyOverview
+            company={company}
+            onEdit={() => setIsEditing(true)}
           />
         ) : (
           <div className="space-y-6">
             {isEditing && (
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 onClick={() => setIsEditing(false)}
-                className="mb-4 text-slate-500 hover:text-slate-900"
+                className="mb-4 text-slate-500 dark:hover:bg-neon hover:text-black dark:hover:text-black"
               >
                 ← Voltar para Visão Geral
               </Button>
