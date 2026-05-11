@@ -41,7 +41,7 @@ export function DashboardNavbar() {
     await authService.logout();
   };
 
-  const initials = user?.name
+  const initials = (mounted && user?.name)
     ? user.name
       .split(" ")
       .map((n: string) => n[0])
@@ -148,8 +148,8 @@ export function DashboardNavbar() {
                 {initials}
               </div>
               <div className="flex flex-col items-start hidden md:flex mr-2">
-                <span className="text-[10px] text-slate-500 dark:text-muted-foreground uppercase tracking-widest font-bold opacity-80">{user?.role || "Membro"}</span>
-                <span className="text-sm font-bold leading-none text-slate-900 dark:text-white">{user?.name || "Usuário"}</span>
+                <span className="text-[10px] text-slate-500 dark:text-muted-foreground uppercase tracking-widest font-bold opacity-80">{mounted ? (user?.role || "Membro") : "—"}</span>
+                <span className="text-sm font-bold leading-none text-slate-900 dark:text-white">{mounted ? (user?.name || "Usuário") : "Carregando..."}</span>
               </div>
             </Button>
           </DropdownMenuTrigger>
@@ -157,8 +157,8 @@ export function DashboardNavbar() {
             <DropdownMenuGroup>
               <DropdownMenuLabel className="font-normal p-2">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-bold leading-none text-slate-900 dark:text-white">{user?.name}</p>
-                  <p className="text-xs leading-none text-slate-500 dark:text-muted-foreground">{user?.email}</p>
+                  <p className="text-sm font-bold leading-none text-slate-900 dark:text-white">{mounted ? user?.name : "Usuário"}</p>
+                  <p className="text-xs leading-none text-slate-500 dark:text-muted-foreground">{mounted ? user?.email : "..."}</p>
                 </div>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
