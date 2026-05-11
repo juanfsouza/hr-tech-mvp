@@ -54,10 +54,13 @@ export class AiController {
       throw new BadRequestException('Messages array cannot be empty');
     }
 
-    // Configurar cabeçalhos para Server-Sent Events (SSE)
+    // Configurar cabeçalhos para Server-Sent Events (SSE) e CORS manualmente
     res.raw.setHeader('Content-Type', 'text/event-stream');
     res.raw.setHeader('Cache-Control', 'no-cache');
     res.raw.setHeader('Connection', 'keep-alive');
+    res.raw.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.raw.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.raw.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
 
     try {
       const stream = await this.aiOrchestration.streamContextualChat(

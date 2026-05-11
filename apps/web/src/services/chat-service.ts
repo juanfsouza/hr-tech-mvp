@@ -7,14 +7,15 @@ export interface ChatMessage {
 
 export const chatService = {
   async streamMessage(messages: ChatMessage[], onChunk: (text: string) => void, jobId?: string) {
-    const token = localStorage.getItem('@SaaS:token');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('@SaaS:token') : null;
     
     const response = await fetch(`${api.defaults.baseURL}/ai/chat/stream`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
       },
+      credentials: 'include',
       body: JSON.stringify({ messages, jobId })
     });
 
