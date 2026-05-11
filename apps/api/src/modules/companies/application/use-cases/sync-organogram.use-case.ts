@@ -5,22 +5,16 @@ import { Either, right } from '@shared/domain/errors/either';
 
 @Injectable()
 export class SyncOrganogramUseCase {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async execute(input: SyncOrganogramInput): Promise<Either<Error, SyncOrganogramOutput>> {
     const { companyId, nodes, personalityResults } = input;
 
     // Usar transação para garantir atomicidade
     await this.prisma.$transaction(async (tx) => {
-      // 1. Limpar organograma atual da empresa (soft delete ou delete físico no onboarding)
-      // No onboarding, como estamos "montando", podemos limpar e recriar
       await tx.collaborator.deleteMany({
         where: { companyId }
       });
-
-      // 2. Criar colaboradores (sem parentId primeiro para evitar erros de FK)
-      // Mapeamos os IDs do frontend para os IDs reais se necessário, 
-      // mas aqui vamos assumir que o frontend gera UUIDs válidos.
       for (const node of nodes) {
         await tx.collaborator.create({
           data: {
@@ -60,7 +54,7 @@ export class SyncOrganogramUseCase {
           });
         }
       }
-      
+
       // 5. Marcar onboarding como avançado (opcional, dependendo de como você controla)
       await tx.company.update({
         where: { id: companyId },

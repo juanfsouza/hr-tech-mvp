@@ -63,51 +63,88 @@ export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Card Principal: Dados */}
-        <Card className="md:col-span-2 border-none bg-white dark:bg-card/40 shadow-2xl overflow-hidden rounded-md">
-          <CardHeader className="p-4 pb-4 border-b border-slate-100 dark:border-white/5">
-            <CardTitle className="text-xl flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-azure/10">
-                <Building2 className="w-5 h-5 text-azure" />
+        <div className="md:col-span-2 space-y-6">
+          <Card className="border-none bg-white dark:bg-card/40 shadow-2xl overflow-hidden rounded-md">
+            <CardHeader className="p-4 pb-4 border-b border-slate-100 dark:border-white/5">
+              <CardTitle className="text-xl flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-azure/10">
+                  <Building2 className="w-5 h-5 text-azure" />
+                </div>
+                Dados Corporativos
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">CNPJ</span>
+                  <p className="text-lg font-bold font-mono text-slate-700 dark:text-slate-200">{company.cnpj}</p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Website</span>
+                  <a
+                    href={company.websiteUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 text-lg font-bold text-azure hover:underline"
+                  >
+                    <Globe className="w-4 h-4" />
+                    {company.websiteUrl || "Não informado"}
+                  </a>
+                </div>
               </div>
-              Dados Corporativos
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div className="space-y-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">CNPJ</span>
-                <p className="text-lg font-bold font-mono text-slate-700 dark:text-slate-200">{company.cnpj}</p>
-              </div>
-              <div className="space-y-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Website</span>
-                <a
-                  href={company.websiteUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-2 text-lg font-bold text-azure hover:underline"
-                >
-                  <Globe className="w-4 h-4" />
-                  {company.websiteUrl || "Não informado"}
-                </a>
-              </div>
-            </div>
 
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Status da Conta</span>
-                <div className="flex items-center gap-3 p-3 bg-emerald-50 mt-2 dark:bg-emerald-500/10 rounded-2xl border border-emerald-100 dark:border-emerald-500/20">
-                  <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-emerald-900 dark:text-emerald-400 leading-none mb-1">Verificada</p>
-                    <p className="text-[10px] text-emerald-700/70 dark:text-emerald-400/70 uppercase font-black">Pronta para uso</p>
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Status da Conta</span>
+                  <div className="flex items-center gap-3 p-3 bg-emerald-50 mt-2 dark:bg-emerald-500/10 rounded-2xl border border-emerald-100 dark:border-emerald-500/20">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-emerald-900 dark:text-emerald-400 leading-none mb-1">Verificada</p>
+                      <p className="text-[10px] text-emerald-700/70 dark:text-emerald-400/70 uppercase font-black">Pronta para uso</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          {/* Seção de Contexto IA */}
+          <Card className="border-none bg-gradient-to-br from-white to-slate-50 dark:from-card/40 dark:to-card/20 shadow-2xl overflow-hidden rounded-md border-l-4 border-l-neon">
+            <CardHeader className="p-6">
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-xl flex items-center gap-3">
+                  <Zap className="w-5 h-5 text-neon" />
+                  Contexto Estratégico (IA)
+                </CardTitle>
+                <Badge variant="outline" className="border-neon/20 text-neon font-bold">
+                  {company.context?.companyProfile || 'STARTUP'}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="px-6 pb-6 space-y-6">
+              <div className="prose prose-slate dark:prose-invert max-w-none">
+                <p className="text-slate-600 dark:text-slate-300 italic leading-relaxed">
+                  "{company.context?.companyContext || 'A narrativa estratégica ainda não foi gerada ou está pendente.'}"
+                </p>
+              </div>
+              
+              <div className="pt-4 border-t border-slate-200 dark:border-white/5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-3">Valores e Cultura</span>
+                <div className="flex flex-wrap gap-2">
+                  {company.context?.cultureValues?.map((val: string) => (
+                    <Badge key={val} className="bg-azure/10 text-azure border-azure/20 hover:bg-azure/20 transition-colors">
+                      {val}
+                    </Badge>
+                  )) || (
+                    <span className="text-xs text-muted-foreground">Nenhum valor cadastrado.</span>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Card Lateral: Estatísticas Rápidas */}
         <div className="space-y-6">

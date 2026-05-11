@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/atoms/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/atoms/card";
 import { BrainCircuit, Users, ChevronRight, Zap } from "lucide-react";
-import Link from "next/link";
 import { KineticText } from "@/components/atoms/KineticText";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth-service";

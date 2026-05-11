@@ -6,6 +6,7 @@ import { PsychProfileData } from "../interfaces/psych-profile-data.interface";
 export interface ITestRepository {
     findSessionByToken(token: string): Promise<TestSession | null>;
     findSessionById(id: string): Promise<TestSession | null>;
+    findSessionsByCompany(companyId: string): Promise<TestSession[]>;
     saveSession(session: TestSession): Promise<void>;
     updateSession(session: TestSession): Promise<void>;
     expireOldSessions(): Promise<number>;

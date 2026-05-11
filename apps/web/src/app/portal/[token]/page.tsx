@@ -22,18 +22,63 @@ export default function CandidatePortal() {
 
   const { data: session, isLoading, isError, refetch } = useQuery({
     queryKey: ["test-session", token],
-    queryFn: () => testService.getSession(token),
+    queryFn: async () => {
+      if (token.startsWith('demo-')) {
+        // Retornar sessão mock para demonstração
+        return {
+          candidateName: "Colaborador Demo",
+          companyName: "Sua Empresa",
+          currentTest: "DISC",
+          status: "IN_PROGRESS",
+          expiresAt: new Date(Date.now() + 86400000).toISOString(),
+          responses: []
+        };
+      }
+      return testService.getSession(token);
+    },
     retry: false,
   });
 
   const { data: questionsData, isLoading: isLoadingQuestions } = useQuery({
     queryKey: ["questions", session?.currentTest],
-    queryFn: () => testService.getQuestions(session!.currentTest!),
+    queryFn: async () => {
+      if (token.startsWith('demo-')) {
+        return {
+          questions: [
+            {
+              id: "b1",
+              blockNumber: 1,
+              items: [
+                { id: "i1", text: "Entusiasmado, comunicativo e otimista.", dimension: "I" },
+                { id: "i2", text: "Decidido, direto e orientado a resultados.", dimension: "D" },
+                { id: "i3", text: "Paciente, bom ouvinte e constante.", dimension: "S" },
+                { id: "i4", text: "Preciso, detalhista e diplomático.", dimension: "C" },
+              ]
+            },
+            {
+              id: "b2",
+              blockNumber: 2,
+              items: [
+                { id: "i5", text: "Gosta de desafios e novos projetos.", dimension: "D" },
+                { id: "i6", text: "Valoriza a harmonia e o trabalho em equipe.", dimension: "S" },
+                { id: "i7", text: "Expressivo e gosta de ser o centro das atenções.", dimension: "I" },
+                { id: "i8", text: "Analítico e prefere trabalhar sozinho.", dimension: "C" },
+              ]
+            }
+          ]
+        };
+      }
+      return testService.getQuestions(session!.currentTest!);
+    },
     enabled: !!session?.currentTest && view === "TESTING",
   });
 
   const handleSaveProgress = async (questionId: string, answer: string) => {
     if (!session?.currentTest) return;
+    if (token.startsWith('demo-')) {
+      console.log("Demo: Salvando progresso", { questionId, answer });
+      return;
+    }
     try {
       await testService.saveProgress(token, {
         testType: session.currentTest,
@@ -47,6 +92,11 @@ export default function CandidatePortal() {
 
   const handleCompleteTest = async () => {
     if (!session?.currentTest) return;
+    if (token.startsWith('demo-')) {
+      toast.success("Demonstração: Teste concluído!");
+      setView("COMPLETED");
+      return;
+    }
     try {
       const result = await testService.completeTest(token, session.currentTest);
       if (result.allCompleted) {

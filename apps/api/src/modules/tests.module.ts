@@ -7,6 +7,7 @@ import { CompleteTestUseCase } from './tests/application/use-cases/complete-sess
 import { CreateTestSessionUseCase } from './tests/application/use-cases/create-session.use-case';
 import { GetTestSessionByTokenUseCase } from './tests/application/use-cases/list.session.use-case';
 import { SaveProgressUseCase } from './tests/application/use-cases/save-session.use-case';
+import { ListCompanySessionsUseCase } from './tests/application/use-cases/list-company-sessions.use-case';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SaveProgressUseCase } from './tests/application/use-cases/save-session.
     GetTestSessionByTokenUseCase,
     SaveProgressUseCase,
     CompleteTestUseCase,
+    ListCompanySessionsUseCase,
   ],
   exports: [TEST_REPOSITORY, CreateTestSessionUseCase],
 })

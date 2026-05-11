@@ -46,7 +46,16 @@ export class TestsController {
     private readonly getByToken: GetTestSessionByTokenUseCase,
     private readonly saveProgress: SaveProgressUseCase,
     private readonly completeTest: CompleteTestUseCase,
+    private readonly listSessions: ListCompanySessionsUseCase,
   ) { }
+
+  @Get('sessions')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Listar todas as sessões de teste da empresa' })
+  async getCompanySessions(@CurrentUser() user: AuthenticatedUser) {
+    return this.listSessions.execute(user.companyId!);
+  }
 
   // ─── POST /tests/sessions (autenticado — RH cria link) ───────────────────
   @Post('sessions')

@@ -14,12 +14,19 @@ export class PrismaTestRepository implements ITestRepository {
 
   async findSessionByToken(token: string): Promise<TestSession | null> {
     const r = await this.prisma.testSession.findUnique({ where: { token } });
-    return r ? this.sessionToDomain(r) : null;
+    return r ? this.sessionToDomain(r as any) : null;
   }
 
   async findSessionById(id: string): Promise<TestSession | null> {
     const r = await this.prisma.testSession.findUnique({ where: { id } });
-    return r ? this.sessionToDomain(r) : null;
+    return r ? this.sessionToDomain(r as any) : null;
+  }
+
+  async findSessionsByCompany(companyId: string): Promise<TestSession[]> {
+    const records = await this.prisma.testSession.findMany({
+      where: { companyId }
+    });
+    return records.map(r => this.sessionToDomain(r as any));
   }
 
   async saveSession(session: TestSession): Promise<void> {
@@ -28,6 +35,7 @@ export class PrismaTestRepository implements ITestRepository {
         id: session.id.value,
         companyId: session.companyId,
         candidateId: session.candidateId,
+        collaboratorId: session.collaboratorId,
         token: session.token,
         status: session.status,
         expiresAt: session.expiresAt,
@@ -35,7 +43,7 @@ export class PrismaTestRepository implements ITestRepository {
         completedAt: session.completedAt,
         currentTest: session.currentTest,
         createdAt: session.createdAt,
-      },
+      } as any,
     });
   }
 
@@ -48,7 +56,8 @@ export class PrismaTestRepository implements ITestRepository {
         completedAt: session.completedAt,
         currentTest: session.currentTest,
         candidateId: session.candidateId,
-      },
+        collaboratorId: session.collaboratorId,
+      } as any,
     });
   }
 
@@ -129,6 +138,7 @@ export class PrismaTestRepository implements ITestRepository {
       {
         companyId: r.companyId,
         candidateId: r.candidateId ?? undefined,
+        collaboratorId: r.collaboratorId ?? undefined,
         token: r.token,
         status: r.status as TestSessionStatus,
         expiresAt: r.expiresAt,

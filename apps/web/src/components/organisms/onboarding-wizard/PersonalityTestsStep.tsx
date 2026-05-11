@@ -27,18 +27,59 @@ import {
 } from "@/components/atoms/select";
 import { Input } from "@/components/atoms/input";
 
+import { testService } from "@/services/test-service";
+import { companyService } from "@/services/company-service";
+import { useQuery } from "@tanstack/react-query";
+
 export function PersonalityTestsStep() {
-  const { organogram, personalityResults, updatePersonalityResult, nextStep, prevStep } = useOnboardingStore();
+  const { companyData, organogram, personalityResults, updatePersonalityResult, nextStep, prevStep } = useOnboardingStore();
   const [option, setOption] = useState<"A" | "B" | null>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const copyLink = (name: string, id: string) => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://saas-rh.com';
-    const mockLink = `${origin}/portal/${id.substring(0, 8)}`;
-    navigator.clipboard.writeText(mockLink);
-    toast.success(`Link copiado para ${name}!`, {
-      description: "Envie este link para o colaborador realizar os testes.",
-    });
+  // Buscar sessões reais para ver quem já concluiu
+  const { data: sessions, refetch: refetchSessions } = useQuery({
+    queryKey: ["company-test-sessions"],
+    queryFn: () => testService.listSessions(),
+    enabled: !!companyData.id,
+    refetchInterval: 10000,
+  });
+
+  const handleSaveAndExit = async () => {
+    if (!companyData.id) {
+      toast.error("ID da empresa não encontrado.");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await companyService.syncOrganogram(
+        companyData.id,
+        organogram,
+        personalityResults
+      );
+      toast.success("Estrutura salva com sucesso!");
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao salvar estrutura.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const copyLink = async (name: string, id: string) => {
+    try {
+      const { portalUrl } = await testService.createSession({
+        collaboratorId: id,
+        expiryHours: 72
+      });
+      navigator.clipboard.writeText(portalUrl);
+      toast.success(`Link real criado e copiado para ${name}!`);
+      refetchSessions();
+    } catch (error) {
+      toast.error("Erro ao criar link de teste real.");
+    }
   };
 
   return (
@@ -130,23 +171,32 @@ export function PersonalityTestsStep() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {organogram.map((node) => (
-                        <TableRow key={node.id}>
-                          <TableCell className="font-medium">{node.name}</TableCell>
-                          <TableCell>{node.role}</TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              className="h-8 gap-2"
-                              onClick={() => copyLink(node.name, node.id)}
-                            >
-                              <ClipboardCopy className="w-3.5 h-3.5" />
-                              Copiar Link
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {organogram.map((node) => {
+                        const session = sessions?.find((s: any) => s.collaboratorId === node.id);
+                        const isCompleted = session?.status === 'COMPLETED';
+
+                        return (
+                          <TableRow key={node.id}>
+                            <TableCell className="font-medium">{node.name}</TableCell>
+                            <TableCell>{node.role}</TableCell>
+                            <TableCell className="text-right">
+                              {isCompleted ? (
+                                <Badge className="bg-emerald-500 text-white border-none">CONCLUÍDO</Badge>
+                              ) : (
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  className="h-8 gap-2"
+                                  onClick={() => copyLink(node.name, node.id)}
+                                >
+                                  <ClipboardCopy className="w-3.5 h-3.5" />
+                                  {session ? "Recopiar Link" : "Copiar Link"}
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </div>
@@ -262,12 +312,21 @@ export function PersonalityTestsStep() {
               Voltar
             </Button>
             <Button
-              onClick={nextStep}
-              className="flex-[2] h-12 text-lg font-bold bg-forest dark:bg-neon dark:text-chumbo"
-              disabled={!option}
+              onClick={handleSaveAndExit}
+              className="flex-[2] h-12 text-lg font-bold bg-forest dark:bg-neon dark:text-chumbo shadow-xl shadow-neon/20"
+              disabled={!option || isSaving}
             >
-              Próxima Etapa: Contexto e Ritmo
-              <ChevronRight className="ml-2 w-5 h-5" />
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 w-5 h-5 animate-spin" />
+                  Salvando Estrutura...
+                </>
+              ) : (
+                <>
+                  Salvar e Concluir Etapa
+                  <CheckCircle2 className="ml-2 w-5 h-5" />
+                </>
+              )}
             </Button>
           </div>
         </CardContent>

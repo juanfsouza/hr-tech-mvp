@@ -177,6 +177,7 @@ model Collaborator {
   company      Company        @relation(fields: [companyId], references: [id])
   parent       Collaborator?  @relation("Hierarchy", fields: [parentId], references: [id])
   subordinates Collaborator[] @relation("Hierarchy")
+  testSessions TestSession[]
   psychProfile PsychProfile?
 
   @@index([companyId, isActive])
@@ -257,18 +258,20 @@ model Candidate {
 model TestSession {
   id          String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   companyId   String           @map("company_id") @db.Uuid
-  candidateId String?          @map("candidate_id") @db.Uuid
-  token       String           @unique           // token único no link
-  status      TestSessionStatus @default(PENDING)
-  expiresAt   DateTime         @map("expires_at")
-  startedAt   DateTime?        @map("started_at")
-  completedAt DateTime?        @map("completed_at")
-  currentTest TestType?        @map("current_test")
-  createdAt   DateTime         @default(now()) @map("created_at")
+  candidateId    String?           @map("candidate_id") @db.Uuid
+  collaboratorId String?           @map("collaborator_id") @db.Uuid
+  token          String            @unique           // token único no link
+  status         TestSessionStatus @default(PENDING)
+  expiresAt      DateTime          @map("expires_at")
+  startedAt      DateTime?         @map("started_at")
+  completedAt    DateTime?         @map("completed_at")
+  currentTest    TestType?         @map("current_test")
+  createdAt      DateTime          @default(now()) @map("created_at")
 
-  company     Company        @relation(fields: [companyId], references: [id])
-  candidate   Candidate?     @relation(fields: [candidateId], references: [id])
-  responses   TestResponse[]
+  company      Company        @relation(fields: [companyId], references: [id])
+  candidate    Candidate?     @relation(fields: [candidateId], references: [id])
+  collaborator Collaborator?  @relation(fields: [collaboratorId], references: [id])
+  responses    TestResponse[]
 
   @@index([token])
   @@index([companyId, status])

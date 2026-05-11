@@ -28,6 +28,9 @@ export default function OnboardingPage() {
         id: company.id,
         name: company.razaoSocial,
         cnpj: company.cnpj,
+        profile: company.context?.companyProfile,
+        narrative: company.context?.companyContext,
+        values: company.context?.cultureValues,
       });
     }
   }, [company, updateCompanyData]);
