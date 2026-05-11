@@ -33,9 +33,10 @@ export class UpdateOnboardingUseCase
       company.updateContext(input.context);
 
       if (!company.hasCompleteContext()) {
+        const count = input.context.companyContext?.trim().split(/\s+/).filter(w => w.length > 0).length || 0;
         return left(
           new BusinessRuleViolationError(
-            'Company context requires at least 100 words in the description and one culture value.',
+            `O contexto da empresa precisa de pelo menos 100 palavras. Atual: ${count} palavras.`,
           ),
         );
       }

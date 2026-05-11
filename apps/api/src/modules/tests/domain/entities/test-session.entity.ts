@@ -12,7 +12,7 @@ export class TestSession extends Entity<TestSessionProps> {
   }
 
   static create(
-    props: Pick<TestSessionProps, 'companyId' | 'candidateId' | 'expiresAt'>,
+    props: Pick<TestSessionProps, 'companyId' | 'candidateId' | 'collaboratorId' | 'expiresAt'>,
     id?: UniqueEntityID,
   ): TestSession {
     return new TestSession(
@@ -33,6 +33,7 @@ export class TestSession extends Entity<TestSessionProps> {
 
   get companyId(): string { return this.props.companyId; }
   get candidateId(): string | undefined { return this.props.candidateId; }
+  get collaboratorId(): string | undefined { return this.props.collaboratorId; }
   get token(): string { return this.props.token; }
   get status(): TestSessionStatus { return this.props.status; }
   get expiresAt(): Date { return this.props.expiresAt; }

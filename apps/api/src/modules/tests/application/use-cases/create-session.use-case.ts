@@ -22,6 +22,7 @@ export class CreateTestSessionUseCase {
         const session = TestSession.create({
             companyId: input.companyId,
             candidateId: input.candidateId,
+            collaboratorId: input.collaboratorId,
             expiresAt,
         });
 

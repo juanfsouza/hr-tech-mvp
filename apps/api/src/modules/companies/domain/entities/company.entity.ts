@@ -84,12 +84,17 @@ export class Company extends Entity<CompanyProps> {
 
   hasCompleteContext(): boolean {
     const ctx = this.props.context;
-    return (
-      !!ctx.companyProfile &&
-      !!ctx.companyContext &&
-      ctx.companyContext.split(' ').length >= 100 &&
-      ctx.cultureValues.length > 0
-    );
+    if (!ctx.companyProfile || !ctx.companyContext || ctx.cultureValues.length === 0) {
+      return false;
+    }
+
+    // Contagem robusta de palavras
+    const wordCount = ctx.companyContext
+      .trim()
+      .split(/\s+/)
+      .filter(word => word.length > 0).length;
+
+    return wordCount >= 100;
   }
 
   isOnboardingComplete(): boolean {

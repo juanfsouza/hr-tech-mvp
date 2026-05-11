@@ -19,6 +19,7 @@ import { SaveProgressUseCase } from '../application/use-cases/save-session.use-c
 
 class CreateSessionDto {
   @ApiProperty({ required: false }) @IsOptional() @IsUUID() candidateId?: string;
+  @ApiProperty({ required: false }) @IsOptional() @IsUUID() collaboratorId?: string;
   @ApiProperty({ required: false, default: 72 }) @IsOptional() @IsNumber() expiryHours?: number;
 }
 
@@ -60,6 +61,7 @@ export class TestsController {
     const result = await this.createSession.execute({
       companyId: user.companyId!,
       candidateId: dto.candidateId,
+      collaboratorId: dto.collaboratorId,
       expiryHours: dto.expiryHours,
     });
 

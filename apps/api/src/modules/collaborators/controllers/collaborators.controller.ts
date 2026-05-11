@@ -1,5 +1,5 @@
 import {
-  Controller, Post, Get, Body, Param,
+  Controller, Post, Get, Patch, Delete, Body, Param,
   UseGuards, HttpCode, HttpStatus,
   ConflictException, BadRequestException,
   ForbiddenException,
