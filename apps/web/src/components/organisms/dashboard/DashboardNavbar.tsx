@@ -8,7 +8,6 @@ import {
   LogOut,
   User as UserIcon,
   Bell,
-  LayoutDashboard,
   CheckCircle2,
   Clock
 } from "lucide-react";
@@ -85,15 +84,6 @@ export function DashboardNavbar() {
       </div>
 
       <div className="flex items-center gap-4">
-        {mounted && !user?.companyId && (
-          <Link href="/onboarding">
-            <Button variant="outline" className="hidden md:flex items-center gap-2 border-azure/30 text-azure hover:bg-azure/10 rounded-full font-bold px-4 h-10 transition-all group">
-              <LayoutDashboard className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-              Finalizar Configuração
-            </Button>
-          </Link>
-        )}
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="icon" className="rounded-full bg-transparent hover:bg-primary/30 dark:hover:bg-muted/50 relative hover:bg-slate-100 dark:hover:bg-muted/50 transition-colors">
