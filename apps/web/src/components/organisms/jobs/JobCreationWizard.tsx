@@ -18,10 +18,18 @@ import {
   CheckCircle2,
   Loader2
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/atoms/select";
 
 import { jobService } from "@/services/job-service";
 import { authService } from "@/services/auth-service";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { collaboratorService, Collaborator } from "@/services/collaborator-service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -35,14 +43,24 @@ export function JobCreationWizard() {
   const [generatedJd, setGeneratedJd] = useState("");
   const [briefing, setBriefing] = useState({
     title: "",
-    leader: "",
+    leaderId: "",
     reason: "",
     responsibilities: "",
+  });
+
+  const user = authService.getUser();
+
+  // Buscar colaboradores para o seletor de líder
+  const { data: collaborators } = useQuery({
+    queryKey: ["collaborators", user?.companyId],
+    queryFn: () => collaboratorService.list(user!.companyId!),
+    enabled: !!user?.companyId,
   });
 
   const [manualData, setManualData] = useState({
     title: "",
     description: "",
+    responsibleId: "",
   });
 
   // Mutação para criar a vaga inicial
@@ -51,6 +69,7 @@ export function JobCreationWizard() {
       jobService.create({
         title: data.title,
         description: data.responsibilities,
+        responsibleId: data.leaderId,
       }),
   });
 
@@ -211,6 +230,29 @@ export function JobCreationWizard() {
                 onChange={e => setManualData({ ...manualData, description: e.target.value })}
               />
             </div>
+            <div className="space-y-2">
+              <Label>Líder Responsável</Label>
+              <Select
+                value={manualData.responsibleId}
+                onValueChange={(val) => setManualData({ ...manualData, responsibleId: val })}
+              >
+                <SelectTrigger className="rounded-xl h-12">
+                  <SelectValue placeholder="Selecione o gestor da vaga" />
+                </SelectTrigger>
+                <SelectContent>
+                  {collaborators?.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name} ({c.role})
+                    </SelectItem>
+                  ))}
+                  {(!collaborators || collaborators.length === 0) && (
+                    <div className="p-2 text-sm text-muted-foreground italic">
+                      Nenhum colaborador encontrado. Cadastre no Organograma primeiro.
+                    </div>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="flex gap-4 pt-6">
               <Button variant="outline" onClick={() => setMode("IDLE")} className="flex-1 h-12">
                 <ArrowLeft className="mr-2 w-5 h-5" /> Voltar
@@ -252,7 +294,21 @@ export function JobCreationWizard() {
               </div>
               <div className="space-y-2">
                 <Label>Líder Direto</Label>
-                <Input placeholder="Selecione do organograma..." value={briefing.leader} onChange={e => setBriefing({ ...briefing, leader: e.target.value })} />
+                <Select
+                  value={briefing.leaderId}
+                  onValueChange={(val) => setBriefing({ ...briefing, leaderId: val })}
+                >
+                  <SelectTrigger className="rounded-xl h-12">
+                    <SelectValue placeholder="Quem será o gestor?" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {collaborators?.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name} ({c.role})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="space-y-2">

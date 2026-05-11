@@ -49,18 +49,28 @@ export class CompleteTestUseCase {
         session.complete();
         await this.repo.updateSession(session);
 
-        let candidateName = 'Indefinido';
+        let subjectName = 'Indefinido';
         let candidate = null;
+        let collaborator = null;
 
         if (session.candidateId) {
             candidate = await this.prisma.candidate.findUnique({
                 where: { id: session.candidateId },
             });
-            if (candidate) {
-                candidateName = candidate.name;
-            }
+            if (candidate) subjectName = candidate.name;
+        } else if (session.collaboratorId) {
+            collaborator = await this.prisma.collaborator.findUnique({
+                where: { id: session.collaboratorId },
+            });
+            if (collaborator) subjectName = collaborator.name;
         }
-        const { profileId, profileData } = await this.calculateAndSaveProfile(session.id.value, session.candidateId, candidateName);
+
+        const { profileId, profileData } = await this.calculateAndSaveProfile(
+            session.id.value, 
+            session.candidateId, 
+            session.collaboratorId,
+            subjectName
+        );
 
         // -- AUTOMAÇÃO 1 e 2: Disparar Match IA e Enviar Email --
         if (candidate) {
@@ -129,7 +139,8 @@ export class CompleteTestUseCase {
     private async calculateAndSaveProfile(
         sessionId: string,
         candidateId?: string,
-        candidateName: string = 'Indefinido',
+        collaboratorId?: string,
+        subjectName: string = 'Indefinido',
     ): Promise<{ profileId: string, profileData: PsychProfileData }> {
         const discRaw = await this.repo.findResponses(sessionId, 'DISC');
         const ennRaw = await this.repo.findResponses(sessionId, 'ENNEAGRAM');
@@ -143,7 +154,7 @@ export class CompleteTestUseCase {
         const sixteen = SixteenPersonalitiesEngine.calculate(sixResponses);
 
         const profileData = {
-            candidateName,
+            candidateName: subjectName,
             discD: disc.D, discI: disc.I, discS: disc.S, discC: disc.C,
             discDominant: disc.dominantProfile, discSecondary: disc.secondaryProfile,
             enneagramType: enn.type, enneagramWing: enn.wing, enneagramLevel: enn.integrationLevel,
@@ -155,7 +166,7 @@ export class CompleteTestUseCase {
             bigFiveN: sixteen.bigFive.neuroticism,
         };
 
-        const profileId = await this.repo.savePsychProfile(candidateId, undefined, profileData);
+        const profileId = await this.repo.savePsychProfile(candidateId, collaboratorId, profileData);
 
         return { profileId, profileData };
     }

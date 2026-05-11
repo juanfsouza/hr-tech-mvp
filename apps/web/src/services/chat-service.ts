@@ -6,7 +6,7 @@ export interface ChatMessage {
 }
 
 export const chatService = {
-  async streamMessage(messages: ChatMessage[], onChunk: (text: string) => void) {
+  async streamMessage(messages: ChatMessage[], onChunk: (text: string) => void, jobId?: string) {
     const token = localStorage.getItem('@SaaS:token');
     
     const response = await fetch(`${api.defaults.baseURL}/ai/chat/stream`, {
@@ -15,7 +15,7 @@ export const chatService = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ messages })
+      body: JSON.stringify({ messages, jobId })
     });
 
     if (!response.ok) {

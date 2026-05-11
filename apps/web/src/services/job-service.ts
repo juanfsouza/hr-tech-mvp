@@ -8,6 +8,7 @@ export interface CreateJobInput {
   type?: string;
   requirements?: string[];
   responsibilities?: string[];
+  responsibleId?: string;
 }
 
 export interface Job {

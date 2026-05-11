@@ -3,6 +3,7 @@ import { MatchAnalysisInput } from '@/modules/match/application/interfaces/match
 import { MatchAnalysisOutput } from '@/modules/match/application/interfaces/match-analysis-output.interface';
 import { ClaudeService } from '@/shared/infrastructure/ai/claude.service';
 import { OpenAiService } from '@/shared/infrastructure/ai/openai.service';
+import { PrismaService } from '@/shared/infrastructure/database/prisma.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -10,7 +11,46 @@ export class AiOrchestrationService {
   constructor(
     private readonly claude: ClaudeService,
     private readonly grok: OpenAiService,
+    private readonly prisma: PrismaService,
   ) { }
+
+  async *streamContextualChat(messages: any[], jobId?: string, companyId?: string) {
+    let systemPrompt = 'Você é um assistente de RH focado em análise de candidatos e processos seletivos. Responda de forma concisa e útil.';
+
+    if (jobId) {
+      const job = await this.prisma.job.findUnique({
+        where: { id: jobId },
+        include: {
+          candidates: {
+            include: {
+              matches: { orderBy: { createdAt: 'desc' }, take: 1 }
+            }
+          }
+        }
+      });
+
+      if (job) {
+        const candidatesContext = job.candidates.map(c => {
+          const match = c.matches[0];
+          return `- ${c.name} (${c.email}): Score ${match?.overallScore || 'N/A'}%. Resumo: ${match?.summary || 'Sem análise'}`;
+        }).join('\n');
+
+        systemPrompt = `
+Você é o assistente de IA especialista da vaga "${job.title}".
+Contexto da Vaga: ${job.description}
+
+Candidatos nesta vaga:
+${candidatesContext}
+
+Sua tarefa é ajudar o recrutador a tomar decisões, comparar candidatos e sugerir próximos passos. 
+Use os dados acima para fundamentar suas respostas. Se falarem de um candidato específico, use o resumo de match dele.
+Responda sempre em Português do Brasil.
+        `.trim();
+      }
+    }
+
+    return this.claude.stream(messages, { systemPrompt });
+  }
 
   async generateJobDescription(input: GenerateJdInput): Promise<string> {
     const prompt = `

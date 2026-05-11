@@ -67,7 +67,34 @@ export class MatchService {
     const company = await this.prisma.company.findUnique({ where: { id: input.companyId } });
     if (!company) throw new Error(`Company ${input.companyId} not found`);
 
-    // 5. Invocar IA para análise qualitativa
+    // 5. Buscar dados do Líder (se houver responsável na vaga)
+    let leaderData = undefined;
+    if (job.responsibleId) {
+      const leader = await this.prisma.collaborator.findUnique({ where: { id: job.responsibleId } });
+      const leaderProfile = await this.prisma.psychProfile.findFirst({
+        where: { collaboratorId: job.responsibleId },
+        orderBy: { completedAt: 'desc' },
+      });
+
+      if (leader && leaderProfile) {
+        leaderData = {
+          name: leader.name,
+          disc: {
+            D: leaderProfile.discD ?? 0,
+            I: leaderProfile.discI ?? 0,
+            S: leaderProfile.discS ?? 0,
+            C: leaderProfile.discC ?? 0,
+            dominant: leaderProfile.discDominant ?? 'D',
+          },
+          enneagram: {
+            type: leaderProfile.enneagramType ?? 0,
+            wing: leaderProfile.enneagramWing ?? '?',
+          },
+        };
+      }
+    }
+
+    // 6. Invocar IA para análise qualitativa
     const analysis = await this.ai.analyzeCandidateMatch({
       candidate: {
         name: candidate.name,
@@ -97,6 +124,7 @@ export class MatchService {
         description: job.description ?? job.title,
         requirements: job.requirements,
       },
+      leader: leaderData,
       companyContext: company.companyContext ?? company.razaoSocial,
     });
 

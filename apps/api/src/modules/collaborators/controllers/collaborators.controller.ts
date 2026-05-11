@@ -14,6 +14,7 @@ import { UpdateCollaboratorUseCase } from '../application/use-cases/update.colla
 import { DeleteCollaboratorUseCase } from '../application/use-cases/delete.collaborator.use-case';
 import { OrgChartNode } from '@/modules/collaborators/application/interfaces/org-chart-node.interface';
 import { GetOrgChartUseCase } from '../application/use-cases/list.collaborato.use-case';
+import { ListCollaboratorsUseCase } from '../application/use-cases/list.collaborators.use-case';
 
 class CreateCollaboratorDto {
   @ApiProperty() @IsString() @IsNotEmpty() name!: string;
@@ -33,7 +34,18 @@ export class CollaboratorsController {
     private readonly updateCollaborator: UpdateCollaboratorUseCase,
     private readonly deleteCollaborator: DeleteCollaboratorUseCase,
     private readonly getOrgChart: GetOrgChartUseCase,
+    private readonly listCollaborators: ListCollaboratorsUseCase,
   ) { }
+
+  @Get()
+  @ApiOperation({ summary: 'Listar todos os colaboradores da empresa (flat)' })
+  async list(
+    @Param('companyId') companyId: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<any[]> {
+    if (user.companyId !== companyId) throw new ForbiddenException();
+    return this.listCollaborators.execute(companyId);
+  }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)

@@ -1,8 +1,9 @@
 import { Controller, Body, Post, Res, UseGuards, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
-import { ClaudeService } from '@/shared/infrastructure/ai/claude.service';
+import { AiOrchestrationService } from '../services/ai-orchestration.service';
 import { FastifyReply } from 'fastify';
+import { AuthenticatedUser, CurrentUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
 
 export class ChatMessageDto {
   role!: 'user' | 'assistant';
@@ -11,6 +12,7 @@ export class ChatMessageDto {
 
 export class ChatRequestDto {
   messages!: ChatMessageDto[];
+  jobId?: string;
 }
 
 @ApiTags('AI Chat')
@@ -18,13 +20,14 @@ export class ChatRequestDto {
 @UseGuards(JwtAuthGuard)
 @Controller('ai/chat')
 export class AiController {
-  constructor(private readonly claudeService: ClaudeService) { }
+  constructor(private readonly aiOrchestration: AiOrchestrationService) { }
 
   @Post('stream')
   @ApiOperation({ summary: 'Conversar com IA do RH via Stream (POST)' })
   async streamChat(
     @Body() body: ChatRequestDto,
     @Res() res: FastifyReply,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
     if (!body.messages || body.messages.length === 0) {
       throw new BadRequestException('Messages array cannot be empty');
@@ -36,12 +39,13 @@ export class AiController {
     res.raw.setHeader('Connection', 'keep-alive');
 
     try {
-      const stream = this.claudeService.stream(body.messages, {
-        systemPrompt: 'Você é um assistente de RH focado em análise de candidatos e processos seletivos. Responda de forma concisa e útil.',
-      });
+      const stream = await this.aiOrchestration.streamContextualChat(
+        body.messages,
+        body.jobId,
+        user.companyId
+      );
 
       for await (const chunk of stream) {
-        // Enviar no formato SSE: "data: content\n\n"
         res.raw.write(`data: ${JSON.stringify({ text: chunk })}\n\n`);
       }
 

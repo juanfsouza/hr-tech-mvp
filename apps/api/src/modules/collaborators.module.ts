@@ -6,6 +6,7 @@ import { CreateCollaboratorUseCase } from './collaborators/application/use-cases
 import { UpdateCollaboratorUseCase } from './collaborators/application/use-cases/update.collaborator.use-case';
 import { DeleteCollaboratorUseCase } from './collaborators/application/use-cases/delete.collaborator.use-case';
 import { GetOrgChartUseCase } from './collaborators/application/use-cases/list.collaborato.use-case';
+import { ListCollaboratorsUseCase } from './collaborators/application/use-cases/list.collaborators.use-case';
 
 @Module({
   controllers: [CollaboratorsController],
@@ -15,7 +16,8 @@ import { GetOrgChartUseCase } from './collaborators/application/use-cases/list.c
     UpdateCollaboratorUseCase,
     DeleteCollaboratorUseCase,
     GetOrgChartUseCase,
+    ListCollaboratorsUseCase,
   ],
-  exports: [COLLABORATOR_REPOSITORY, GetOrgChartUseCase],
+  exports: [COLLABORATOR_REPOSITORY, GetOrgChartUseCase, ListCollaboratorsUseCase],
 })
 export class CollaboratorsModule { }
