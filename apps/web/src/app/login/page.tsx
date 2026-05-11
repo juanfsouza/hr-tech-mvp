@@ -72,40 +72,78 @@ export default function LoginPage() {
   // Handle Google OAuth Redirect Callback
   useEffect(() => {
     const userParam = searchParams.get('user');
+    const errorParam = searchParams.get('error');
+
+    if (errorParam) {
+      toast.error("Erro no Google Login", {
+        description: decodeURIComponent(errorParam)
+      });
+    }
+
     if (userParam) {
       try {
         const userData = JSON.parse(atob(userParam));
         localStorage.setItem('@SaaS:user', JSON.stringify(userData));
-        toast.success(`Bem-vindo, ${userData.name}!`);
+        toast.success(`Bem-vindo, ${userData.name}!`, {
+          description: "Login via Google realizado com sucesso."
+        });
         router.push("/dashboard");
       } catch (e) {
         console.error("Erro no processamento OAuth", e);
+        toast.error("Erro ao processar dados do Google");
       }
     }
   }, [searchParams, router]);
 
   const handleSubmit = async () => {
-    if (!email || !password) return;
+    if (!email || !password) {
+      toast.warning("Campos obrigatórios", {
+        description: "Por favor, preencha e-mail e senha."
+      });
+      return;
+    }
+    
     setLoading(true);
     try {
       if (activeTab === "login") {
         const response = await authService.login(email, password);
         if (response.accessToken) {
           setSuccess(true);
-          toast.success("Login realizado com sucesso!");
+          toast.success("Bem-vindo de volta!", {
+            description: "Acessando seu painel..."
+          });
           router.push("/dashboard");
         }
       } else {
+        if (!name) {
+          toast.warning("Nome obrigatório", { description: "Por favor, preencha seu nome." });
+          setLoading(false);
+          return;
+        }
         await authService.register(name, email, password);
         setSuccess(true);
-        toast.success("Conta criada!", { description: "Agora você pode entrar." });
+        toast.success("Conta criada com sucesso!", { 
+          description: "Agora você já pode realizar o login." 
+        });
         setActiveTab("login");
         setSuccess(false);
       }
     } catch (error: any) {
-      toast.error("Erro na autenticação", {
-        description: error.response?.data?.message || "Verifique seus dados."
-      });
+      const message = error.response?.data?.message || "Ocorreu um erro inesperado.";
+      
+      if (error.response?.status === 401) {
+        toast.error("Credenciais inválidas", {
+          description: "E-mail ou senha incorretos. Tente novamente."
+        });
+      } else if (error.response?.status === 409) {
+        toast.error("Conflito no cadastro", {
+          description: "Este e-mail já está sendo utilizado."
+        });
+      } else {
+        toast.error("Erro na autenticação", {
+          description: message
+        });
+      }
     } finally {
       setLoading(false);
     }
