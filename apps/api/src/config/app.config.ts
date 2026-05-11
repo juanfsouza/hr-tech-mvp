@@ -33,6 +33,9 @@ const configSchema = z.object({
   THROTTLE_LIMIT: z.coerce.number().default(100),
   TEST_LINK_EXPIRY_HOURS: z.coerce.number().default(72),
   CANDIDATE_PORTAL_URL: z.string().url(),
+  GOOGLE_CLIENT_ID: z.string().min(1),
+  GOOGLE_CLIENT_SECRET: z.string().min(1),
+  GOOGLE_CALLBACK_URL: z.string().url(),
 });
 
 export type AppConfig = z.infer<typeof configSchema>;

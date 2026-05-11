@@ -18,7 +18,9 @@ import { LoginUseCase } from '@modules/auth/application/use-cases/login.use-case
 import { RegisterUseCase } from '@modules/auth/application/use-cases/register.use-case';
 import { RefreshTokenUseCase } from '@modules/auth/application/use-cases/refresh-token.use-case';
 import { VerifyEmailUseCase } from '@modules/auth/application/use-cases/verify-email.use-case';
+import { OAuthLoginUseCase } from '@modules/auth/application/use-cases/oauth-login.use-case';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
+import { GoogleAuthGuard } from '../infrastructure/guards/google-auth.guard';
 import { CurrentUser, AuthenticatedUser } from '@shared/infrastructure/http/decorators/current-user.decorator';
 import { LoginDto, RegisterDto } from '../application/dtos/login.dto';
 
@@ -30,6 +32,7 @@ export class AuthController {
     private readonly registerUseCase: RegisterUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly verifyEmailUseCase: VerifyEmailUseCase,
+    private readonly oauthLoginUseCase: OAuthLoginUseCase,
   ) { }
 
   // ─── POST /auth/login ──────────────────────────────────────────────────────
@@ -170,5 +173,56 @@ export class AuthController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<AuthenticatedUser> {
     return user;
+  }
+
+  // ─── GOOGLE AUTH ───────────────────────────────────────────────────────────
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  @ApiOperation({ summary: 'Iniciar login via Google' })
+  async googleAuth() {
+    // O Guard inicia o redirecionamento para o Google
+  }
+
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  @ApiOperation({ summary: 'Callback do Google OAuth' })
+  async googleAuthRedirect(
+    @Res({ passthrough: true }) reply: FastifyReply,
+    @CurrentUser() googleUser: any,
+  ) {
+    const result = await this.oauthLoginUseCase.execute({
+      email: googleUser.email,
+      name: `${googleUser.firstName} ${googleUser.lastName}`,
+      picture: googleUser.picture,
+    });
+
+    if (result.isLeft()) {
+      // Se der erro, redireciona para o login com erro
+      return reply.redirect(`${process.env['FRONTEND_URL']}/login?error=${result.value.message}`);
+    }
+
+    const { accessToken, refreshToken, user } = result.value;
+
+    // Configurar Cookies (Igual ao login manual)
+    reply.setCookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: process.env['NODE_ENV'] === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60,
+    });
+
+    reply.setCookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: process.env['NODE_ENV'] === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    // Redireciona para o Dashboard no Frontend
+    // Passamos os dados do usuário via localStorage (o que o frontend já faz)
+    // Mas no redirecionamento, o frontend precisará buscar o usuário
+    return reply.redirect(`${process.env['FRONTEND_URL']}/dashboard?auth=google&user=${Buffer.from(JSON.stringify(user)).toString('base64')}`);
   }
 }

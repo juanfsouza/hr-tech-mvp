@@ -7,7 +7,9 @@ import { LoginUseCase } from './auth/application/use-cases/login.use-case';
 import { RegisterUseCase } from './auth/application/use-cases/register.use-case';
 import { RefreshTokenUseCase } from './auth/application/use-cases/refresh-token.use-case';
 import { VerifyEmailUseCase } from './auth/application/use-cases/verify-email.use-case';
+import { OAuthLoginUseCase } from './auth/application/use-cases/oauth-login.use-case';
 import { JwtStrategy } from './auth/infrastructure/jwt.strategy';
+import { GoogleStrategy } from './auth/infrastructure/google.strategy';
 import { BcryptHashService } from './auth/infrastructure/services/bcrypt-hash.service';
 import { PrismaTokenRepository } from './auth/infrastructure/repositories/prisma-token.repository';
 import { AuthController } from './auth/controllers/auth.controller';
@@ -37,7 +39,9 @@ import { UsersModule } from './users.module';
     RegisterUseCase,
     RefreshTokenUseCase,
     VerifyEmailUseCase,
+    OAuthLoginUseCase,
     JwtStrategy,
+    GoogleStrategy,
     { provide: HASH_SERVICE, useClass: BcryptHashService },
     { provide: TOKEN_REPOSITORY, useClass: PrismaTokenRepository },
   ],

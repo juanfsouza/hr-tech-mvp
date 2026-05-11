@@ -6,13 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { motion } from "framer-motion";
 import { Button } from "@/components/atoms/button";
-import { Input } from "@/components/atoms/input";
-import { Label } from "@/components/atoms/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/atoms/card";
 import { authService } from "@/services/auth-service";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Sparkles, Loader2, UserPlus } from "lucide-react";
+import { Loader2, Mail, Lock, User } from "lucide-react";
 import Link from "next/link";
 
 const registerSchema = z.object({
@@ -43,8 +40,8 @@ export default function RegisterPage() {
     setIsLoading(true);
     try {
       await authService.register(data.name, data.email, data.password);
-      toast.success("Cadastro realizado!", {
-        description: "Verifique seu e-mail para validar sua conta.",
+      toast.success("Conta criada com sucesso!", {
+        description: "Agora você pode acessar sua conta.",
       });
       router.push("/login");
     } catch (error: any) {
@@ -57,99 +54,113 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-background">
+    <div className="min-h-screen flex items-center justify-center bg-offwhite dark:bg-chumbo/10 p-4 md:p-8 font-outfit">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col md:flex-row-reverse w-full max-w-5xl bg-white dark:bg-card rounded-[40px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden min-h-[700px] border border-white/20"
       >
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-forest/10 dark:bg-neon/10 mb-4">
-            <UserPlus className="w-8 h-8 text-forest dark:text-neon" />
+
+        {/* Lado Esquerdo (Invertido no Register para variar) - Estilo Imagem */}
+        <div className="w-full md:w-[40%] bg-azure relative flex flex-col items-center justify-center p-12 overflow-hidden">
+          <div className="absolute top-[-10%] right-[-10%] w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+
+          <div className="relative z-10 flex flex-col items-center gap-4 w-full">
+            <div className="w-full flex flex-col gap-5">
+              <Link href="/login" className="text-white/40 hover:text-white px-10 py-3.5 font-bold text-lg text-center transition-all hover:scale-105">
+                LOGIN
+              </Link>
+              <div className="bg-white text-azure px-10 py-3.5 rounded-full font-bold text-lg shadow-xl text-center cursor-default">
+                SIGN IN
+              </div>
+            </div>
+
+            <div className="mt-20 text-white/20">
+              <img src="/logo_black.png" alt="Logo" className="w-24 opacity-20 grayscale brightness-200" />
+            </div>
           </div>
-          <h1 className="text-3xl font-bold font-outfit">Crie sua conta</h1>
-          <p className="text-muted-foreground mt-2">Comece a otimizar seu RH hoje</p>
         </div>
 
-        <Card className="border-border/50 bg-card/50 backdrop-blur-xl shadow-2xl">
-          <CardHeader>
-            <CardTitle className="text-xl">Cadastro</CardTitle>
-            <CardDescription>Preencha os dados abaixo para se registrar.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome Completo</Label>
-                <Input
-                  id="name"
-                  placeholder="Seu Nome"
-                  {...register("name")}
-                  className={errors.name ? "border-destructive" : ""}
-                />
-                {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
-              </div>
+        {/* Lado Direito - Formulário */}
+        <div className="w-full md:w-[60%] p-8 md:p-16 flex flex-col justify-center bg-white dark:bg-card">
+          <div className="flex flex-col items-center mb-10">
+            <div className="w-16 h-16 bg-azure/5 dark:bg-azure/5 rounded-2xl flex items-center justify-center mb-4 border border-azure/10">
+              <img src="/logo_white.png" alt="Logo" className="w-10 h-10 object-contain dark:invert" />
+            </div>
+            <h2 className="text-2xl font-black text-azure tracking-[0.2em] uppercase">Cadastro</h2>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Corporativo</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  {...register("email")}
-                  className={errors.email ? "border-destructive" : ""}
-                />
-                {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
-              </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-md mx-auto w-full">
+            {/* Input de Nome */}
+            <div className="relative group">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest absolute -top-5 left-0">Nome Completo</label>
+              <User className="absolute left-0 bottom-3 w-5 h-5 text-slate-300 group-focus-within:text-azure transition-colors" />
+              <input
+                {...register("name")}
+                placeholder="Seu Nome"
+                className="w-full pl-8 pb-3 bg-transparent border-b-2 border-slate-100 dark:border-white/10 focus:border-azure outline-none transition-all placeholder:text-slate-300 text-slate-700 dark:text-white font-medium"
+              />
+              {errors.name && <span className="text-[10px] text-coral absolute -bottom-5 left-0 font-bold">{errors.name.message}</span>}
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
+            {/* Input de Email */}
+            <div className="relative group">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest absolute -top-5 left-0">Email</label>
+              <Mail className="absolute left-0 bottom-3 w-5 h-5 text-slate-300 group-focus-within:text-azure transition-colors" />
+              <input
+                {...register("email")}
+                placeholder="seu@email.com"
+                className="w-full pl-8 pb-3 bg-transparent border-b-2 border-slate-100 dark:border-white/10 focus:border-azure outline-none transition-all placeholder:text-slate-300 text-slate-700 dark:text-white font-medium"
+              />
+              {errors.email && <span className="text-[10px] text-coral absolute -bottom-5 left-0 font-bold">{errors.email.message}</span>}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Input de Senha */}
+              <div className="relative group">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest absolute -top-5 left-0">Password</label>
+                <Lock className="absolute left-0 bottom-3 w-5 h-5 text-slate-300 group-focus-within:text-azure transition-colors" />
+                <input
                   {...register("password")}
-                  className={errors.password ? "border-destructive" : ""}
-                />
-                {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar Senha</Label>
-                <Input
-                  id="confirmPassword"
                   type="password"
                   placeholder="••••••••"
-                  {...register("confirmPassword")}
-                  className={errors.confirmPassword ? "border-destructive" : ""}
+                  className="w-full pl-8 pb-3 bg-transparent border-b-2 border-slate-100 dark:border-white/10 focus:border-azure outline-none transition-all placeholder:text-slate-300 text-slate-700 dark:text-white font-medium"
                 />
-                {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>}
+                {errors.password && <span className="text-[10px] text-coral absolute -bottom-5 left-0 font-bold">{errors.password.message}</span>}
               </div>
 
+              {/* Confirmar Senha */}
+              <div className="relative group">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest absolute -top-5 left-0">Confirm</label>
+                <Lock className="absolute left-0 bottom-3 w-5 h-5 text-slate-300 group-focus-within:text-azure transition-colors" />
+                <input
+                  {...register("confirmPassword")}
+                  type="password"
+                  placeholder="••••••••"
+                  className="w-full pl-8 pb-3 bg-transparent border-b-2 border-slate-100 dark:border-white/10 focus:border-azure outline-none transition-all placeholder:text-slate-300 text-slate-700 dark:text-white font-medium"
+                />
+                {errors.confirmPassword && <span className="text-[10px] text-coral absolute -bottom-5 left-0 font-bold">{errors.confirmPassword.message}</span>}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end pt-4">
               <Button
                 type="submit"
-                className="w-full h-12 bg-forest dark:bg-neon dark:text-chumbo font-bold text-lg mt-2"
                 disabled={isLoading}
+                className="bg-azure hover:bg-azure/90 text-white px-12 py-7 rounded-full font-black text-sm tracking-widest shadow-[0_15px_30px_-5px_rgba(123,179,176,0.4)] transition-all active:scale-95 flex items-center gap-2"
               >
-                {isLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    Criar Conta
-                    <Sparkles className="ml-2 w-5 h-5" />
-                  </>
-                )}
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "SIGN IN"}
               </Button>
-            </form>
-
-            <div className="mt-6 text-center text-sm text-muted-foreground">
-              Já tem uma conta?{" "}
-              <Link href="/login" className="text-forest dark:text-neon font-bold hover:underline">
-                Faça login
-              </Link>
             </div>
-          </CardContent>
-        </Card>
+          </form>
+
+          <div className="mt-12 text-center">
+            <p className="text-xs text-slate-400">
+              Ao se cadastrar, você concorda com nossos <span className="text-azure font-bold cursor-pointer">Termos de Uso</span>.
+            </p>
+          </div>
+        </div>
       </motion.div>
     </div>
   );
