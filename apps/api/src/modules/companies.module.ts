@@ -5,6 +5,7 @@ import { CreateCompanyUseCase } from './companies/application/use-cases/create-c
 import { UpdateOnboardingUseCase } from './companies/application/use-cases/update-onboarding.use-case';
 import { GetCompanyUseCase } from './companies/application/use-cases/get-company.use-case';
 import { UpdateCompanyUseCase } from './companies/application/use-cases/update-company.use-case';
+import { SyncOrganogramUseCase } from './companies/application/use-cases/sync-organogram.use-case';
 import { CompaniesController } from './companies/controllers/companies.controller';
 import { UsersModule } from './users.module';
 
@@ -17,6 +18,7 @@ import { UsersModule } from './users.module';
     UpdateOnboardingUseCase,
     GetCompanyUseCase,
     UpdateCompanyUseCase,
+    SyncOrganogramUseCase,
   ],
   exports: [COMPANY_REPOSITORY],
 })

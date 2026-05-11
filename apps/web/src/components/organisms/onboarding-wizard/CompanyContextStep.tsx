@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { aiService } from "@/services/ai-service";
+import { companyService } from "@/services/company-service";
 import { useMutation } from "@tanstack/react-query";
 
 const COMPANY_PROFILES = [
@@ -23,7 +24,7 @@ const COMPANY_PROFILES = [
 ];
 
 export function CompanyContextStep() {
-  const { companyData, updateCompanyData, prevStep } = useOnboardingStore();
+  const { companyData, organogram, personalityResults, updateCompanyData, prevStep } = useOnboardingStore();
   const [profile, setProfile] = useState<string | null>(companyData.profile || null);
   const [narrative, setNarrative] = useState(companyData.narrative || "");
   const [tags, setTags] = useState<string[]>(companyData.values || []);
@@ -57,15 +58,36 @@ export function CompanyContextStep() {
 
   const removeTag = (t: string) => setTags(tags.filter(tag => tag !== t));
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     setIsFinishing(true);
-    toast.success("Onboarding concluído com sucesso!", {
-      description: "Sua conta está configurada. Redirecionando para o Dashboard...",
-    });
+    try {
+      // 1. Sincronizar Organograma e Resultados Psicométricos
+      await companyService.syncOrganogram(
+        companyData.id!, 
+        organogram, 
+        personalityResults
+      );
 
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 2000);
+      // 2. Salvar Contexto da Empresa
+      await companyService.updateOnboarding(companyData.id!, {
+        companyContext: narrative,
+        perfilRitmo: profile || undefined,
+        valores: tags,
+        isComplete: true
+      });
+
+      toast.success("Onboarding concluído com sucesso!", {
+        description: "Sua conta está configurada. Redirecionando para o Dashboard...",
+      });
+
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao salvar dados do onboarding.");
+      setIsFinishing(false);
+    }
   };
 
   return (

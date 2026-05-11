@@ -101,7 +101,7 @@ export function CompanyOverview({ company, onEdit }: CompanyOverviewProps) {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-emerald-900 dark:text-emerald-400 leading-none mb-1">Verificada</p>
-                    <p className="text-[10px] text-emerald-700/70 dark:text-emerald-400/70 uppercase font-black">Pronta para IA</p>
+                    <p className="text-[10px] text-emerald-700/70 dark:text-emerald-400/70 uppercase font-black">Pronta para uso</p>
                   </div>
                 </div>
               </div>

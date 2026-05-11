@@ -24,11 +24,13 @@ interface OnboardingState {
     };
   };
   organogram: OrganogramNode[];
+  personalityResults: Record<string, { disc?: string; enneagram?: string }>;
   setStep: (step: number) => void;
   updateCompanyData: (data: Partial<OnboardingState['companyData']>) => void;
   setOrganogram: (nodes: OrganogramNode[]) => void;
   addOrganogramNode: (node: OrganogramNode) => void;
   removeOrganogramNode: (id: string) => void;
+  updatePersonalityResult: (nodeId: string, result: { disc?: string; enneagram?: string }) => void;
   nextStep: () => void;
   prevStep: () => void;
 }
@@ -42,6 +44,7 @@ export const useOnboardingStore = create<OnboardingState>()(
         cnpj: '',
       },
       organogram: [],
+      personalityResults: {},
       setStep: (step) => set({ step }),
       updateCompanyData: (data) =>
         set((state) => ({
@@ -53,6 +56,13 @@ export const useOnboardingStore = create<OnboardingState>()(
       removeOrganogramNode: (id) =>
         set((state) => ({
           organogram: state.organogram.filter((n) => n.id !== id),
+        })),
+      updatePersonalityResult: (nodeId, result) =>
+        set((state) => ({
+          personalityResults: {
+            ...state.personalityResults,
+            [nodeId]: { ...state.personalityResults[nodeId], ...result },
+          },
         })),
       nextStep: () => set((state) => ({ step: state.step + 1 })),
       prevStep: () => set((state) => ({ step: Math.max(1, state.step - 1) })),

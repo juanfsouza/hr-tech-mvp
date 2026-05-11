@@ -34,5 +34,13 @@ export const companyService = {
   async getById(id: string) {
     const { data } = await api.get(`/companies/${id}`);
     return data;
+  },
+
+  async syncOrganogram(companyId: string, nodes: any[], personalityResults: any) {
+    const { data } = await api.post(`/companies/${companyId}/sync-organogram`, {
+      nodes,
+      personalityResults
+    });
+    return data;
   }
 };

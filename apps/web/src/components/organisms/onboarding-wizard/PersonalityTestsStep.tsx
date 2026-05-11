@@ -6,6 +6,7 @@ import { Button } from "@/components/atoms/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/atoms/card";
 import { RadioGroup, RadioGroupItem } from "@/components/atoms/radio-group";
 import { Label } from "@/components/atoms/label";
+import { Badge } from "@/components/atoms/badge";
 import {
   Table,
   TableBody,
@@ -15,15 +16,25 @@ import {
   TableRow
 } from "@/components/atoms/table";
 import { useOnboardingStore } from "@/store/onboarding-store";
-import { Brain, ClipboardCopy, CheckCircle2, ArrowLeft, ChevronRight, Link as LinkIcon, ExternalLink } from "lucide-react";
+import { Brain, ClipboardCopy, CheckCircle2, ArrowLeft, ChevronRight, Link as LinkIcon, ExternalLink, UserCircle2, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/atoms/select";
+import { Input } from "@/components/atoms/input";
 
 export function PersonalityTestsStep() {
-  const { organogram, nextStep, prevStep } = useOnboardingStore();
+  const { organogram, personalityResults, updatePersonalityResult, nextStep, prevStep } = useOnboardingStore();
   const [option, setOption] = useState<"A" | "B" | null>(null);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
-  const copyLink = (name: string) => {
-    const mockLink = `https://saas-rh.com/teste/${Math.random().toString(36).substring(7)}`;
+  const copyLink = (name: string, id: string) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://saas-rh.com';
+    const mockLink = `${origin}/portal/${id.substring(0, 8)}`;
     navigator.clipboard.writeText(mockLink);
     toast.success(`Link copiado para ${name}!`, {
       description: "Envie este link para o colaborador realizar os testes.",
@@ -128,7 +139,7 @@ export function PersonalityTestsStep() {
                               variant="secondary"
                               size="sm"
                               className="h-8 gap-2"
-                              onClick={() => copyLink(node.name)}
+                              onClick={() => copyLink(node.name, node.id)}
                             >
                               <ClipboardCopy className="w-3.5 h-3.5" />
                               Copiar Link
@@ -147,12 +158,98 @@ export function PersonalityTestsStep() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="p-12 text-center border-2 border-dashed border-muted rounded-2xl"
+                className="space-y-6"
               >
-                <p className="text-muted-foreground mb-4">
-                  Interface de cadastro manual em desenvolvimento...
-                </p>
-                <Button variant="outline" disabled>Abrir Formulário de Resultados</Button>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-[32px] bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                  <div className="space-y-2">
+                    <Label>Colaborador</Label>
+                    <Select onValueChange={setSelectedNode}>
+                      <SelectTrigger className="bg-white dark:bg-background border-none h-11 rounded-xl shadow-sm">
+                        <SelectValue placeholder="Selecione..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {organogram.map(node => (
+                          <SelectItem key={node.id} value={node.id}>{node.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {selectedNode && (
+                    <>
+                      <div className="space-y-2">
+                        <Label>Perfil DISC Principal</Label>
+                        <Select
+                          value={personalityResults[selectedNode]?.disc || ""}
+                          onValueChange={(val) => updatePersonalityResult(selectedNode, { disc: val })}
+                        >
+                          <SelectTrigger className="bg-white dark:bg-background border-none h-11 rounded-xl shadow-sm">
+                            <SelectValue placeholder="Ex: D, I, S, C..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="D">D (Dominante)</SelectItem>
+                            <SelectItem value="I">I (Influente)</SelectItem>
+                            <SelectItem value="S">S (Estável)</SelectItem>
+                            <SelectItem value="C">C (Analítico)</SelectItem>
+                            <SelectItem value="DI">D-I (Executor/Comunicador)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Tipo Eneagrama</Label>
+                        <Select
+                          value={personalityResults[selectedNode]?.enneagram || ""}
+                          onValueChange={(val) => updatePersonalityResult(selectedNode, { enneagram: val })}
+                        >
+                          <SelectTrigger className="bg-white dark:bg-background border-none h-11 rounded-xl shadow-sm">
+                            <SelectValue placeholder="Tipo..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
+                              <SelectItem key={n} value={n.toString()}>Tipo {n}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <div className="rounded-2xl border border-border overflow-hidden">
+                  <Table>
+                    <TableHeader className="bg-muted/50">
+                      <TableRow>
+                        <TableHead>Colaborador</TableHead>
+                        <TableHead>DISC</TableHead>
+                        <TableHead>Eneagrama</TableHead>
+                        <TableHead className="text-right">Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {organogram.map((node) => {
+                        const res = personalityResults[node.id];
+                        return (
+                          <TableRow key={node.id}>
+                            <TableCell className="font-medium">{node.name}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="border-azure/20 text-azure">{res?.disc || "-"}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="border-forest/20 text-forest dark:text-neon">{res?.enneagram ? `Tipo ${res.enneagram}` : "-"}</Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {res?.disc && res?.enneagram ? (
+                                <CheckCircle2 className="w-5 h-5 text-emerald-500 ml-auto" />
+                              ) : (
+                                <span className="text-[10px] uppercase font-black text-slate-400">Pendente</span>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

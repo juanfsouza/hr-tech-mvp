@@ -20,6 +20,7 @@ import { CreateCompanyUseCase } from '@modules/companies/application/use-cases/c
 import { UpdateOnboardingUseCase } from '@modules/companies/application/use-cases/update-onboarding.use-case';
 import { GetCompanyUseCase } from '@modules/companies/application/use-cases/get-company.use-case';
 import { UpdateCompanyUseCase } from '@modules/companies/application/use-cases/update-company.use-case';
+import { SyncOrganogramUseCase } from '@modules/companies/application/use-cases/sync-organogram.use-case';
 import { GetCompanyOutput } from '@/modules/companies/application/interfaces/get-company-output.interface';
 import { CreateCompanyDto, UpdateOnboardingDto, UpdateCompanyDto } from '../application/dtos/create-company.dto';
 
@@ -33,6 +34,7 @@ export class CompaniesController {
     private readonly updateOnboarding: UpdateOnboardingUseCase,
     private readonly getCompany: GetCompanyUseCase,
     private readonly updateCompany: UpdateCompanyUseCase,
+    private readonly syncOrganogram: SyncOrganogramUseCase,
   ) { }
 
   @Post()
@@ -128,5 +130,26 @@ export class CompaniesController {
       onboardingStatus: result.value.onboardingStatus,
       isComplete: result.value.isComplete,
     };
+  }
+
+  @Post(':id/sync-organogram')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Sincronizar organograma e perfis psicométricos' })
+  async syncOrganogramData(
+    @Param('id') id: string,
+    @Body() dto: any,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    if (user.companyId !== id) throw new ForbiddenException();
+
+    const result = await this.syncOrganogram.execute({
+      companyId: id,
+      nodes: dto.nodes,
+      personalityResults: dto.personalityResults,
+    });
+
+    if (result.isLeft()) throw new BadRequestException(result.value.message);
+
+    return result.value;
   }
 }

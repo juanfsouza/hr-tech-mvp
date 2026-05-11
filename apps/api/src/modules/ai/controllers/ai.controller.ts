@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Res, UseGuards, BadRequestException } from '@nestjs/common';
+import { Controller, Body, Post, Res, UseGuards, BadRequestException, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@shared/infrastructure/http/guards/jwt-auth.guard';
 import { AiOrchestrationService } from '../services/ai-orchestration.service';

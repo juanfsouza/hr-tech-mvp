@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
@@ -47,9 +47,14 @@ import {
 import { dashboardService } from "@/services/dashboard-service";
 
 export default function DashboardPage() {
+  const [mounted, setMounted] = useState(false);
   const user = authService.getUser();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Capturar dados do Google OAuth se presentes na URL
   useEffect(() => {
@@ -143,7 +148,7 @@ export default function DashboardPage() {
         <header className="flex justify-between items-end">
           <div>
             <h1 className="text-4xl font-bold text-forest dark:text-neon font-outfit mb-2">Painel de Controle</h1>
-            <p className="text-muted-foreground text-lg">Olá {user?.name || "Usuário"}, veja como estão seus processos seletivos hoje.</p>
+            <p className="text-muted-foreground text-lg">Olá {mounted ? (user?.name || "Usuário") : "Usuário"}, veja como estão seus processos seletivos hoje.</p>
           </div>
           {!user?.companyId && (
             <motion.div
