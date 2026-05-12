@@ -33,13 +33,13 @@ export function CandidateModal({ open, onOpenChange, candidate, jobs, onSuccess 
       setFormData({
         name: candidate.name,
         email: candidate.email,
-        jobId: candidate.jobId || "",
+        jobId: candidate.jobId || undefined,
       });
     } else {
       setFormData({
         name: "",
         email: "",
-        jobId: "",
+        jobId: undefined,
       });
     }
   }, [candidate, open]);
@@ -109,7 +109,7 @@ export function CandidateModal({ open, onOpenChange, candidate, jobs, onSuccess 
               <Label htmlFor="job" className="text-xs font-black uppercase tracking-widest text-slate-400">Vaga / Posição Estratégica</Label>
               <Select
                 value={formData.jobId}
-                onValueChange={(value) => setFormData({ ...formData, jobId: value })}
+                onValueChange={(value) => setFormData({ ...formData, jobId: value || undefined })}
               >
                 <SelectTrigger className="h-12 w-full bg-background/50 border-border/50 rounded-xl justify-between">
                   <SelectValue placeholder="Selecione uma vaga para este talento">

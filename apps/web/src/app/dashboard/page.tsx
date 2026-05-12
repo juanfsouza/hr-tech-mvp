@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { usePagination } from "@/hooks/use-pagination";
 
@@ -50,7 +50,7 @@ import {
 } from "@/components/atoms/dialog";
 import { dashboardService } from "@/services/dashboard-service";
 
-export default function DashboardPage() {
+function DashboardContent() {
   const [mounted, setMounted] = useState(false);
   const user = authService.getUser();
   const queryClient = useQueryClient();
@@ -438,5 +438,19 @@ export default function DashboardPage() {
         </section>
       </div>
     </DashboardLayout>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 animate-spin text-forest dark:text-neon" />
+        </div>
+      </DashboardLayout>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { authService } from "@/services/auth-service";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -57,7 +57,7 @@ const EyeIcon = ({ open }: { open: boolean }) => (
   </svg>
 );
 
-export default function LoginPage() {
+function LoginContent() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -298,5 +298,17 @@ export default function LoginPage() {
         ::placeholder { color: #8D9999; opacity: 0.5; }
       `}</style>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0F1414] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-neon border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

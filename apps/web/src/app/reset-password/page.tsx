@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { authService } from "@/services/auth-service";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -26,7 +26,7 @@ const LockIcon = () => (
   </svg>
 );
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -129,5 +129,17 @@ export default function ResetPasswordPage() {
         ::placeholder { color: #8D9999; opacity: 0.5; }
       `}</style>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F5F7F0] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[#597048] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

@@ -10,8 +10,6 @@ import {
   BrainCircuit,
   Settings,
   Sparkles,
-  ChevronLeft,
-  ChevronRight,
   Rocket
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -41,7 +39,7 @@ export function DashboardSidebar() {
   const currentWidth = !mounted ? 80 : (isSidebarCollapsed ? 80 : 256);
 
   return (
-    <motion.aside 
+    <motion.aside
       initial={false}
       animate={{ width: currentWidth }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -59,15 +57,15 @@ export function DashboardSidebar() {
               <motion.div
                 className={cn(
                   "flex items-center gap-3 px-3 py-3 rounded-xl m-1 transition-all duration-200 group relative",
-                  isActive 
-                    ? "bg-neon text-slate-900 shadow-lg shadow-neon/70 dark:shadow-neon/50 font-bold" 
+                  isActive
+                    ? "bg-neon text-slate-900 shadow-lg shadow-neon/70 dark:shadow-neon/50 font-bold"
                     : "text-slate-500 dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-muted"
                 )}
                 whileHover={{ x: 4 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Icon className={cn("w-5 h-5 flex-shrink-0", isActive ? "text-slate-900" : "group-hover:text-forest dark:group-hover:text-neon")} />
-                
+
                 <AnimatePresence mode="wait">
                   {(!isSidebarCollapsed && mounted) && (
                     <motion.span

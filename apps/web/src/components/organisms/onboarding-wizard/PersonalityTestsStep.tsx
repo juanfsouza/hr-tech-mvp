@@ -25,8 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/atoms/select";
-import { Input } from "@/components/atoms/input";
-
 import { testService } from "@/services/test-service";
 import { companyService } from "@/services/company-service";
 import { useQuery } from "@tanstack/react-query";
@@ -70,7 +68,7 @@ export function PersonalityTestsStep() {
   const copyLink = async (name: string, id: string) => {
     try {
       const { portalUrl } = await testService.createSession({
-        collaboratorId: id,
+        candidateId: id,
         expiryHours: 72
       });
       navigator.clipboard.writeText(portalUrl);
