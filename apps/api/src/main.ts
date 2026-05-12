@@ -83,7 +83,7 @@ async function bootstrap(): Promise<void> {
   }
 
   // ─── Start ────────────────────────────────────────────────────────────────
-  const port = 3001;
+  const port = process.env['PORT'] || 3333;
   await app.listen(port, '0.0.0.0');
 
   logger.log(`API rodando em: http://localhost:${port}/api/v1`);

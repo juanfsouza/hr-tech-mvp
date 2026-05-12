@@ -130,7 +130,7 @@ export class AuthController {
     @Res({ passthrough: true }) reply: FastifyReply,
   ): Promise<{ accessToken: string }> {
     const refreshToken = request.cookies['refresh_token'];
-    
+
     if (!refreshToken) {
       Logger.warn('[Auth] Tentativa de refresh sem cookie refresh_token', 'AuthController');
       throw new UnauthorizedException('No refresh token provided.');
@@ -251,7 +251,7 @@ export class AuthController {
     reply.setCookie('access_token', accessToken, {
       httpOnly: true,
       secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'lax',
+      sameSite: 'none',
       path: '/',
       maxAge: 60 * 60,
     });
@@ -259,7 +259,7 @@ export class AuthController {
     reply.setCookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'lax',
+      sameSite: 'none',
       path: '/',
       maxAge: 60 * 60 * 24 * 7,
     });

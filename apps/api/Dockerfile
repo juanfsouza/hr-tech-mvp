@@ -41,7 +41,6 @@ COPY --from=build /app/apps/api/dist ./dist
 COPY --from=build /app/apps/api/package.json ./package.json
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages/database/prisma ./prisma
-COPY --from=build /app/packages/database/node_modules/.prisma ./node_modules/.prisma
 
 # Entrypoint
 COPY apps/api/docker-entrypoint.sh ./docker-entrypoint.sh

@@ -1,61 +1,30 @@
-# 🚀 RH TECH - Plataforma de Recrutamento (Local Setup)
+# 🚀 RH TECH - MVP (Plataforma de Recrutamento Inteligente)
+Uma solução SaaS completa para automação de processos seletivos, utilizando IA para análise de candidatos e testes psicométricos avançados.
 
-Guia rápido para rodar a plataforma de recrutamento inteligente em seu ambiente local.
-
-## 🛠️ Stack Local
-- **Backend**: NestJS + Prisma
-- **Frontend**: Next.js 14
-- **Serviços**: Postgres & Redis (via Docker)
-
+## 🌟 Principais Funcionalidades (Escopo MVP)
+### 1. Recrutamento Assistido por IA
+- **Geração de JD**: Criação automática de descrições de cargos baseadas em competências.
+- **Triagem Inteligente**: Análise automática de currículos cruzando dados com os requisitos da vaga.
+- **Match Score**: Ranking de candidatos baseado em compatibilidade técnica e comportamental.
+### 2. Avaliações Psicométricas
+- **Testes Comportamentais**: Módulo de testes para avaliar traços de personalidade e fit cultural.
+- **Portal do Candidato**: Interface simplificada para realização de testes e acompanhamento de status.
+- **Relatórios PDF**: Geração de relatórios detalhados para os gestores de RH.
+### 3. Gestão Multi-Tenant
+- **Isolamento Total**: Dados separados por empresa (Company Isolation).
+- **Gestão de Colaboradores**: Controle de quem pode visualizar e gerenciar cada vaga.
+- **Dashboard de Gestão**: Visão geral de vagas abertas, candidatos inscritos e métricas de funil.
+## 🏗️ Arquitetura Técnica
+- **Backend**: NestJS + TurboRepo com Clean Architecture (Arquitetura Modular).
+- **Frontend**: Next.js 14 com Tailwind CSS e Framer Motion para UI.
+- **Banco de Dados**: PostgreSQL com PGVector para buscas semânticas via IA.
+- **Fila de Processamento**: BullMQ com Redis para análise assíncrona de IA.
+- **Infraestrutura**: Dockerizada e pronta para deploy em nuvem (AWS/EC2).
 ---
-
-## 🏃 Como Rodar na sua Máquina
-
-### 1. Preparar o Ambiente
-```bash
-# Instalar todas as dependências do monorepo
-npm install
-
-# Configurar o arquivo de ambiente
-cp .env.example .env
-# Certifique-se de que DATABASE_URL aponta para localhost:5432 ou 5433 conforme seu docker-compose
-```
-
-### 2. Subir a Infraestrutura (Docker)
-```bash
-# Iniciar Postgres e Redis
-docker-compose up -d
-
-# Gerar o Prisma Client e aplicar o schema
-npm run db:generate
-npm run db:migrate
-```
-
-### 3. Iniciar o Projeto
-```bash
-# Rodar Backend e Frontend em paralelo usando Turbo
-npm run dev
-```
-
-### 🔗 Acessos Rápidos
-- **Frontend**: [http://localhost:3000](http://localhost:3000)
-- **API (Swagger)**: [http://localhost:3001/api/docs](http://localhost:3001/api/docs)
-- **Prisma Studio**: [http://localhost:5555](http://localhost:5555) (via `npx prisma studio`)
-
+## 🏃 Como Rodar Localmente
+1. `npm install`
+2. `cp .env.example .env`
+3. `docker compose up -d`
+4. `npx prisma generate --schema=packages/database/prisma/schema.prisma`
+5. `npm run dev`
 ---
-
-## 📄 Notas
-- O frontend e backend estão configurados para se comunicar via `localhost`.
-- Certifique-se de que o Docker Desktop está rodando antes de iniciar.
-
----
-
-## 🛡️ Multi-Tenancy & Segurança
-- Isolamento de dados por `companyId` em todas as tabelas.
-- Autenticação via JWT com Refresh Tokens em Cookies HttpOnly.
-- Sessões isoladas por navegador para evitar vazamento de dados entre contas.
-
----
-
-## 📄 Licença
-Privado - Todos os direitos reservados.
