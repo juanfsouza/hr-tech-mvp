@@ -14,3 +14,16 @@ export interface TestProgressInput {
   questionId: string;
   answer: string;
 }
+
+export type TestResponses = Record<string, string>;
+
+export interface TestSession {
+  id: string;
+  candidateId: string;
+  collaboratorId?: string; // Some legacy code uses collaboratorId
+  token: string;
+  expiresAt: string;
+  isCompleted: boolean;
+  testType?: string;
+  createdAt: string;
+}

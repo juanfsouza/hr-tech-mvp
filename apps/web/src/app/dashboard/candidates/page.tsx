@@ -15,7 +15,7 @@ import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/atoms/dialog";
 import { MatchReportView } from "@/components/organisms/match/MatchReportView";
-import { testService } from "@/services/test-service";
+import { testService, TestSession } from "@/services/test-service";
 import { CandidateModal } from "@/components/organisms/candidates/CandidateModal";
 import {
   Users,
@@ -235,9 +235,9 @@ export default function CandidatesPage() {
 
                 {!expandedJobs[jobId] && (
                   <div className="grid gap-3">
-                    {data.candidates.map((candidate) => {
-                      const session = sessions?.find((s: any) => s.candidateId === candidate.id);
-                      const isCompleted = session?.status === 'COMPLETED' || !!candidate.matchId;
+                      {data.candidates.map((candidate) => {
+                        const session = sessions?.find((s: TestSession) => s.candidateId === candidate.id);
+                        const isCompleted = session?.isCompleted || !!candidate.matchId;
 
                       return (
                         <Card key={candidate.id} className="bg-card/30 dark:bg-card/10 border-border/40 hover:border-neon/30 transition-all overflow-hidden group">

@@ -28,9 +28,10 @@ function VerifyEmailContent() {
         const { data } = await api.get(`/auth/verify?token=${token}`);
         setStatus("success");
         setMessage(data.message || "E-mail verificado com sucesso!");
-      } catch (error: any) {
+      } catch (error) {
+        const axiosError = error as any; // Using any for error property access in catch is a pragmatic middle ground here
         setStatus("error");
-        setMessage(error.response?.data?.message || "Token inválido ou expirado.");
+        setMessage(axiosError.response?.data?.message || "Token inválido ou expirado.");
       }
     };
 

@@ -20,10 +20,12 @@ interface DiscBlock {
   items: DiscItem[];
 }
 
+import { TestResponses } from "@/types/test";
+
 interface DiscTestProps {
   questions: DiscBlock[];
-  initialResponses?: Record<string, string>;
-  onComplete: (responses: any) => void;
+  initialResponses?: TestResponses;
+  onComplete: (responses: TestResponses) => void;
   onSaveProgress: (questionId: string, answer: string) => Promise<void>;
 }
 

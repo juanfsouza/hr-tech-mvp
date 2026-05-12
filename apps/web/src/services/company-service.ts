@@ -1,54 +1,39 @@
 import { api } from '@/lib/api';
+import { 
+  Company, 
+  CreateCompanyInput, 
+  UpdateOnboardingInput, 
+  OrganogramNode 
+} from '@/types/company';
 
-export interface CreateCompanyInput {
-  razaoSocial: string;
-  cnpj: string;
-  websiteUrl?: string;
-  userId: string;
-}
-
-export interface UpdateOnboardingInput {
-  onboardingStatus?: string;
-  companyContext?: string;
-  perfilRitmo?: string;
-  valores?: string[];
-  isComplete?: boolean;
-}
-
-export interface CompanyService {
-  create(input: CreateCompanyInput): Promise<{ companyId: string; cnpj: string; razaoSocial: string }>;
-  updateOnboarding(id: string, input: UpdateOnboardingInput): Promise<any>;
-  update(id: string, input: Partial<CreateCompanyInput>): Promise<any>;
-  getById(id: string): Promise<any>;
-  syncOrganogram(companyId: string, nodes: any[], personalityResults: any): Promise<any>;
-}
-
-export const companyService: CompanyService = {
+export const companyService = {
   async create(input: CreateCompanyInput) {
     const { data } = await api.post<{ companyId: string; cnpj: string; razaoSocial: string }>('/companies', input);
     return data;
   },
 
   async updateOnboarding(id: string, input: UpdateOnboardingInput) {
-    const { data } = await api.patch(`/companies/${id}/onboarding`, input);
+    const { data } = await api.patch<Company>(`/companies/${id}/onboarding`, input);
     return data;
   },
 
   async update(id: string, input: Partial<CreateCompanyInput>) {
-    const { data } = await api.patch(`/companies/${id}`, input);
+    const { data } = await api.patch<Company>(`/companies/${id}`, input);
     return data;
   },
 
   async getById(id: string) {
-    const { data } = await api.get(`/companies/${id}`);
+    const { data } = await api.get<Company>(`/companies/${id}`);
     return data;
   },
 
-  async syncOrganogram(companyId: string, nodes: any[], personalityResults: any) {
-    const { data } = await api.post(`/companies/${companyId}/sync-organogram`, {
+  async syncOrganogram(companyId: string, nodes: OrganogramNode[], personalityResults: Record<string, any>) {
+    const { data } = await api.post<{ success: boolean }>(`/companies/${companyId}/sync-organogram`, {
       nodes,
       personalityResults
     });
     return data;
   }
 };
+
+export type { Company, CreateCompanyInput, UpdateOnboardingInput, OrganogramNode };

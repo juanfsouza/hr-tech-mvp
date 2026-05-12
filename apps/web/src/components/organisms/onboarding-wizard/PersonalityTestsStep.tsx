@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/atoms/select";
-import { testService } from "@/services/test-service";
+import { testService, TestSession } from "@/services/test-service";
 import { companyService } from "@/services/company-service";
 import { useQuery } from "@tanstack/react-query";
 
@@ -169,8 +169,8 @@ export function PersonalityTestsStep() {
                     </TableHeader>
                     <TableBody>
                       {organogram.map((node) => {
-                        const session = sessions?.find((s: any) => s.collaboratorId === node.id);
-                        const isCompleted = session?.status === 'COMPLETED';
+                        const session = sessions?.find((s: TestSession) => s.candidateId === node.id || s.collaboratorId === node.id);
+                        const isCompleted = session?.isCompleted;
 
                         return (
                           <TableRow key={node.id}>

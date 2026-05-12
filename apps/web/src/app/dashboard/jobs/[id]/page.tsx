@@ -34,7 +34,6 @@ import {
   Trash2
 } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 export default function JobDetailsPage() {

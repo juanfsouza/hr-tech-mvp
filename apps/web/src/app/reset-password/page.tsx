@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { authService } from "@/services/auth-service";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import Link from "next/link";
 
 const BrandLogo = () => (
   <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -45,7 +44,7 @@ function ResetPasswordContent() {
 
   const handleSubmit = async () => {
     if (!password || !confirmPassword || !token) return;
-    
+
     if (password !== confirmPassword) {
       toast.error("As senhas não coincidem.");
       return;
@@ -55,8 +54,8 @@ function ResetPasswordContent() {
     try {
       await authService.resetPassword(token, password);
       setSuccess(true);
-      toast.success("Senha redefinida!", { 
-        description: "Você já pode entrar com sua nova senha." 
+      toast.success("Senha redefinida!", {
+        description: "Você já pode entrar com sua nova senha."
       });
       setTimeout(() => router.push("/login"), 2000);
     } catch (error: any) {
@@ -114,9 +113,8 @@ function ResetPasswordContent() {
               disabled={loading || success}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className={`w-full py-4 rounded-full font-black text-[11px] tracking-[0.2em] shadow-lg transition-colors ${
-                success ? "bg-[#43c98a]" : "bg-[#597048] hover:bg-[#4A5452]"
-              } text-white`}
+              className={`w-full py-4 rounded-full font-black text-[11px] tracking-[0.2em] shadow-lg transition-colors ${success ? "bg-[#43c98a]" : "bg-[#597048] hover:bg-[#4A5452]"
+                } text-white`}
             >
               {loading ? "PROCESSANDO..." : (success ? "SENHA ATUALIZADA" : "REDEFINIR AGORA")}
             </motion.button>

@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/atoms/button";
 import { authService } from "@/services/auth-service";
 import { User, Mail, Shield, Building, Camera } from "lucide-react";
-import { motion } from "framer-motion";
 
 export default function ProfilePage() {
   const user = authService.getUser();

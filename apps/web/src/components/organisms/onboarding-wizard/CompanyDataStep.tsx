@@ -54,7 +54,7 @@ export function CompanyDataStep() {
         userId: user!.id,
       });
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data: { companyId: string; cnpj: string; razaoSocial: string }) => {
       toast.success(user?.companyId ? "Dados atualizados!" : "Empresa cadastrada!");
       
       if (user && !user.companyId) {
@@ -69,7 +69,7 @@ export function CompanyDataStep() {
       });
       nextStep();
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error("Erro ao salvar empresa", {
         description: error.response?.data?.message || "Tente novamente.",
       });

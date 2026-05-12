@@ -14,10 +14,12 @@ interface Question {
   isReversed: boolean;
 }
 
+import { TestResponses } from "@/types/test";
+
 interface SixteenPersonalitiesTestProps {
   questions: Question[];
-  initialResponses?: Record<string, string>;
-  onComplete: (responses: any) => void;
+  initialResponses?: TestResponses;
+  onComplete: (responses: TestResponses) => void;
   onSaveProgress: (questionId: string, answer: string) => Promise<void>;
 }
 

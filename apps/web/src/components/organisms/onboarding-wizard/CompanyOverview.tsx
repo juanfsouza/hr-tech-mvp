@@ -19,8 +19,10 @@ import { Badge } from "@/components/atoms/badge";
 import { useOnboardingStore } from "@/store/onboarding-store";
 import { useRouter } from "next/navigation";
 
+import { Company } from "@/types/company";
+
 interface CompanyOverviewProps {
-  company: any;
+  company: Company;
   onEdit: () => void;
 }
 

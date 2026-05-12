@@ -24,7 +24,15 @@ import {
 } from "lucide-react";
 import { authService } from "@/services/auth-service";
 
-const SidebarItem = ({ id, label, icon: Icon, active, onClick }: any) => (
+interface SidebarItemProps {
+  id: string;
+  label: string;
+  icon: any; // Lucide icon type is complex, using any here is common for icons but I'll use React.ElementType
+  active: boolean;
+  onClick: (id: string) => void;
+}
+
+const SidebarItem = ({ id, label, icon: Icon, active, onClick }: SidebarItemProps) => (
   <button
     onClick={() => onClick(id)}
     className={`w-full mt-2 flex items-center justify-between p-4 rounded-2xl transition-all duration-300 group ${active

@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { usePagination } from "@/hooks/use-pagination";
 
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
+import { Card, CardContent } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
 import Link from "next/link";
@@ -17,7 +17,6 @@ import {
   Clock,
   ArrowUpRight,
   MoreVertical,
-  CheckCircle2,
   Brain,
   Sparkles,
   Pencil,
@@ -48,7 +47,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/atoms/dialog";
-import { dashboardService } from "@/services/dashboard-service";
+import { dashboardService, DashboardStats } from "@/services/dashboard-service";
 
 function DashboardContent() {
   const [mounted, setMounted] = useState(false);
@@ -69,10 +68,10 @@ function DashboardContent() {
       try {
         const userData = JSON.parse(atob(userDataBase64));
         localStorage.setItem('@SaaS:user', JSON.stringify(userData));
-        
+
         // Limpar a URL para não expor os dados
         window.history.replaceState({}, document.title, window.location.pathname);
-        
+
         // Forçar um pequeno refresh para atualizar o estado do user
         if (!user) window.location.reload();
       } catch (e) {
@@ -87,11 +86,11 @@ function DashboardContent() {
     queryFn: () => dashboardService.getStats(),
   });
 
-  const { 
-    currentCursor, 
-    handleNext, 
-    handleBack, 
-    cursorHistory 
+  const {
+    currentCursor,
+    handleNext,
+    handleBack,
+    cursorHistory
   } = usePagination(5);
 
   // Buscar vagas reais com paginação
@@ -225,18 +224,18 @@ function DashboardContent() {
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold font-outfit text-slate-900 dark:text-white">Vagas Recentes</h2>
               <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   disabled={cursorHistory.length === 0 || isLoadingJobs}
                   onClick={handleBack}
                   className="h-8 w-8 p-0 rounded-lg border-slate-200 dark:border-border/50"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   disabled={!jobsData?.hasNextPage || isLoadingJobs}
                   onClick={onNext}
                   className="h-8 w-8 p-0 rounded-lg border-slate-200 dark:border-border/50"
@@ -413,7 +412,7 @@ function DashboardContent() {
                 {isLoadingStats ? (
                   [1, 2, 3].map((i) => <div key={i} className="h-12 bg-slate-100 dark:bg-muted/50 animate-pulse rounded-xl" />)
                 ) : stats?.recentActivity && stats.recentActivity.length > 0 ? (
-                  stats.recentActivity.slice(0, 5).map((log: any, i: number) => (
+                  stats.recentActivity.slice(0, 5).map((log: DashboardStats['recentActivity'][0], i: number) => (
                     <div key={log.id} className="flex gap-4 relative">
                       {i !== Math.min(stats.recentActivity.length, 5) - 1 && <div className="absolute left-5 top-10 bottom-0 w-px bg-slate-200 dark:bg-border/50" />}
                       <div className="w-10 h-10 rounded-full bg-white dark:bg-background border border-slate-200 dark:border-border flex items-center justify-center shrink-0 z-10 shadow-sm transition-transform hover:scale-110">

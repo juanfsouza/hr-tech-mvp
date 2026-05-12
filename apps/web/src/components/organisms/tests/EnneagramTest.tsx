@@ -16,10 +16,12 @@ interface EnneagramQuestion {
   statementB: string;
 }
 
+import { TestResponses } from "@/types/test";
+
 interface EnneagramTestProps {
   questions: EnneagramQuestion[];
-  initialResponses?: Record<string, string>;
-  onComplete: (responses: any) => void;
+  initialResponses?: TestResponses;
+  onComplete: (responses: TestResponses) => void;
   onSaveProgress: (questionId: string, answer: string) => Promise<void>;
 }
 

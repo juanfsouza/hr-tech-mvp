@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import { TestSessionResponse, TestSessionInput, TestProgressInput } from "@/types/test";
+import { TestSessionResponse, TestSessionInput, TestProgressInput, TestSession } from "@/types/test";
 
 export const testService = {
   async createSession(input: TestSessionInput) {
@@ -8,7 +8,7 @@ export const testService = {
   },
 
   async listSessions() {
-    const { data } = await api.get("/tests/sessions");
+    const { data } = await api.get<TestSession[]>("/tests/sessions");
     return data;
   },
 
