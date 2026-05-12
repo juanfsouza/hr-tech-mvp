@@ -3,10 +3,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { candidateService } from "@/services/candidate-service";
-import { Candidate } from "@/types/candidate";
+import { Candidate, CandidateListResponse } from "@/types/candidate";
 import { matchService } from "@/services/match-service";
 import { jobService } from "@/services/job-service";
-import { Job } from "@/types/job";
+import { Job, JobListResponse } from "@/types/job";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
@@ -15,7 +15,6 @@ import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/atoms/dialog";
 import { MatchReportView } from "@/components/organisms/match/MatchReportView";
-import { Input } from "@/components/atoms/input";
 import { testService } from "@/services/test-service";
 import { CandidateModal } from "@/components/organisms/candidates/CandidateModal";
 import {
@@ -36,8 +35,6 @@ import {
   Trash2,
   Edit,
   CheckCircle2,
-  ChevronLeft,
-  ChevronRight
 } from "lucide-react";
 
 import { usePagination } from "@/hooks/use-pagination";
@@ -51,25 +48,25 @@ export default function CandidatesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(null);
 
-  const { 
-    currentCursor, 
-    handleNext, 
-    handleBack, 
-    cursorHistory, 
-    pageNumber 
+  const {
+    currentCursor,
+    handleNext,
+    handleBack,
+    cursorHistory,
+    pageNumber
   } = usePagination(10);
 
   // Buscar candidatos, vagas e sessões
   const { data: candidatesData, isLoading: isLoadingCandidates, refetch: refetchCandidates } = useQuery({
     queryKey: ["candidates", currentCursor],
-    queryFn: () => candidateService.list(currentCursor, 10),
+    queryFn: () => candidateService.list(currentCursor, 10) as Promise<CandidateListResponse>,
   });
 
   const onNext = () => handleNext(candidatesData?.nextCursor);
 
   const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
     queryKey: ["jobs"],
-    queryFn: () => jobService.list(),
+    queryFn: () => jobService.list() as Promise<JobListResponse>,
   });
 
   const { data: sessions, refetch: refetchSessions } = useQuery({
@@ -133,11 +130,11 @@ export default function CandidatesPage() {
       unlinked: { job: null, candidates: [] }
     };
 
-    jobs.forEach((job) => {
+    jobs.forEach((job: Job) => {
       groups[job.id] = { job, candidates: [] };
     });
 
-    candidates.forEach((candidate) => {
+    candidates.forEach((candidate: Candidate) => {
       const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         candidate.email.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -294,8 +291,8 @@ export default function CandidatesPage() {
                                     size="sm"
                                     className={cn(
                                       "h-9 gap-2 transition-all",
-                                      copiedId === candidate.id 
-                                        ? "border-emerald-500 text-emerald-500 bg-emerald-500/5" 
+                                      copiedId === candidate.id
+                                        ? "border-emerald-500 text-emerald-500 bg-emerald-500/5"
                                         : "border-azure/20 text-azure hover:bg-azure/5"
                                     )}
                                   >

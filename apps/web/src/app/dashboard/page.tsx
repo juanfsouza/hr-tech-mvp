@@ -32,7 +32,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { jobService } from "@/services/job-service";
-import { Job } from "@/types/job";
+import { Job, JobListResponse } from "@/types/job";
 import { authService } from "@/services/auth-service";
 import { toast } from "sonner";
 import {
@@ -97,12 +97,12 @@ function DashboardContent() {
   // Buscar vagas reais com paginação
   const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
     queryKey: ["jobs", currentCursor],
-    queryFn: () => jobService.list(currentCursor, 5),
+    queryFn: () => jobService.list(currentCursor, 5) as Promise<JobListResponse>,
   });
 
   const onNext = () => handleNext(jobsData?.nextCursor);
 
-  const jobs = (jobsData as any)?.items || [];
+  const jobs = jobsData?.items || [];
 
   // Mutação para encerrar vaga
   const closeMutation = useMutation({

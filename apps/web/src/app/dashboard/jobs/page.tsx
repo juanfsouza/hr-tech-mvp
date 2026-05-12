@@ -12,6 +12,7 @@ import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { cn } from "@/lib/utils";
 import { usePagination } from "@/hooks/use-pagination";
 import { Pagination } from "@/components/molecules/Pagination";
+import { Job, JobListResponse } from "@/types/job";
 
 export default function JobsPage() {
   const {
@@ -24,7 +25,7 @@ export default function JobsPage() {
 
   const { data: jobs, isLoading } = useQuery({
     queryKey: ["jobs", currentCursor],
-    queryFn: () => jobService.list(currentCursor, 6),
+    queryFn: () => jobService.list(currentCursor, 6) as Promise<JobListResponse>,
   });
 
   const onNext = () => handleNext(jobs?.nextCursor);
@@ -51,7 +52,7 @@ export default function JobsPage() {
         ) : jobs?.items && jobs.items.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 drop-shadow-xl">
-              {jobs.items.map((job: any) => (
+              {jobs.items.map((job: Job) => (
                 <motion.div key={job.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                   <Card className="hover:border-slate-300 py-4 dark:hover:border-neon/50 transition-all cursor-pointer bg-white dark:bg-card/50 border-slate-200 dark:border-border/50 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-neon/5 group">
                     <CardHeader>

@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { Job, CreateJobInput } from '@/types/job';
+import { Job, CreateJobInput, JobListResponse } from '@/types/job';
 
 export const jobService = {
   async create(input: CreateJobInput) {
@@ -8,7 +8,7 @@ export const jobService = {
   },
 
   async list(cursor?: string, take?: number) {
-    const { data } = await api.get<{ items: Job[], nextCursor?: string, hasNextPage?: boolean }>('/jobs', { params: { cursor, take } });
+    const { data } = await api.get<JobListResponse>('/jobs', { params: { cursor, take } });
     return data;
   },
 
@@ -47,4 +47,4 @@ export const jobService = {
   }
 };
 
-export type { Job, CreateJobInput };
+export type { Job, CreateJobInput, JobListResponse };

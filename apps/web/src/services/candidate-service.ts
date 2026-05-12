@@ -1,9 +1,9 @@
 import { api } from '@/lib/api';
-import { Candidate, CreateCandidateInput } from '@/types/candidate';
+import { Candidate, CreateCandidateInput, CandidateListResponse } from '@/types/candidate';
 
 export const candidateService = {
   async list(cursor?: string, take?: number) {
-    const { data } = await api.get<{ items: Candidate[], nextCursor?: string, hasNextPage?: boolean }>('/candidates', { params: { cursor, take } });
+    const { data } = await api.get<CandidateListResponse>('/candidates', { params: { cursor, take } });
     return data;
   },
 
@@ -26,5 +26,5 @@ export const candidateService = {
     await api.delete(`/candidates/${id}`);
   }
 };
-export type { Candidate, CreateCandidateInput };
+export type { Candidate, CreateCandidateInput, CandidateListResponse };
 

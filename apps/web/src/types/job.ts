@@ -19,3 +19,10 @@ export interface Job {
   location?: string;
   createdAt: string;
 }
+
+export interface JobListResponse {
+  items: Job[];
+  nextCursor?: string;
+  hasNextPage?: boolean;
+}
+

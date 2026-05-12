@@ -64,7 +64,7 @@ export default function WelcomePage() {
             whileHover={{ y: -8 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <Card className="h-full border-forest/20 dark:border-neon/20 bg-card/50 backdrop-blur-md shadow-xl overflow-hidden relative">
+            <Card className="h-full py-4 border-forest/20 dark:border-neon/20 bg-card/50 backdrop-blur-md shadow-xl overflow-hidden relative">
               <div className="absolute top-0 right-0 w-32 h-32 bg-forest/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
               <CardHeader>
                 <div className="w-12 h-12 rounded-xl bg-forest text-offwhite flex items-center justify-center mb-4 shadow-lg shadow-forest/20">
@@ -91,7 +91,7 @@ export default function WelcomePage() {
             whileHover={{ y: -8 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <Card className="h-full border-azure/20 bg-offwhite/50 dark:bg-chumbo/30 backdrop-blur-md shadow-xl overflow-hidden relative">
+            <Card className="h-full py-4 border-azure/20 bg-offwhite/50 dark:bg-chumbo/30 backdrop-blur-md shadow-xl overflow-hidden relative">
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-coral/10 rounded-full -ml-16 -mb-16 blur-2xl"></div>
               <CardHeader>
                 <div className="w-12 h-12 rounded-xl bg-azure text-offwhite flex items-center justify-center mb-4 shadow-lg shadow-azure/20">
