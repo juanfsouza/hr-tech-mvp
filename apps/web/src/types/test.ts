@@ -17,10 +17,12 @@ export interface TestProgressInput {
 
 export type TestResponses = Record<string, string>;
 
+export type DiscResponses = Record<string, { most: string | null; least: string | null }>;
+
 export interface TestSession {
   id: string;
   candidateId: string;
-  collaboratorId?: string; // Some legacy code uses collaboratorId
+  collaboratorId?: string;
   token: string;
   expiresAt: string;
   isCompleted: boolean;

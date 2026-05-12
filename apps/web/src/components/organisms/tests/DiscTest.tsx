@@ -20,12 +20,12 @@ interface DiscBlock {
   items: DiscItem[];
 }
 
-import { TestResponses } from "@/types/test";
+import { DiscResponses } from "@/types/test";
 
 interface DiscTestProps {
   questions: DiscBlock[];
-  initialResponses?: TestResponses;
-  onComplete: (responses: TestResponses) => void;
+  initialResponses?: DiscResponses;
+  onComplete: (responses: DiscResponses) => void;
   onSaveProgress: (questionId: string, answer: string) => Promise<void>;
 }
 
@@ -35,17 +35,7 @@ export function DiscTest({
   onComplete, 
   onSaveProgress 
 }: DiscTestProps) {
-  const [selections, setSelections] = useState<{ [blockId: string]: { most: string | null; least: string | null } }>(() => {
-    const parsed: Record<string, { most: string | null; least: string | null }> = {};
-    Object.entries(initialResponses).forEach(([id, val]) => {
-      try {
-        parsed[id] = JSON.parse(val);
-      } catch {
-        // Fallback se não for JSON (não esperado para DISC)
-      }
-    });
-    return parsed;
-  });
+  const [selections, setSelections] = useState<DiscResponses>(initialResponses);
 
   const [currentIndex, setCurrentIndex] = useState(() => {
     const answeredCount = Object.keys(initialResponses).length;
