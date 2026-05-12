@@ -36,15 +36,20 @@ export function CompanyDataStep() {
   const user = authService.getUser();
 
   const mutation = useMutation({
-    mutationFn: (data: CompanyFormData) => {
+    mutationFn: async (data: CompanyFormData) => {
       const companyId = user?.companyId;
 
       if (companyId) {
-        return companyService.update(companyId, {
+        const company = await companyService.update(companyId, {
           razaoSocial: data.name,
           cnpj: data.cnpj,
           websiteUrl: data.website || undefined,
         });
+        return {
+          companyId: company.id,
+          cnpj: company.cnpj,
+          razaoSocial: company.razaoSocial,
+        };
       }
 
       return companyService.create({
@@ -70,8 +75,9 @@ export function CompanyDataStep() {
       nextStep();
     },
     onError: (error: Error) => {
+      const axiosError = error as any;
       toast.error("Erro ao salvar empresa", {
-        description: error.response?.data?.message || "Tente novamente.",
+        description: axiosError.response?.data?.message || "Tente novamente.",
       });
     }
   });
