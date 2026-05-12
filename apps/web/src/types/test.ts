@@ -5,7 +5,8 @@ export interface TestSessionResponse {
 }
 
 export interface TestSessionInput {
-  candidateId: string;
+  candidateId?: string;
+  collaboratorId?: string;
   expiryHours?: number;
 }
 

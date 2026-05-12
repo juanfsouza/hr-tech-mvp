@@ -13,11 +13,13 @@ export class PrismaJobRepository implements IJobRepository {
   constructor(private readonly prisma: PrismaService) { }
 
   async findById(id: string, companyId: string): Promise<Job | null> {
+    if (!companyId) throw new Error('Company ID is required for data isolation');
     const r = await this.prisma.job.findFirst({ where: { id, companyId, deletedAt: null } });
     return r ? this.toDomain(r) : null;
   }
 
   async findByCompany(companyId: string, params: PaginationParams): Promise<PaginatedResult<Job>> {
+    if (!companyId) throw new Error('Company ID is required for data isolation');
     const { cursor, take } = normalizePaginationParams(params);
     const records = await this.prisma.job.findMany({
       where: { companyId, deletedAt: null },

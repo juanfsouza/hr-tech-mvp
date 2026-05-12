@@ -10,6 +10,7 @@ export class PrismaCollaboratorRepository implements ICollaboratorRepository {
   constructor(private readonly prisma: PrismaService) { }
 
   async findById(id: string, companyId: string): Promise<Collaborator | null> {
+    if (!companyId) throw new Error('Company ID is required for data isolation');
     const r = await this.prisma.collaborator.findFirst({
       where: { id, companyId, deletedAt: null },
     });
@@ -17,6 +18,7 @@ export class PrismaCollaboratorRepository implements ICollaboratorRepository {
   }
 
   async findByCompany(companyId: string): Promise<Collaborator[]> {
+    if (!companyId) throw new Error('Company ID is required for data isolation');
     const records = await this.prisma.collaborator.findMany({
       where: { companyId, deletedAt: null, isActive: true },
       orderBy: { createdAt: 'asc' },
@@ -25,6 +27,7 @@ export class PrismaCollaboratorRepository implements ICollaboratorRepository {
   }
 
   async findChildren(parentId: string, companyId: string): Promise<Collaborator[]> {
+    if (!companyId) throw new Error('Company ID is required for data isolation');
     const records = await this.prisma.collaborator.findMany({
       where: { parentId, companyId, deletedAt: null },
       orderBy: { name: 'asc' },
@@ -73,6 +76,7 @@ export class PrismaCollaboratorRepository implements ICollaboratorRepository {
   }
 
   async existsByEmail(email: string, companyId: string): Promise<boolean> {
+    if (!companyId) throw new Error('Company ID is required for data isolation');
     const count = await this.prisma.collaborator.count({
       where: { email, companyId, deletedAt: null },
     });

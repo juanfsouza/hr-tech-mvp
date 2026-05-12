@@ -65,6 +65,9 @@ export function CompanyDataStep() {
       if (user && !user.companyId) {
         const updatedUser = { ...user, companyId: data.companyId };
         localStorage.setItem('@SaaS:user', JSON.stringify(updatedUser));
+        
+        // REFRESH JWT: O novo token conterá o companyId no payload
+        authService.refreshToken().catch(err => console.error("Falha ao atualizar token:", err));
       }
       
       updateCompanyData({

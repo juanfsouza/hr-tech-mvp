@@ -13,11 +13,13 @@ export class PrismaCandidateRepository implements ICandidateRepository {
   constructor(private readonly prisma: PrismaService) { }
 
   async findById(id: string, companyId: string): Promise<Candidate | null> {
+    if (!companyId) throw new Error('Company ID is required for data isolation');
     const r = await this.prisma.candidate.findFirst({ where: { id, companyId, deletedAt: null } });
     return r ? this.toDomain(r) : null;
   }
 
   async findByJob(jobId: string, companyId: string, params: PaginationParams): Promise<PaginatedResult<Candidate>> {
+    if (!companyId) throw new Error('Company ID is required for data isolation');
     const { cursor, take } = normalizePaginationParams(params);
     const records = await this.prisma.candidate.findMany({
       where: { jobId, companyId, deletedAt: null },
@@ -36,6 +38,7 @@ export class PrismaCandidateRepository implements ICandidateRepository {
   }
 
   async findByCompany(companyId: string, params: PaginationParams): Promise<PaginatedResult<Candidate>> {
+    if (!companyId) throw new Error('Company ID is required for data isolation');
     const { cursor, take } = normalizePaginationParams(params);
     const records = await this.prisma.candidate.findMany({
       where: { companyId, deletedAt: null },
@@ -54,6 +57,7 @@ export class PrismaCandidateRepository implements ICandidateRepository {
   }
 
   async findByEmail(email: string, companyId: string): Promise<Candidate | null> {
+    if (!companyId) throw new Error('Company ID is required for data isolation');
     const r = await this.prisma.candidate.findFirst({
       where: { email, companyId, deletedAt: null },
       include: { matches: { orderBy: { createdAt: 'desc' }, take: 1 } }

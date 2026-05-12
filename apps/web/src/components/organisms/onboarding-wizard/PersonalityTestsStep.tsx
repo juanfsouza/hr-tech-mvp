@@ -27,6 +27,7 @@ import {
 } from "@/components/atoms/select";
 import { testService, TestSession } from "@/services/test-service";
 import { companyService } from "@/services/company-service";
+import { authService } from "@/services/auth-service";
 import { useQuery } from "@tanstack/react-query";
 
 export function PersonalityTestsStep() {
@@ -68,7 +69,7 @@ export function PersonalityTestsStep() {
   const copyLink = async (name: string, id: string) => {
     try {
       const { portalUrl } = await testService.createSession({
-        candidateId: id,
+        collaboratorId: id,
         expiryHours: 72
       });
       navigator.clipboard.writeText(portalUrl);
@@ -76,6 +77,20 @@ export function PersonalityTestsStep() {
       refetchSessions();
     } catch (error) {
       toast.error("Erro ao criar link de teste real.");
+    }
+  };
+
+  const handleSync = async () => {
+    setIsSaving(true);
+    try {
+      const user = authService.getUser();
+      if (!user?.companyId) return;
+      await companyService.syncOrganogram(user.companyId, organogram, personalityResults);
+      toast.success("Estrutura sincronizada com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao sincronizar estrutura.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -156,6 +171,16 @@ export function PersonalityTestsStep() {
                     <LinkIcon className="w-5 h-5 text-azure" />
                     Links para Colaboradores
                   </h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleSync}
+                    disabled={isSaving}
+                    className="gap-2 border-azure/30 text-azure hover:bg-azure/10"
+                  >
+                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Sincronizar Estrutura
+                  </Button>
                 </div>
 
                 <div className="rounded-2xl border border-border overflow-hidden">

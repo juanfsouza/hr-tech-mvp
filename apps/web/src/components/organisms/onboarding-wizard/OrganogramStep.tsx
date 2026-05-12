@@ -14,12 +14,16 @@ import {
   SelectValue,
 } from "@/components/atoms/select";
 import { useOnboardingStore, OrganogramNode } from "@/store/onboarding-store";
-import { UserPlus, Trash2, ChevronRight, ArrowLeft, Users2, Network } from "lucide-react";
+import { UserPlus, Trash2, ChevronRight, ArrowLeft, Users2, Network, Loader2 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import { companyService } from "@/services/company-service";
+import { authService } from "@/services/auth-service";
+import { toast } from "sonner";
 
 export function OrganogramStep() {
-  const { organogram, addOrganogramNode, removeOrganogramNode, nextStep, prevStep } = useOnboardingStore();
+  const { organogram, addOrganogramNode, removeOrganogramNode, personalityResults, nextStep, prevStep } = useOnboardingStore();
   const [isAdding, setIsAdding] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [newNode, setNewNode] = useState<Omit<OrganogramNode, "id">>({
     name: "",
     role: "",
@@ -32,6 +36,27 @@ export function OrganogramStep() {
       addOrganogramNode({ ...newNode, id: uuidv4() });
       setNewNode({ name: "", role: "", department: "", parentId: null });
       setIsAdding(false);
+    }
+  };
+
+  const handleNext = async () => {
+    if (organogram.length === 0) return;
+    
+    setIsSyncing(true);
+    try {
+      const user = authService.getUser();
+      if (!user?.companyId) {
+        toast.error("Empresa não identificada.");
+        return;
+      }
+
+      await companyService.syncOrganogram(user.companyId, organogram, personalityResults);
+      nextStep();
+    } catch (error) {
+      console.error("Erro ao sincronizar organograma:", error);
+      toast.error("Erro ao salvar estrutura organizacional.");
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -189,12 +214,21 @@ export function OrganogramStep() {
               Voltar
             </Button>
             <Button
-              onClick={nextStep}
+              onClick={handleNext}
               className="flex-[2] h-12 text-lg font-bold bg-forest dark:bg-neon dark:text-chumbo"
-              disabled={organogram.length === 0}
+              disabled={organogram.length === 0 || isSyncing}
             >
-              Próxima Etapa: Testes de Personalidade
-              <ChevronRight className="ml-2 w-5 h-5" />
+              {isSyncing ? (
+                <>
+                  <Loader2 className="mr-2 w-5 h-5 animate-spin" />
+                  Sincronizando...
+                </>
+              ) : (
+                <>
+                  Próxima Etapa: Testes de Personalidade
+                  <ChevronRight className="ml-2 w-5 h-5" />
+                </>
+              )}
             </Button>
           </div>
         </CardContent>

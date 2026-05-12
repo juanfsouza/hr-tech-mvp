@@ -25,6 +25,7 @@ export const authService = {
     } finally {
       localStorage.removeItem('@SaaS:token');
       localStorage.removeItem('@SaaS:user');
+      localStorage.removeItem('@SaaS:onboarding-storage');
       window.location.href = '/login';
     }
   },
@@ -45,6 +46,14 @@ export const authService = {
   async resetPassword(token: string, newPassword: string): Promise<AuthMessageResponse> {
     const { data } = await api.post('/auth/reset-password', { token, newPassword });
     return data;
+  },
+
+  async refreshToken(): Promise<string> {
+    const { data } = await api.post('/auth/refresh');
+    if (data.accessToken) {
+      localStorage.setItem('@SaaS:token', data.accessToken);
+    }
+    return data.accessToken;
   }
 };
 

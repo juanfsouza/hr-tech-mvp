@@ -36,8 +36,12 @@ export class CandidatesController {
     @Query('take') take: string | undefined,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<object> {
+    if (!user.companyId) {
+      return { items: [], nextCursor: null, hasNextPage: false };
+    }
+
     const result = await this.listAllCandidatesUseCase.execute({
-      companyId: user.companyId!,
+      companyId: user.companyId,
       cursor,
       take: take ? parseInt(take, 10) : undefined,
     });
@@ -67,9 +71,13 @@ export class CandidatesController {
     @Query('take') take: string | undefined,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<object> {
+    if (!user.companyId) {
+      return { items: [], nextCursor: null, hasNextPage: false };
+    }
+
     const result = await this.listCandidatesUseCase.execute({
       jobId,
-      companyId: user.companyId!,
+      companyId: user.companyId,
       cursor,
       take: take ? parseInt(take, 10) : undefined,
     });

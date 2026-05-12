@@ -68,8 +68,12 @@ export class JobsController {
     @Query('cursor') cursor?: string,
     @Query('take') take?: string,
   ): Promise<object> {
+    if (!user.companyId) {
+      return { items: [], nextCursor: null, hasNextPage: false };
+    }
+
     const result = await this.listJobsUseCase.execute({
-      companyId: user.companyId!,
+      companyId: user.companyId,
       cursor,
       take: take ? parseInt(take, 10) : undefined,
     });
