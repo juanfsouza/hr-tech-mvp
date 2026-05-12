@@ -33,4 +33,4 @@ export const testService = {
   }
 };
 
-export type { TestSessionResponse, TestSessionInput, TestProgressInput };
+export type { TestSessionResponse, TestSessionInput, TestProgressInput, TestSession };
