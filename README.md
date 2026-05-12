@@ -28,3 +28,5 @@ Uma solução SaaS completa para automação de processos seletivos, utilizando 
 4. `npx prisma generate --schema=packages/database/prisma/schema.prisma`
 5. `npm run dev`
 ---
+
+Youtube: https://www.youtube.com/watch?v=0ibqzu1vm74
