@@ -55,10 +55,12 @@ export class AiController {
     }
 
     // Configurar cabeçalhos para Server-Sent Events (SSE) e CORS manualmente
+    const frontendUrl = process.env['FRONTEND_URL'] || 'http://localhost:3000';
+    
     res.raw.setHeader('Content-Type', 'text/event-stream');
     res.raw.setHeader('Cache-Control', 'no-cache');
     res.raw.setHeader('Connection', 'keep-alive');
-    res.raw.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.raw.setHeader('Access-Control-Allow-Origin', frontendUrl);
     res.raw.setHeader('Access-Control-Allow-Credentials', 'true');
     res.raw.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
 
