@@ -26,6 +26,7 @@ export const authService = {
       localStorage.removeItem('@SaaS:token');
       localStorage.removeItem('@SaaS:user');
       localStorage.removeItem('@SaaS:onboarding-storage');
+      localStorage.removeItem('@SaaS:chat-history');
       window.location.href = '/login';
     }
   },
