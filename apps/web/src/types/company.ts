@@ -9,6 +9,11 @@ export interface Company {
   valores?: string[];
   isComplete?: boolean;
   userId: string;
+  context?: {
+    companyProfile?: string;
+    companyContext?: string;
+    cultureValues?: string[];
+  };
   createdAt: string;
   updatedAt: string;
 }
