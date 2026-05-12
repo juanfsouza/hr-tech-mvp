@@ -89,8 +89,7 @@ export default function LoginPage() {
         });
         router.push("/dashboard");
       } catch (e) {
-        console.error("Erro no processamento OAuth", e);
-        toast.error("Erro ao processar dados do Google");
+        // Erro Google Login silencioso
       }
     }
   }, [searchParams, router]);
@@ -102,7 +101,7 @@ export default function LoginPage() {
       });
       return;
     }
-    
+
     setLoading(true);
     try {
       if (activeTab === "login") {
@@ -122,15 +121,15 @@ export default function LoginPage() {
         }
         await authService.register(name, email, password);
         setSuccess(true);
-        toast.success("Conta criada com sucesso!", { 
-          description: "Agora você já pode realizar o login." 
+        toast.success("Conta criada com sucesso!", {
+          description: "Agora você já pode realizar o login."
         });
         setActiveTab("login");
         setSuccess(false);
       }
     } catch (error: any) {
       const message = error.response?.data?.message || "Ocorreu um erro inesperado.";
-      
+
       if (error.response?.status === 401) {
         toast.error("Credenciais inválidas", {
           description: "E-mail ou senha incorretos. Tente novamente."

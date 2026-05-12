@@ -61,7 +61,6 @@ export function PersonalityTestsStep() {
       toast.success("Estrutura salva com sucesso!");
       window.location.reload();
     } catch (error) {
-      console.error(error);
       toast.error("Erro ao salvar estrutura.");
     } finally {
       setIsSaving(false);

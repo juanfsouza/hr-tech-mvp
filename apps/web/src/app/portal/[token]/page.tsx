@@ -76,7 +76,6 @@ export default function CandidatePortal() {
   const handleSaveProgress = async (questionId: string, answer: string) => {
     if (!session?.currentTest) return;
     if (token.startsWith('demo-')) {
-      console.log("Demo: Salvando progresso", { questionId, answer });
       return;
     }
     try {
@@ -86,7 +85,6 @@ export default function CandidatePortal() {
         answer
       });
     } catch (error) {
-      console.error("Erro ao salvar progresso:", error);
     }
   };
 

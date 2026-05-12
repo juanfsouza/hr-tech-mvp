@@ -6,8 +6,9 @@ import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
 import { Label } from "@/components/atoms/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/atoms/select";
-import { Candidate, CreateCandidateInput, candidateService } from "@/services/candidate-service";
-import { Job } from "@/services/job-service";
+import { candidateService } from "@/services/candidate-service";
+import { Candidate, CreateCandidateInput } from "@/types/candidate";
+import { Job } from "@/types/job";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 

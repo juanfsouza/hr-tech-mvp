@@ -1,15 +1,5 @@
 import { api } from "@/lib/api";
-
-export interface TestSessionResponse {
-  token: string;
-  portalUrl: string;
-  expiresAt: string;
-}
-
-export interface TestSessionInput {
-  candidateId: string;
-  expiryHours?: number;
-}
+import { TestSessionResponse, TestSessionInput, TestProgressInput } from "@/types/test";
 
 export const testService = {
   async createSession(input: TestSessionInput) {
@@ -42,3 +32,5 @@ export const testService = {
     return data;
   }
 };
+
+export type { TestSessionResponse, TestSessionInput, TestProgressInput };

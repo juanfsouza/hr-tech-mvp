@@ -125,7 +125,7 @@ export function CompanyDataStep() {
           document.getElementById("number")?.focus();
         }
       } catch (error) {
-        console.error("Erro ao buscar CEP:", error);
+        // Error silent
       } finally {
         setIsFetchingCep(false);
       }

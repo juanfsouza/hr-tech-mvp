@@ -69,7 +69,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        console.log("[API] Access token expirado. Tentando renovar via Refresh Token...");
+        // Refresh token attempt silent
         // Tentamos o refresh (o cookie refresh_token será enviado automaticamente)
         const { data } = await api.post('/auth/refresh');
         
@@ -82,7 +82,7 @@ api.interceptors.response.use(
         processQueue(null, data.accessToken);
         return api(originalRequest);
       } catch (refreshError) {
-        console.error("[API] Refresh token falhou ou expirou. Deslogando usuário.");
+        // Refresh token failed silent
         processQueue(refreshError, null);
         
         if (typeof window !== 'undefined') {

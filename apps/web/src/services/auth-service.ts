@@ -1,15 +1,5 @@
 import { api } from '@/lib/api';
-
-export interface LoginResponse {
-  accessToken: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    companyId?: string;
-    role: string;
-  };
-}
+import { User, LoginResponse, AuthMessageResponse } from '@/types/auth';
 
 export const authService = {
   async login(email: string, password: string): Promise<LoginResponse> {
@@ -31,7 +21,7 @@ export const authService = {
     try {
       await api.post('/auth/logout');
     } catch (error) {
-      console.error("[Auth] Erro ao deslogar no backend:", error);
+      // Erro silenciado para o usuário final em logout
     } finally {
       localStorage.removeItem('@SaaS:token');
       localStorage.removeItem('@SaaS:user');
@@ -47,13 +37,15 @@ export const authService = {
     return null;
   },
 
-  async forgotPassword(email: string): Promise<{ message: string }> {
+  async forgotPassword(email: string): Promise<AuthMessageResponse> {
     const { data } = await api.post('/auth/forgot-password', { email });
     return data;
   },
 
-  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+  async resetPassword(token: string, newPassword: string): Promise<AuthMessageResponse> {
     const { data } = await api.post('/auth/reset-password', { token, newPassword });
     return data;
   }
 };
+
+export type { User, LoginResponse, AuthMessageResponse };

@@ -1,15 +1,5 @@
 import { api } from '@/lib/api';
-
-export interface Candidate {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  matchScore?: number;
-  matchId?: string;
-  status: string;
-  jobId?: string;
-}
+import { Candidate, CreateCandidateInput } from '@/types/candidate';
 
 export const candidateService = {
   async list(cursor?: string, take?: number) {
@@ -22,12 +12,12 @@ export const candidateService = {
     return data;
   },
 
-  async create(input: any) {
+  async create(input: CreateCandidateInput) {
     const { data } = await api.post<Candidate>('/candidates', input);
     return data;
   },
 
-  async update(id: string, input: any) {
+  async update(id: string, input: Partial<CreateCandidateInput>) {
     const { data } = await api.patch<Candidate>(`/candidates/${id}`, input);
     return data;
   },
@@ -36,3 +26,5 @@ export const candidateService = {
     await api.delete(`/candidates/${id}`);
   }
 };
+export type { Candidate, CreateCandidateInput };
+

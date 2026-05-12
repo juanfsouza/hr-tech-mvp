@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { usePagination } from "@/hooks/use-pagination";
 
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
@@ -30,7 +31,8 @@ import {
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Job, jobService } from "@/services/job-service";
+import { jobService } from "@/services/job-service";
+import { Job } from "@/types/job";
 import { authService } from "@/services/auth-service";
 import { toast } from "sonner";
 import {
@@ -74,7 +76,7 @@ export default function DashboardPage() {
         // Forçar um pequeno refresh para atualizar o estado do user
         if (!user) window.location.reload();
       } catch (e) {
-        console.error("Erro ao processar login do Google:", e);
+        // Erro silencioso
       }
     }
   }, [searchParams, user]);
@@ -85,8 +87,12 @@ export default function DashboardPage() {
     queryFn: () => dashboardService.getStats(),
   });
 
-  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
-  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
+  const { 
+    currentCursor, 
+    handleNext, 
+    handleBack, 
+    cursorHistory 
+  } = usePagination(5);
 
   // Buscar vagas reais com paginação
   const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
@@ -94,21 +100,7 @@ export default function DashboardPage() {
     queryFn: () => jobService.list(currentCursor, 5),
   });
 
-  const handleNext = () => {
-    if (jobsData?.nextCursor) {
-      setCursorHistory(prev => [...prev, currentCursor || ""]);
-      setCurrentCursor(jobsData.nextCursor);
-    }
-  };
-
-  const handleBack = () => {
-    if (cursorHistory.length > 0) {
-      const newHistory = [...cursorHistory];
-      const prevCursor = newHistory.pop();
-      setCursorHistory(newHistory);
-      setCurrentCursor(prevCursor || undefined);
-    }
-  };
+  const onNext = () => handleNext(jobsData?.nextCursor);
 
   const jobs = (jobsData as any)?.items || [];
 
@@ -246,7 +238,7 @@ export default function DashboardPage() {
                   variant="outline" 
                   size="sm" 
                   disabled={!jobsData?.hasNextPage || isLoadingJobs}
-                  onClick={handleNext}
+                  onClick={onNext}
                   className="h-8 w-8 p-0 rounded-lg border-slate-200 dark:border-border/50"
                 >
                   <ChevronRight className="w-4 h-4" />

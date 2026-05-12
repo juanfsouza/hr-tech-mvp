@@ -6,36 +6,28 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
 import { Plus, Briefcase, Users, BrainCircuit, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { cn } from "@/lib/utils";
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/molecules/Pagination";
 
 export default function JobsPage() {
-  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
-  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
+  const {
+    currentCursor,
+    handleNext,
+    handleBack,
+    cursorHistory,
+    pageNumber
+  } = usePagination(6);
 
   const { data: jobs, isLoading } = useQuery({
     queryKey: ["jobs", currentCursor],
     queryFn: () => jobService.list(currentCursor, 6),
   });
 
-  const handleNext = () => {
-    if (jobs?.nextCursor) {
-      setCursorHistory(prev => [...prev, currentCursor || ""]);
-      setCurrentCursor(jobs.nextCursor);
-    }
-  };
-
-  const handleBack = () => {
-    if (cursorHistory.length > 0) {
-      const newHistory = [...cursorHistory];
-      const prevCursor = newHistory.pop();
-      setCursorHistory(newHistory);
-      setCurrentCursor(prevCursor || undefined);
-    }
-  };
+  const onNext = () => handleNext(jobs?.nextCursor);
 
   return (
     <DashboardLayout>
@@ -113,29 +105,14 @@ export default function JobsPage() {
             </div>
 
             {/* Pagination Controls */}
-            {(jobs.hasNextPage || cursorHistory.length > 0) && (
-              <div className="flex justify-center items-center gap-4 mt-12">
-                <Button
-                  variant="outline"
-                  disabled={cursorHistory.length === 0}
-                  onClick={handleBack}
-                  className="rounded-xl border-slate-200 hover:bg-slate-50 dark:border-border/50 transition-all gap-2"
-                >
-                  <ChevronLeft className="w-4 h-4" /> Anterior
-                </Button>
-                <div className="text-sm font-medium text-slate-500">
-                  Página {cursorHistory.length + 1}
-                </div>
-                <Button
-                  variant="outline"
-                  disabled={!jobs.hasNextPage}
-                  onClick={handleNext}
-                  className="rounded-xl border-slate-200 hover:bg-slate-50 dark:border-border/50 transition-all gap-2"
-                >
-                  Próxima <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            )}
+            <Pagination
+              pageNumber={pageNumber}
+              hasNextPage={!!jobs.hasNextPage}
+              hasPreviousPage={cursorHistory.length > 0}
+              onNext={onNext}
+              onBack={handleBack}
+              isLoading={isLoading}
+            />
           </>
         ) : (
           <Card className="border-dashed border-2 py-20 text-center bg-transparent border-slate-200 dark:border-border/50">

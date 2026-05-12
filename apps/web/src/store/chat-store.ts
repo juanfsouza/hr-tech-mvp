@@ -1,17 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-export interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-interface ChatState {
-  messages: ChatMessage[];
-  addMessage: (message: ChatMessage) => void;
-  updateLastMessage: (content: string) => void;
-  clearMessages: () => void;
-}
+import { ChatMessage, ChatState } from '@/types/chat';
 
 export const useChatStore = create<ChatState>()(
   persist(
@@ -34,3 +23,5 @@ export const useChatStore = create<ChatState>()(
     }
   )
 );
+
+export type { ChatMessage, ChatState };

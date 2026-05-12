@@ -84,7 +84,8 @@ export function CompanyContextStep() {
         router.push("/dashboard");
       }, 2000);
     } catch (error) {
-      console.error(error);
+      // Error silent
+    } finally {
       toast.error("Erro ao salvar dados do onboarding.");
       setIsFinishing(false);
     }

@@ -5,7 +5,8 @@ import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
 import { chatService } from "@/services/chat-service";
-import { useChatStore, ChatMessage as StoreMessage } from "@/store/chat-store";
+import { useChatStore } from "@/store/chat-store";
+import { ChatMessage as StoreMessage } from "@/types/chat";
 import {
   Send,
   Sparkles,
@@ -61,7 +62,6 @@ export default function ChatAssistantPage() {
         updateLastMessage(assistantContent);
       });
     } catch (error) {
-      console.error("Erro no chat:", error);
       updateLastMessage("Desculpe, ocorreu um erro ao processar sua mensagem.");
     } finally {
       setIsLoading(false);

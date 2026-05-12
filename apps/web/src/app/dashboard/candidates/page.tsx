@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { candidateService, Candidate } from "@/services/candidate-service";
+import { candidateService } from "@/services/candidate-service";
+import { Candidate } from "@/types/candidate";
 import { matchService } from "@/services/match-service";
-import { jobService, Job } from "@/services/job-service";
+import { jobService } from "@/services/job-service";
+import { Job } from "@/types/job";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
@@ -38,6 +40,10 @@ import {
   ChevronRight
 } from "lucide-react";
 
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/molecules/Pagination";
+import { SearchInput } from "@/components/molecules/SearchInput";
+
 export default function CandidatesPage() {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,8 +51,13 @@ export default function CandidatesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(null);
 
-  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
-  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
+  const { 
+    currentCursor, 
+    handleNext, 
+    handleBack, 
+    cursorHistory, 
+    pageNumber 
+  } = usePagination(10);
 
   // Buscar candidatos, vagas e sessões
   const { data: candidatesData, isLoading: isLoadingCandidates, refetch: refetchCandidates } = useQuery({
@@ -54,21 +65,7 @@ export default function CandidatesPage() {
     queryFn: () => candidateService.list(currentCursor, 10),
   });
 
-  const handleNext = () => {
-    if (candidatesData?.nextCursor) {
-      setCursorHistory(prev => [...prev, currentCursor || ""]);
-      setCurrentCursor(candidatesData.nextCursor);
-    }
-  };
-
-  const handleBack = () => {
-    if (cursorHistory.length > 0) {
-      const newHistory = [...cursorHistory];
-      const prevCursor = newHistory.pop();
-      setCursorHistory(newHistory);
-      setCurrentCursor(prevCursor || undefined);
-    }
-  };
+  const onNext = () => handleNext(candidatesData?.nextCursor);
 
   const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
     queryKey: ["jobs"],
@@ -170,7 +167,7 @@ export default function CandidatesPage() {
       await matchService.downloadPdf(selectedCandidate.matchId, selectedCandidate.name);
       toast.success("Download concluído!", { id: "pdf-gen" });
     } catch (error) {
-      console.error(error);
+      // Error silent
       toast.error("Erro ao gerar PDF.");
     }
   };
@@ -193,15 +190,12 @@ export default function CandidatesPage() {
             <p className="text-muted-foreground text-lg">Gerencie os candidatos e visualize as análises de match por vaga.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <div className="relative w-full md:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                className="pl-10"
-                placeholder="Buscar talentos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+            <SearchInput
+              wrapperClassName="w-full md:w-64"
+              placeholder="Buscar talentos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <Button onClick={handleCreate} className="bg-forest dark:bg-neon dark:text-chumbo font-bold shadow-lg shadow-neon/20">
               <Plus className="w-4 h-4 mr-2" /> Novo Candidato
             </Button>
@@ -354,30 +348,14 @@ export default function CandidatesPage() {
             </Card>
           )}
 
-          {/* Pagination Controls */}
-          {candidatesData?.items && (candidatesData.hasNextPage || cursorHistory.length > 0) && (
-            <div className="flex justify-center items-center gap-4 py-8 border-t border-border/20">
-              <Button
-                variant="outline"
-                disabled={cursorHistory.length === 0}
-                onClick={handleBack}
-                className="rounded-xl border-border/40 hover:bg-forest/5 transition-all gap-2"
-              >
-                <ChevronLeft className="w-4 h-4" /> Anterior
-              </Button>
-              <div className="text-sm font-medium text-muted-foreground">
-                Página {cursorHistory.length + 1}
-              </div>
-              <Button
-                variant="outline"
-                disabled={!candidatesData.hasNextPage}
-                onClick={handleNext}
-                className="rounded-xl border-border/40 hover:bg-forest/5 transition-all gap-2"
-              >
-                Próxima <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-          )}
+          <Pagination
+            pageNumber={pageNumber}
+            hasNextPage={!!candidatesData?.hasNextPage}
+            hasPreviousPage={cursorHistory.length > 0}
+            onNext={onNext}
+            onBack={handleBack}
+            isLoading={isLoadingCandidates}
+          />
         </div>
 
         {/* MODAL DE CADASTRO/EDIÇÃO */}

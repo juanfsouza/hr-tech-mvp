@@ -25,7 +25,8 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { candidateService, Candidate } from "@/services/candidate-service";
+import { candidateService } from "@/services/candidate-service";
+import { Candidate } from "@/types/candidate";
 import { testService } from "@/services/test-service";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,6 +40,10 @@ import {
   DialogFooter,
 } from "@/components/atoms/dialog";
 
+import { usePagination } from "@/hooks/use-pagination";
+import { Pagination } from "@/components/molecules/Pagination";
+import { SearchInput } from "@/components/molecules/SearchInput";
+
 export default function TestsPortalPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
@@ -48,8 +53,13 @@ export default function TestsPortalPage() {
     expiresAt: string;
   } | null>(null);
 
-  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
-  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
+  const { 
+    currentCursor, 
+    handleNext, 
+    handleBack, 
+    cursorHistory, 
+    pageNumber 
+  } = usePagination(10);
 
   // Buscar candidatos com paginação
   const { data: candidatesData, isLoading } = useQuery({
@@ -57,21 +67,7 @@ export default function TestsPortalPage() {
     queryFn: () => candidateService.list(currentCursor, 10),
   });
 
-  const handleNext = () => {
-    if (candidatesData?.nextCursor) {
-      setCursorHistory(prev => [...prev, currentCursor || ""]);
-      setCurrentCursor(candidatesData.nextCursor);
-    }
-  };
-
-  const handleBack = () => {
-    if (cursorHistory.length > 0) {
-      const newHistory = [...cursorHistory];
-      const prevCursor = newHistory.pop();
-      setCursorHistory(newHistory);
-      setCurrentCursor(prevCursor || undefined);
-    }
-  };
+  const onNext = () => handleNext(candidatesData?.nextCursor);
 
   const candidates = candidatesData?.items || [];
 
@@ -113,15 +109,12 @@ export default function TestsPortalPage() {
             <h1 className="text-4xl font-bold font-outfit text-forest dark:text-neon mb-2">Portal de Testes</h1>
             <p className="text-muted-foreground text-lg">Selecione um candidato para gerar um link de avaliação psicométrica.</p>
           </div>
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              className="pl-10 h-12 rounded-xl"
-              placeholder="Buscar candidato..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+          <SearchInput
+            wrapperClassName="w-full md:w-80"
+            placeholder="Buscar candidato..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -182,31 +175,14 @@ export default function TestsPortalPage() {
               </div>
 
               {/* Pagination Controls */}
-              {candidatesData?.items && (candidatesData.hasNextPage || cursorHistory.length > 0) && (
-                <div className="flex justify-center items-center gap-4 py-6 border-t border-border/50">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={cursorHistory.length === 0}
-                    onClick={handleBack}
-                    className="rounded-xl border-border/40 hover:bg-slate-50 transition-all gap-2"
-                  >
-                    <ChevronLeft className="w-4 h-4" /> Anterior
-                  </Button>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    Página {cursorHistory.length + 1}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={!candidatesData.hasNextPage}
-                    onClick={handleNext}
-                    className="rounded-xl border-border/40 hover:bg-slate-50 transition-all gap-2"
-                  >
-                    Próxima <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </div>
-              )}
+              <Pagination
+                pageNumber={pageNumber}
+                hasNextPage={!!candidatesData?.hasNextPage}
+                hasPreviousPage={cursorHistory.length > 0}
+                onNext={onNext}
+                onBack={handleBack}
+                isLoading={isLoading}
+              />
             </CardContent>
           </Card>
 

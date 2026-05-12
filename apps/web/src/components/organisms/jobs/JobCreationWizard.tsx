@@ -125,8 +125,7 @@ export function JobCreationWizard() {
       const job = await createMutation.mutateAsync(briefing);
       setJobId(job.id);
       generateMutation.mutate(job.id);
-    } catch (error: any) {
-      console.error("Erro ao iniciar criação:", error);
+    } catch (error) {
       toast.error("Erro ao conectar ao servidor.");
       setMode("IA_BRIEFING");
     }
@@ -146,7 +145,6 @@ export function JobCreationWizard() {
         await jobService.update(jobId, { description: generatedJd });
         await publishMutation.mutateAsync(jobId);
       } catch (e) {
-        console.error("Erro ao publicar vaga:", e);
         toast.error("Erro ao publicar vaga");
       }
     }

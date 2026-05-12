@@ -1,9 +1,5 @@
 import { api } from '@/lib/api';
-
-export interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
+import { ChatMessage } from '@/types/chat';
 
 export const chatService = {
   async streamMessage(messages: ChatMessage[], onChunk: (text: string) => void, jobId?: string) {
@@ -52,3 +48,5 @@ export const chatService = {
     }
   }
 };
+
+export type { ChatMessage };

@@ -1,26 +1,5 @@
 import { api } from '@/lib/api';
-
-export interface CreateJobInput {
-  title: string;
-  description?: string;
-  department?: string;
-  location?: string;
-  type?: string;
-  requirements?: string[];
-  responsibilities?: string[];
-  responsibleId?: string;
-}
-
-export interface Job {
-  candidatesCount?: number;
-  id: string;
-  title: string;
-  status: string;
-  description?: string;
-  companyId: string;
-  location?: string;
-  createdAt: string;
-}
+import { Job, CreateJobInput } from '@/types/job';
 
 export const jobService = {
   async create(input: CreateJobInput) {
@@ -67,3 +46,5 @@ export const jobService = {
     return data;
   }
 };
+
+export type { Job, CreateJobInput };
