@@ -59,15 +59,23 @@ export function CompanyDataStep() {
         userId: user!.id,
       });
     },
-    onSuccess: (data: { companyId: string; cnpj: string; razaoSocial: string }) => {
+    onSuccess: async (data: { companyId: string; cnpj: string; razaoSocial: string }) => {
       toast.success(user?.companyId ? "Dados atualizados!" : "Empresa cadastrada!");
       
-      if (user && !user.companyId) {
+      const isNewCompany = user && !user.companyId;
+
+      if (isNewCompany) {
         const updatedUser = { ...user, companyId: data.companyId };
         localStorage.setItem('@SaaS:user', JSON.stringify(updatedUser));
         
-        // REFRESH JWT: O novo token conterá o companyId no payload
-        authService.refreshToken().catch(err => console.error("Falha ao atualizar token:", err));
+        try {
+          console.log('[Onboarding] Iniciando refresh de token após criação de empresa...');
+          await authService.refreshToken();
+        } catch (err) {
+          console.error("[Onboarding] Falha crítica ao atualizar token:", err);
+          toast.error("Sua sessão não pôde ser sincronizada. Recarregue a página ou faça login novamente.");
+          return; // NÃO prossegue se falhou na criação inicial
+        }
       }
       
       updateCompanyData({
@@ -75,6 +83,7 @@ export function CompanyDataStep() {
         name: data.razaoSocial,
         cnpj: data.cnpj
       });
+      
       nextStep();
     },
     onError: (error: Error) => {
@@ -107,16 +116,17 @@ export function CompanyDataStep() {
 
   // Atualizar formulário quando o store mudar (ex: após fetch no page.tsx)
   useEffect(() => {
-    if (companyData.name || companyData.cnpj) {
+    const hasData = companyData.name || companyData.cnpj || companyData.address?.zipCode;
+    if (hasData) {
       reset({
-        name: companyData.name,
-        cnpj: companyData.cnpj,
-        zipCode: companyData.address?.zipCode,
-        street: companyData.address?.street,
-        number: companyData.address?.number,
-        city: companyData.address?.city,
-        state: companyData.address?.state,
-      });
+        name: companyData.name || "",
+        cnpj: companyData.cnpj || "",
+        zipCode: companyData.address?.zipCode || "",
+        street: companyData.address?.street || "",
+        number: companyData.address?.number || "",
+        city: companyData.address?.city || "",
+        state: companyData.address?.state || "",
+      }, { keepDefaultValues: false });
     }
   }, [companyData, reset]);
 

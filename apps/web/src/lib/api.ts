@@ -73,25 +73,25 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Refresh token attempt silent
-        // Tentamos o refresh (o cookie refresh_token será enviado automaticamente)
+        console.log('[API] Tentando refresh token silencioso...');
         const { data } = await api.post('/auth/refresh');
         
-        // Se o backend ainda retornar o accessToken no body (para compatibilidade/migração)
         if (data.accessToken) {
+          console.log('[API] Refresh concluído com sucesso.');
           localStorage.setItem('@SaaS:token', data.accessToken);
           originalRequest.headers['Authorization'] = `Bearer ${data.accessToken}`;
         }
 
         processQueue(null, data.accessToken);
         return api(originalRequest);
-      } catch (refreshError) {
-        // Refresh token failed silent
+      } catch (refreshError: any) {
+        console.error('[API] Falha crítica no refresh token:', refreshError.response?.status, refreshError.response?.data);
         processQueue(refreshError, null);
         
         if (typeof window !== 'undefined') {
           localStorage.removeItem('@SaaS:token');
           localStorage.removeItem('@SaaS:user');
+          localStorage.removeItem('@SaaS:onboarding-storage');
           window.location.href = '/login';
         }
         return Promise.reject(refreshError);

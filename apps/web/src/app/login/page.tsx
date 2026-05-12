@@ -122,7 +122,7 @@ function LoginContent() {
         await authService.register(name, email, password);
         setSuccess(true);
         toast.success("Conta criada com sucesso!", {
-          description: "Agora você já pode realizar o login."
+          description: "Verifique seu e-mail para confirmar o cadastro."
         });
         setActiveTab("login");
         setSuccess(false);

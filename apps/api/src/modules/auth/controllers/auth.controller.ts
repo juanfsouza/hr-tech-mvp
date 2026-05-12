@@ -69,8 +69,8 @@ export class AuthController {
     // Access token via HTTP-only cookie
     reply.setCookie('access_token', accessToken, {
       httpOnly: true,
-      secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'lax', // Permite envio em navegações cross-site básicas
+      secure: true,
+      sameSite: 'none',
       path: '/',
       maxAge: 60 * 60, // 1 hora
     });
@@ -78,9 +78,9 @@ export class AuthController {
     // Refresh token via HTTP-only cookie
     reply.setCookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'lax',
-      path: '/', // Mudado para / para facilitar acesso e limpeza
+      secure: true, // Necessário para SameSite=None
+      sameSite: 'none', // Permite envio cross-origin entre portas 3000 e 3001
+      path: '/',
       maxAge: 60 * 60 * 24 * 7, // 7 dias
     });
 
@@ -88,6 +88,7 @@ export class AuthController {
   }
 
   // ─── POST /auth/register ───────────────────────────────────────────────────
+  @Post('register')
   @ApiOperation({ summary: 'Registrar novo usuário de RH' })
   @ApiBody({ type: RegisterDto })
   async register(@Body() dto: RegisterDto): Promise<{ userId: string; message: string }> {
@@ -129,10 +130,15 @@ export class AuthController {
     @Res({ passthrough: true }) reply: FastifyReply,
   ): Promise<{ accessToken: string }> {
     const refreshToken = request.cookies['refresh_token'];
-    if (!refreshToken) throw new UnauthorizedException('No refresh token provided.');
+    
+    if (!refreshToken) {
+      Logger.warn('[Auth] Tentativa de refresh sem cookie refresh_token', 'AuthController');
+      throw new UnauthorizedException('No refresh token provided.');
+    }
 
     const result = await this.refreshTokenUseCase.execute({ refreshToken });
     if (result.isLeft()) {
+      Logger.error(`[Auth] Falha no RefreshTokenUseCase: ${result.value.message}`, 'AuthController');
       throw new UnauthorizedException(result.value.message);
     }
 
@@ -140,16 +146,16 @@ export class AuthController {
 
     reply.setCookie('access_token', accessToken, {
       httpOnly: true,
-      secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       path: '/',
       maxAge: 60 * 60,
     });
 
     reply.setCookie('refresh_token', newRefreshToken, {
       httpOnly: true,
-      secure: process.env['NODE_ENV'] === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       path: '/',
       maxAge: 60 * 60 * 24 * 7,
     });

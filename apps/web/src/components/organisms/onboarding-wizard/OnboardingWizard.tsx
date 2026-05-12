@@ -8,7 +8,8 @@ import { CompanyContextStep } from "./CompanyContextStep";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function OnboardingWizard() {
-  const { step } = useOnboardingStore();
+  const { step, setStep, companyData } = useOnboardingStore();
+  const hasCompany = !!companyData.id;
 
   const renderStep = () => {
     switch (step) {
@@ -31,10 +32,20 @@ export function OnboardingWizard() {
     <div className="w-full max-w-4xl mx-auto">
       <div className="mb-10">
         <div className="flex justify-between items-end mb-6">
-          <div>
-            <p className="text-xs font-bold text-azure uppercase tracking-[0.2em] mb-2 bg-azure/20 inline-block px-3 py-1 rounded-full border border-azure/20">
-              Passo {step} de 4
-            </p>
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <p className="text-xs font-bold text-azure uppercase tracking-[0.2em] bg-azure/20 inline-block px-3 py-1 rounded-full border border-azure/20">
+                Passo {step} de 4
+              </p>
+              {hasCompany && step < 4 && (
+                <button
+                  onClick={() => setStep(4)}
+                  className="text-xs font-bold text-neon uppercase tracking-wider hover:underline"
+                >
+                  ⚡ Pular para Contexto
+                </button>
+              )}
+            </div>
             <h1 className="text-3xl font-bold font-outfit text-slate-900 dark:text-white mt-2">
               {step === 1 && "Dados da Empresa"}
               {step === 2 && "Estrutura Organizacional"}
