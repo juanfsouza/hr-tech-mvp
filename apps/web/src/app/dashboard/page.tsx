@@ -23,7 +23,9 @@ import {
   Eye,
   MapPin,
   X,
-  Loader2
+  Loader2,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -83,11 +85,30 @@ export default function DashboardPage() {
     queryFn: () => dashboardService.getStats(),
   });
 
-  // Buscar vagas reais
+  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
+  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
+
+  // Buscar vagas reais com paginação
   const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
-    queryKey: ["jobs"],
-    queryFn: () => jobService.list(undefined, 5),
+    queryKey: ["jobs", currentCursor],
+    queryFn: () => jobService.list(currentCursor, 5),
   });
+
+  const handleNext = () => {
+    if (jobsData?.nextCursor) {
+      setCursorHistory(prev => [...prev, currentCursor || ""]);
+      setCurrentCursor(jobsData.nextCursor);
+    }
+  };
+
+  const handleBack = () => {
+    if (cursorHistory.length > 0) {
+      const newHistory = [...cursorHistory];
+      const prevCursor = newHistory.pop();
+      setCursorHistory(newHistory);
+      setCurrentCursor(prevCursor || undefined);
+    }
+  };
 
   const jobs = (jobsData as any)?.items || [];
 
@@ -211,9 +232,29 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold font-outfit text-slate-900 dark:text-white">Vagas Recentes</h2>
-              <Link href="/dashboard/jobs">
-                <Button variant="link" className="text-forest dark:text-neon font-bold">Ver todas</Button>
-              </Link>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  disabled={cursorHistory.length === 0 || isLoadingJobs}
+                  onClick={handleBack}
+                  className="h-8 w-8 p-0 rounded-lg border-slate-200 dark:border-border/50"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  disabled={!jobsData?.hasNextPage || isLoadingJobs}
+                  onClick={handleNext}
+                  className="h-8 w-8 p-0 rounded-lg border-slate-200 dark:border-border/50"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+                <Link href="/dashboard/jobs">
+                  <Button variant="link" className="text-forest dark:text-neon font-bold ml-2">Ver todas</Button>
+                </Link>
+              </div>
             </div>
             <div className="grid gap-4">
               {isLoadingJobs ? (

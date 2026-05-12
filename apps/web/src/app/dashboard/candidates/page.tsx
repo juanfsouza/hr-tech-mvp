@@ -33,7 +33,9 @@ import {
   ClipboardCopy,
   Trash2,
   Edit,
-  CheckCircle2
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 
 export default function CandidatesPage() {
@@ -43,11 +45,30 @@ export default function CandidatesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(null);
 
+  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
+  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
+
   // Buscar candidatos, vagas e sessões
   const { data: candidatesData, isLoading: isLoadingCandidates, refetch: refetchCandidates } = useQuery({
-    queryKey: ["candidates"],
-    queryFn: () => candidateService.list(),
+    queryKey: ["candidates", currentCursor],
+    queryFn: () => candidateService.list(currentCursor, 10),
   });
+
+  const handleNext = () => {
+    if (candidatesData?.nextCursor) {
+      setCursorHistory(prev => [...prev, currentCursor || ""]);
+      setCurrentCursor(candidatesData.nextCursor);
+    }
+  };
+
+  const handleBack = () => {
+    if (cursorHistory.length > 0) {
+      const newHistory = [...cursorHistory];
+      const prevCursor = newHistory.pop();
+      setCursorHistory(newHistory);
+      setCurrentCursor(prevCursor || undefined);
+    }
+  };
 
   const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
     queryKey: ["jobs"],
@@ -331,6 +352,31 @@ export default function CandidatesPage() {
               <h3 className="text-xl font-bold mb-1">Nenhum candidato encontrado</h3>
               <p className="text-muted-foreground">Tente ajustar sua busca ou filtros para encontrar o que procura.</p>
             </Card>
+          )}
+
+          {/* Pagination Controls */}
+          {candidatesData?.items && (candidatesData.hasNextPage || cursorHistory.length > 0) && (
+            <div className="flex justify-center items-center gap-4 py-8 border-t border-border/20">
+              <Button
+                variant="outline"
+                disabled={cursorHistory.length === 0}
+                onClick={handleBack}
+                className="rounded-xl border-border/40 hover:bg-forest/5 transition-all gap-2"
+              >
+                <ChevronLeft className="w-4 h-4" /> Anterior
+              </Button>
+              <div className="text-sm font-medium text-muted-foreground">
+                Página {cursorHistory.length + 1}
+              </div>
+              <Button
+                variant="outline"
+                disabled={!candidatesData.hasNextPage}
+                onClick={handleNext}
+                className="rounded-xl border-border/40 hover:bg-forest/5 transition-all gap-2"
+              >
+                Próxima <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
           )}
         </div>
 

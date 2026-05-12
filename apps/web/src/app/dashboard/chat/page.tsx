@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
-import { chatService, ChatMessage } from "@/services/chat-service";
+import { chatService } from "@/services/chat-service";
+import { useChatStore, ChatMessage as StoreMessage } from "@/store/chat-store";
 import {
   Send,
   Sparkles,
@@ -14,7 +15,8 @@ import {
   BrainCircuit,
   TrendingUp,
   Users,
-  Search
+  Search,
+  Trash2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -26,7 +28,7 @@ const QUICK_ACTIONS = [
 ];
 
 export default function ChatAssistantPage() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const { messages, addMessage, updateLastMessage, clearMessages } = useChatStore();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -40,23 +42,27 @@ export default function ChatAssistantPage() {
   const handleSendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
 
-    const userMessage: ChatMessage = { role: "user", content: text };
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
+    const userMessage: StoreMessage = { role: "user", content: text };
+    addMessage(userMessage);
     setInput("");
     setIsLoading(true);
 
-    let assistantContent = "";
-    const assistantMessage: ChatMessage = { role: "assistant", content: "" };
-    setMessages([...newMessages, assistantMessage]);
+    const assistantMessage: StoreMessage = { role: "assistant", content: "" };
+    addMessage(assistantMessage);
 
+    let assistantContent = "";
+    
     try {
-      await chatService.streamMessage(newMessages, (chunk) => {
+      // Pegamos as mensagens atualizadas do store para o contexto
+      const contextMessages = [...messages, userMessage];
+      
+      await chatService.streamMessage(contextMessages, (chunk) => {
         assistantContent += chunk;
-        setMessages([...newMessages, { role: "assistant", content: assistantContent }]);
+        updateLastMessage(assistantContent);
       });
     } catch (error) {
       console.error("Erro no chat:", error);
+      updateLastMessage("Desculpe, ocorreu um erro ao processar sua mensagem.");
     } finally {
       setIsLoading(false);
     }
@@ -65,14 +71,27 @@ export default function ChatAssistantPage() {
   return (
     <DashboardLayout>
       <div className="h-[calc(100vh-140px)] flex flex-col max-w-5xl mx-auto">
-        <header className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-forest dark:bg-neon flex items-center justify-center shadow-lg shadow-forest/20 dark:shadow-neon/20">
-              <Sparkles className="w-6 h-6 text-offwhite dark:text-chumbo" />
+        <header className="mb-8 flex justify-between items-start">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-xl bg-forest dark:bg-neon flex items-center justify-center shadow-lg shadow-forest/20 dark:shadow-neon/20">
+                <Sparkles className="w-6 h-6 text-offwhite dark:text-chumbo" />
+              </div>
+              <h1 className="text-3xl font-bold font-outfit">Assistente <span className="text-forest dark:text-neon">Inteligente</span></h1>
             </div>
-            <h1 className="text-3xl font-bold font-outfit">Assistente <span className="text-forest dark:text-neon">Inteligente</span></h1>
+            <p className="text-muted-foreground">Tire dúvidas sobre candidatos, vagas e perfis psicométricos.</p>
           </div>
-          <p className="text-muted-foreground">Tire dúvidas sobre candidatos, vagas e perfis psicométricos.</p>
+          
+          {messages.length > 0 && (
+            <Button 
+              variant="ghost" 
+              onClick={clearMessages}
+              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-2 rounded-xl transition-all"
+            >
+              <Trash2 className="w-4 h-4" />
+              Limpar Conversa
+            </Button>
+          )}
         </header>
 
         <div className="flex-1 overflow-hidden flex flex-col bg-card/30 backdrop-blur-xl rounded-3xl border border-border/50 shadow-2xl">

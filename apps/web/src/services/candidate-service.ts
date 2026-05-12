@@ -12,8 +12,8 @@ export interface Candidate {
 }
 
 export const candidateService = {
-  async list() {
-    const { data } = await api.get<{ items: Candidate[] }>('/candidates');
+  async list(cursor?: string, take?: number) {
+    const { data } = await api.get<{ items: Candidate[], nextCursor?: string, hasNextPage?: boolean }>('/candidates', { params: { cursor, take } });
     return data;
   },
 

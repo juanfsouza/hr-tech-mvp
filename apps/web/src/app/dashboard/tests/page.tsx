@@ -20,7 +20,9 @@ import {
   Loader2,
   ExternalLink,
   QrCode,
-  Users
+  Users,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { candidateService, Candidate } from "@/services/candidate-service";
@@ -46,11 +48,30 @@ export default function TestsPortalPage() {
     expiresAt: string;
   } | null>(null);
 
-  // Buscar candidatos
+  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
+  const [cursorHistory, setCursorHistory] = useState<string[]>([]);
+
+  // Buscar candidatos com paginação
   const { data: candidatesData, isLoading } = useQuery({
-    queryKey: ["candidates"],
-    queryFn: () => candidateService.list(),
+    queryKey: ["candidates", currentCursor],
+    queryFn: () => candidateService.list(currentCursor, 10),
   });
+
+  const handleNext = () => {
+    if (candidatesData?.nextCursor) {
+      setCursorHistory(prev => [...prev, currentCursor || ""]);
+      setCurrentCursor(candidatesData.nextCursor);
+    }
+  };
+
+  const handleBack = () => {
+    if (cursorHistory.length > 0) {
+      const newHistory = [...cursorHistory];
+      const prevCursor = newHistory.pop();
+      setCursorHistory(newHistory);
+      setCurrentCursor(prevCursor || undefined);
+    }
+  };
 
   const candidates = candidatesData?.items || [];
 
@@ -159,6 +180,33 @@ export default function TestsPortalPage() {
                   </div>
                 )}
               </div>
+
+              {/* Pagination Controls */}
+              {candidatesData?.items && (candidatesData.hasNextPage || cursorHistory.length > 0) && (
+                <div className="flex justify-center items-center gap-4 py-6 border-t border-border/50">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={cursorHistory.length === 0}
+                    onClick={handleBack}
+                    className="rounded-xl border-border/40 hover:bg-slate-50 transition-all gap-2"
+                  >
+                    <ChevronLeft className="w-4 h-4" /> Anterior
+                  </Button>
+                  <div className="text-xs font-medium text-muted-foreground">
+                    Página {cursorHistory.length + 1}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!candidatesData.hasNextPage}
+                    onClick={handleNext}
+                    className="rounded-xl border-border/40 hover:bg-slate-50 transition-all gap-2"
+                  >
+                    Próxima <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
 

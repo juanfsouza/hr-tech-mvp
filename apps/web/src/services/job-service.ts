@@ -29,7 +29,7 @@ export const jobService = {
   },
 
   async list(cursor?: string, take?: number) {
-    const { data } = await api.get<{ items: Job[] }>('/jobs', { params: { cursor, take } });
+    const { data } = await api.get<{ items: Job[], nextCursor?: string, hasNextPage?: boolean }>('/jobs', { params: { cursor, take } });
     return data;
   },
 

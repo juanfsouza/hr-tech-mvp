@@ -32,33 +32,70 @@ export class AiOrchestrationService {
       if (job) {
         const candidatesContext = job.candidates.map(c => {
           const match = c.matches[0];
-          return `- ${c.name} (${c.email}): Score ${match?.overallScore || 'N/A'}%. Resumo: ${match?.summary || 'Sem análise'}`;
+          return `- ${c.name} (Email: ${c.email}): Match ${match?.overallScore || 'Pendente'}%. Perfil: ${match?.summary || 'Aguardando teste'}`;
         }).join('\n');
 
         systemPrompt = `
-Você é o assistente de IA especialista da vaga "${job.title}".
+Você é o Co-piloto de Recrutamento para a vaga "${job.title}".
 Contexto da Vaga: ${job.description}
 
-Candidatos nesta vaga:
+Lista de Candidatos:
 ${candidatesContext}
 
-Sua tarefa é ajudar o recrutador a tomar decisões, comparar candidatos e sugerir próximos passos. 
-Use os dados acima para fundamentar suas respostas. Se falarem de um candidato específico, use o resumo de match dele.
-Responda sempre em Português do Brasil.
+Sua missão é ajudar o recrutador a analisar esses talentos. Se o match estiver baixo, explique o porquê com base nos perfis. Se estiver alto, destaque as sinergias.
         `.trim();
       }
+    } else {
+      // Contexto Global da Empresa
+      const jobs = await this.prisma.job.findMany({
+        where: { companyId, status: 'ACTIVE' },
+        include: {
+          candidates: {
+            include: {
+              matches: { orderBy: { createdAt: 'desc' }, take: 1 }
+            },
+            take: 10 // Top 10 candidatos gerais para não estourar o contexto
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 5
+      });
+
+      const globalContext = jobs.map(j => {
+        const candList = j.candidates.map(c => {
+          const match = c.matches[0];
+          return `  * ${c.name} (Match: ${match?.overallScore || 'N/A'}%)`;
+        }).join('\n');
+        return `Vaga: ${j.title}\nCandidatos:\n${candList}`;
+      }).join('\n\n');
+
+      systemPrompt = `
+Você é o Co-piloto de IA da plataforma de RH. Você tem acesso a todos os processos seletivos da empresa.
+Aqui está o resumo atual das vagas e candidatos:
+
+${globalContext}
+
+Sua tarefa é responder dúvidas estratégicas sobre o pipeline de contratação. Se perguntarem pelos "melhores", olhe para os scores de match.
+Sempre responda em Português do Brasil de forma profissional e executiva.
+      `.trim();
     }
 
     try {
       console.log('[AiOrchestration] Iniciando chat contextual com Claude...');
-      return await this.claude.stream(messages, { systemPrompt });
-    } catch (error) {
-      console.warn('[AiOrchestration] Claude falhou no chat. Tentando com Grok...', error);
+      const stream = await this.claude.stream(messages, { systemPrompt });
+      for await (const chunk of stream) {
+        yield chunk;
+      }
+    } catch (error: any) {
+      console.warn('[AiOrchestration] Claude falhou no chat. Tentando com Grok (xAI)...', error.message || error);
       try {
-        return await this.grok.stream(messages, { systemPrompt });
-      } catch (grokError) {
-        console.error('[AiOrchestration] Falha total no chat assistente.', grokError);
-        throw new Error('Ambos os serviços de IA estão indisponíveis.');
+        const stream = await this.grok.stream(messages, { systemPrompt });
+        for await (const chunk of stream) {
+          yield chunk;
+        }
+      } catch (grokError: any) {
+        console.error('[AiOrchestration] Falha total no chat assistente.', grokError.message || grokError);
+        yield 'Desculpe, estou tendo dificuldades técnicas para acessar meus modelos de IA no momento. Por favor, tente novamente em alguns instantes.';
       }
     }
   }
